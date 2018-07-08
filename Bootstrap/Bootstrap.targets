@@ -6,7 +6,7 @@
   <Target Name="SetProperties">
     <PropertyGroup>
       <!--Should be latest on 15.8 https://jenkins.mono-project.com/view/Xamarin.Android/job/xamarin-android/1082/Azure/-->
-      <XamarinAndroidUrl>https://xamjenkinsartifact.blob.core.windows.net/xamarin-android/xamarin-android/bin/Release/bundle-v21-h029ca8ca-Release-Darwin-libzip=b95cf3f,llvm=bdb3a11,mono=f3235f3.zip</XamarinAndroidUrl>
+      <XamarinAndroidUrl>https://xamjenkinsartifact.blob.core.windows.net/xamarin-android/xamarin-android/xamarin.android-oss_v8.4.99.60_Darwin-x86_64_HEAD_6ce26a0d.zip</XamarinAndroidUrl>
       <UrlFile>$(IntermediateOutputPath)xamarin-android.url</UrlFile>
       <ZipFile>$(IntermediateOutputPath)xamarin-android.zip</ZipFile>
       <UnzipStamp>$(IntermediateOutputPath)xamarin-android.unzip.stamp</UnzipStamp>
@@ -31,9 +31,13 @@
     </ItemGroup>
   </Target>
   <Target Name="Unzip" Inputs="$(ZipFile)" Outputs="$(UnzipStamp)">
+    <RemoveDir
+      Directories="$(OutputPath)xamarin-android"
+    />
     <Unzip
       SourceFiles="$(ZipFile)"
       DestinationFolder="$(OutputPath)xamarin-android"
+      SkipTopDirectory="True"
       OverwriteReadonlyFiles="True"
       SkipUnchangedFiles="True"
     />

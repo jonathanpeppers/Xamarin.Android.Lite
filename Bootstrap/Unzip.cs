@@ -44,6 +44,11 @@ namespace Xamarin.Android.Lite.Bootstrap
 		public bool SkipUnchangedFiles { get; set; } = true;
 
 		/// <summary>
+		/// In the case of some zips, they have a top directory named the same as the zip file...
+		/// </summary>
+		public bool SkipTopDirectory { get; set; }
+
+		/// <summary>
 		/// Gets or sets an array of <see cref="ITaskItem"/> objects containing the paths to .zip archive files to unzip.
 		/// </summary>
 		[Required]
@@ -110,7 +115,18 @@ namespace Xamarin.Android.Lite.Bootstrap
 		private void Extract (ZipArchive sourceArchive, DirectoryInfo destinationDirectory)
 		{
 			foreach (ZipArchiveEntry zipArchiveEntry in sourceArchive.Entries.TakeWhile (i => !_cancellationToken.IsCancellationRequested)) {
-				FileInfo destinationPath = new FileInfo (Path.Combine (destinationDirectory.FullName, zipArchiveEntry.FullName));
+				//entry.FullName can have / or \ depending on your .NET version
+				var entryPath = zipArchiveEntry.FullName.Replace ('/', Path.DirectorySeparatorChar);
+				if (SkipTopDirectory) {
+					entryPath = entryPath.Substring (entryPath.IndexOf (Path.DirectorySeparatorChar) + 1);
+				}
+				//Skip directory entries
+				if (entryPath.EndsWith (Path.DirectorySeparatorChar.ToString ())) {
+					Log.LogMessage (MessageImportance.Low, "Skipping directory entry: {0}", zipArchiveEntry.FullName);
+					continue;
+				}
+
+				var destinationPath = new FileInfo (Path.Combine (destinationDirectory.FullName, entryPath));
 
 				if (!destinationPath.FullName.StartsWith (destinationDirectory.FullName, StringComparison.OrdinalIgnoreCase)) {
 					// ExtractToDirectory() throws an IOException for this but since we're extracting one file at a time
