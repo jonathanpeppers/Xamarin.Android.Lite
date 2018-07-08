@@ -1,0 +1,31 @@
+<Project>
+  <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.DownloadUri" />
+  <Target Name="Bootstrap" DependsOnTargets="Build;SetProperties;Download">
+  </Target>
+  <Target Name="SetProperties">
+    <PropertyGroup>
+      <!--Should be latest on 15.8 https://jenkins.mono-project.com/view/Xamarin.Android/job/xamarin-android/1082/Azure/-->
+      <XamarinAndroidUrl>https://xamjenkinsartifact.blob.core.windows.net/xamarin-android/xamarin-android/bin/Release/bundle-v21-h029ca8ca-Release-Darwin-libzip=b95cf3f,llvm=bdb3a11,mono=f3235f3.zip</XamarinAndroidUrl>
+      <UrlFile>$(IntermediateOutputPath)xamarin-android.url</UrlFile>
+      <ZipFile>$(IntermediateOutputPath)xamarin-android.zip</ZipFile>
+    </PropertyGroup>
+    <WriteLinesToFile
+      File="$(UrlFile)"
+      Lines="$(XamarinAndroidUrl)"
+      Overwrite="True"
+      WriteOnlyWhenDifferent="True"
+    />
+    <ItemGroup>
+      <FileWrites Include="$(UrlFile)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="Download" Inputs="$(UrlFile)" Outputs="$(ZipFile)">
+    <DownloadUri
+      SourceUris="$(XamarinAndroidUrl)"
+      DestinationFiles="$(ZipFile)"
+    />
+    <ItemGroup>
+      <FileWrites Include="$(ZipFile)" />
+    </ItemGroup>
+  </Target>
+</Project>
