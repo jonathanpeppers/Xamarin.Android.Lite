@@ -1,6 +1,7 @@
 <Project>
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.DownloadUri" />
-  <Target Name="Bootstrap" DependsOnTargets="Build;SetProperties;Download">
+  <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.Unzip" />
+  <Target Name="Bootstrap" DependsOnTargets="Build;SetProperties;Download;Unzip">
   </Target>
   <Target Name="SetProperties">
     <PropertyGroup>
@@ -8,6 +9,7 @@
       <XamarinAndroidUrl>https://xamjenkinsartifact.blob.core.windows.net/xamarin-android/xamarin-android/bin/Release/bundle-v21-h029ca8ca-Release-Darwin-libzip=b95cf3f,llvm=bdb3a11,mono=f3235f3.zip</XamarinAndroidUrl>
       <UrlFile>$(IntermediateOutputPath)xamarin-android.url</UrlFile>
       <ZipFile>$(IntermediateOutputPath)xamarin-android.zip</ZipFile>
+      <UnzipStamp>$(IntermediateOutputPath)xamarin-android.unzip.stamp</UnzipStamp>
     </PropertyGroup>
     <WriteLinesToFile
       File="$(UrlFile)"
@@ -26,6 +28,21 @@
     />
     <ItemGroup>
       <FileWrites Include="$(ZipFile)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="Unzip" Inputs="$(ZipFile)" Outputs="$(UnzipStamp)">
+    <Unzip
+      SourceFiles="$(ZipFile)"
+      DestinationFolder="$(OutputPath)xamarin-android"
+      OverwriteReadonlyFiles="True"
+      SkipUnchangedFiles="True"
+    />
+    <Touch
+      Files="$(UnzipStamp)"
+      AlwaysCreate="True"
+    />
+    <ItemGroup>
+      <FileWrites Include="$(UnzipStamp)" />
     </ItemGroup>
   </Target>
 </Project>
