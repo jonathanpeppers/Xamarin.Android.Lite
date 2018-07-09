@@ -9,6 +9,7 @@
       <XamarinAndroidUrl>https://xamjenkinsartifact.azureedge.net/xamarin-android/xamarin-android/xamarin.android-oss_v8.4.99.60_Darwin-x86_64_HEAD_6ce26a0d.zip</XamarinAndroidUrl>
       <UrlFile>$(IntermediateOutputPath)xamarin-android.url</UrlFile>
       <ZipFile>$(IntermediateOutputPath)xamarin-android.zip</ZipFile>
+      <UnzipFolder>$(IntermediateOutputPath)unzip\</UnzipFolder>
       <UnzipStamp>$(BaseOutputPath)xamarin-android.unzip.stamp</UnzipStamp>
       <FixStamp>$(BaseOutputPath)xamarin-android.fixup.stamp</FixStamp>
     </PropertyGroup>
@@ -23,32 +24,26 @@
     </ItemGroup>
   </Target>
   <Target Name="Download" Inputs="$(UrlFile)" Outputs="$(ZipFile)">
-    <DownloadUri
-      SourceUris="$(XamarinAndroidUrl)"
-      DestinationFiles="$(ZipFile)"
-    />
+    <DownloadUri SourceUris="$(XamarinAndroidUrl)" DestinationFiles="$(ZipFile)" />
     <ItemGroup>
       <FileWrites Include="$(ZipFile)" />
     </ItemGroup>
   </Target>
   <Target Name="Unzip" Inputs="$(ZipFile)" Outputs="$(UnzipStamp)">
-    <RemoveDir
-      Directories="$(BaseOutputPath)xamarin-android"
-    />
+    <RemoveDir Directories="$(UnzipFolder)" />
     <Unzip
       SourceFiles="$(ZipFile)"
-      DestinationFolder="$(BaseOutputPath)xamarin-android"
+      DestinationFolder="$(UnzipFolder)"
       SkipTopDirectory="True"
       OverwriteReadonlyFiles="True"
       SkipUnchangedFiles="True"
     />
-    <RemoveDir
-      Directories="$(BaseOutputPath)xamarin-android\bin\Debug"
-    />
-    <Touch
-      Files="$(UnzipStamp)"
-      AlwaysCreate="True"
-    />
+    <ItemGroup>
+      <_FileToMove Include="$(UnzipFolder)bin\Release\**\*" Exclude="$(UnzipFolder)bin\Release\bcl-tests\**\*" />
+    </ItemGroup>
+    <Move SourceFiles="@(_FileToMove)" DestinationFolder="$(BaseOutputPath)xamarin-android\%(RecursiveDir)" />
+    <RemoveDir Directories="$(UnzipFolder)" />
+    <Touch Files="$(UnzipStamp)" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(UnzipStamp)" />
     </ItemGroup>
@@ -68,13 +63,10 @@
     </ItemGroup>
     <Copy
       SourceFiles="@(_FileToCopy->'$(MSBuildToolsPath)\%(Identity)')"
-      DestinationFolder="$(BaseOutputPath)xamarin-android\bin\Release\bin"
+      DestinationFolder="$(BaseOutputPath)xamarin-android\bin"
       SkipUnchangedFiles="True"
     />
-    <Touch
-      Files="$(FixStamp)"
-      AlwaysCreate="True"
-    />
+    <Touch Files="$(FixStamp)" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(FixStamp)" />
     </ItemGroup>

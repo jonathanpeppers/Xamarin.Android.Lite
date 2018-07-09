@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <XamarinAndroid>$(MSBuildThisFileDirectory)bin\xamarin-android\</XamarinAndroid>
-    <XABuild>$(XamarinAndroid)bin\Release\bin\xabuild</XABuild>
+    <XABuild>$(XamarinAndroid)bin\xabuild</XABuild>
   </PropertyGroup>
   <Target Name="Build">
     <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
