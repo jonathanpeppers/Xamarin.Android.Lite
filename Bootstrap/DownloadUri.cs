@@ -42,7 +42,7 @@ namespace Xamarin.Android.Lite.Bootstrap
 			var source = cancellationTokenSource = new CancellationTokenSource ();
 			var tasks = new Task [SourceUris.Length];
 			using (var client = new HttpClient ()) {
-				client.Timeout = TimeSpan.FromHours (3);
+				client.Timeout = TimeSpan.FromHours (1);
 				for (int i = 0; i < SourceUris.Length; ++i) {
 					tasks [i] = DownloadFile (client, source, SourceUris [i], DestinationFiles [i].ItemSpec);
 				}
