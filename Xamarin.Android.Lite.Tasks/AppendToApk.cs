@@ -12,18 +12,22 @@ namespace Xamarin.Android.Lite.Tasks
 		public ITaskItem[] Files { get; set; }
 
 		[Required]
-		public ITaskItem[] Destination { get; set; }
-
-		[Required]
 		public ITaskItem Apk { get; set; }
 
 		public override bool Execute ()
 		{
 			using (var zip = ZipArchive.Open (Apk.ItemSpec, FileMode.Create)) {
 				ITaskItem file;
+				string archivePath;
 				for (int i = 0; i < Files.Length; i++) {
 					file = Files [i];
-					zip.AddFile (file.ItemSpec, Destination [i].ItemSpec, compressionMethod: GetCompression (file), overwriteExisting: true);
+					archivePath = file.GetMetadata ("ArchivePath");
+
+					//NOTE: always use / on Android
+					if (archivePath != null)
+						archivePath = archivePath.Replace (Path.DirectorySeparatorChar, '/');
+
+					zip.AddFile (file.ItemSpec, archivePath, compressionMethod: GetCompression (file), overwriteExisting: true);
 				}
 			}
 

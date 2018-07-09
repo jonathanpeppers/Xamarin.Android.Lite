@@ -1,0 +1,12 @@
+﻿<Project>
+  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
+  <Target Name="AppendToApk" BeforeTargets="Build">
+    <ItemGroup>
+      <_Assemblies Include="$(TargetPath)">
+        <ArchivePath>assemblies\$(TargetFileName)</ArchivePath>
+        <Compression>Store</Compression>
+      </_Assemblies>
+    </ItemGroup>
+    <AppendToApk Files="@(_Assemblies)" Apk="$(AndroidApkFile)" />
+  </Target>
+</Project>
