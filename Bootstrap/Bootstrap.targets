@@ -1,15 +1,16 @@
 <Project>
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.DownloadUri" />
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.Unzip" />
-  <Target Name="Bootstrap" DependsOnTargets="Build;SetProperties;Download;Unzip">
+  <Target Name="Bootstrap" DependsOnTargets="Build;SetProperties;Download;Unzip;FixXABuild">
   </Target>
   <Target Name="SetProperties">
     <PropertyGroup>
       <!--Should be latest on 15.8 https://jenkins.mono-project.com/view/Xamarin.Android/job/xamarin-android/1082/Azure/-->
-      <XamarinAndroidUrl>https://xamjenkinsartifact.blob.core.windows.net/xamarin-android/xamarin-android/xamarin.android-oss_v8.4.99.60_Darwin-x86_64_HEAD_6ce26a0d.zip</XamarinAndroidUrl>
+      <XamarinAndroidUrl>https://xamjenkinsartifact.azureedge.net/xamarin-android/xamarin-android/xamarin.android-oss_v8.4.99.60_Darwin-x86_64_HEAD_6ce26a0d.zip</XamarinAndroidUrl>
       <UrlFile>$(IntermediateOutputPath)xamarin-android.url</UrlFile>
       <ZipFile>$(IntermediateOutputPath)xamarin-android.zip</ZipFile>
-      <UnzipStamp>$(IntermediateOutputPath)xamarin-android.unzip.stamp</UnzipStamp>
+      <UnzipStamp>$(BaseOutputPath)xamarin-android.unzip.stamp</UnzipStamp>
+      <FixStamp>$(BaseOutputPath)xamarin-android.fixup.stamp</FixStamp>
     </PropertyGroup>
     <WriteLinesToFile
       File="$(UrlFile)"
@@ -32,14 +33,17 @@
   </Target>
   <Target Name="Unzip" Inputs="$(ZipFile)" Outputs="$(UnzipStamp)">
     <RemoveDir
-      Directories="$(OutputPath)xamarin-android"
+      Directories="$(BaseOutputPath)xamarin-android"
     />
     <Unzip
       SourceFiles="$(ZipFile)"
-      DestinationFolder="$(OutputPath)xamarin-android"
+      DestinationFolder="$(BaseOutputPath)xamarin-android"
       SkipTopDirectory="True"
       OverwriteReadonlyFiles="True"
       SkipUnchangedFiles="True"
+    />
+    <RemoveDir
+      Directories="$(BaseOutputPath)xamarin-android\bin\Debug"
     />
     <Touch
       Files="$(UnzipStamp)"
@@ -47,6 +51,32 @@
     />
     <ItemGroup>
       <FileWrites Include="$(UnzipStamp)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="FixXABuild" Condition=" '$(OS)' == 'Windows_NT' " Inputs="$(UnzipStamp)" Outputs="$(FixStamp)">
+    <ItemGroup>
+      <_FileToCopy Include="Microsoft.Build.dll" />
+      <_FileToCopy Include="Microsoft.Build.Engine.dll" />
+      <_FileToCopy Include="Microsoft.Build.Framework.dll" />
+      <_FileToCopy Include="Microsoft.Build.Tasks.Core.dll" />
+      <_FileToCopy Include="Microsoft.Build.Utilities.Core.dll" />
+      <_FileToCopy Include="MSBuild.exe" />
+      <_FileToCopy Include="System.Collections.Immutable.dll" />
+      <_FileToCopy Include="System.IO.Compression.dll" />
+      <_FileToCopy Include="System.Runtime.InteropServices.RuntimeInformation.dll" />
+      <_FileToCopy Include="System.Threading.Tasks.Dataflow.dll" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(_FileToCopy->'$(MSBuildToolsPath)\%(Identity)')"
+      DestinationFolder="$(BaseOutputPath)xamarin-android\bin\Release\bin"
+      SkipUnchangedFiles="True"
+    />
+    <Touch
+      Files="$(FixStamp)"
+      AlwaysCreate="True"
+    />
+    <ItemGroup>
+      <FileWrites Include="$(FixStamp)" />
     </ItemGroup>
   </Target>
 </Project>

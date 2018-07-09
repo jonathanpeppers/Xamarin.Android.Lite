@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <XamarinAndroid>$(MSBuildThisFileDirectory)bin\xamarin-android\</XamarinAndroid>
+    <XABuild>$(XamarinAndroid)bin\Release\bin\xabuild</XABuild>
+  </PropertyGroup>
+  <Target Name="Build">
+    <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
+    <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
+    <Exec Command="&quot;$(XABuild)&quot; Xamarin.Android.Lite\Xamarin.Android.Lite.csproj /t:SignAndroidPackage /p:Configuration=Release /bl:xabuild.binlog" />
+  </Target>
+</Project>
