@@ -4,8 +4,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Android.Lite", "Xamarin.Android.Lite\Xamarin.Android.Lite.csproj", "{3EB18023-5284-44DA-8EB1-9CD0B4BE8D0B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4D9C281-6323-4A09-A8D3-0A98D37072C9} = {A4D9C281-6323-4A09-A8D3-0A98D37072C9}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bootstrap", "Bootstrap\Bootstrap.csproj", "{A4D9C281-6323-4A09-A8D3-0A98D37072C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bootstrap", "Bootstrap\Bootstrap.csproj", "{A4D9C281-6323-4A09-A8D3-0A98D37072C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Android.Lite.Sample", "Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj", "{C6EFA0E5-01D7-4216-BD34-A60ADE223E89}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3EB18023-5284-44DA-8EB1-9CD0B4BE8D0B} = {3EB18023-5284-44DA-8EB1-9CD0B4BE8D0B}
+		{D63BBD6E-3E62-46B6-87DE-376D881AA80A} = {D63BBD6E-3E62-46B6-87DE-376D881AA80A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Android.Lite.Tasks", "Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj", "{D63BBD6E-3E62-46B6-87DE-376D881AA80A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +34,14 @@ Global
 		{A4D9C281-6323-4A09-A8D3-0A98D37072C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4D9C281-6323-4A09-A8D3-0A98D37072C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4D9C281-6323-4A09-A8D3-0A98D37072C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6EFA0E5-01D7-4216-BD34-A60ADE223E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6EFA0E5-01D7-4216-BD34-A60ADE223E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6EFA0E5-01D7-4216-BD34-A60ADE223E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6EFA0E5-01D7-4216-BD34-A60ADE223E89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D63BBD6E-3E62-46B6-87DE-376D881AA80A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D63BBD6E-3E62-46B6-87DE-376D881AA80A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D63BBD6E-3E62-46B6-87DE-376D881AA80A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D63BBD6E-3E62-46B6-87DE-376D881AA80A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
