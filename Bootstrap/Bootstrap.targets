@@ -30,6 +30,8 @@
     </ItemGroup>
   </Target>
   <Target Name="Unzip" Inputs="$(ZipFile)" Outputs="$(UnzipStamp)">
+    <!--NOTE: not the most efficient, this unzips the entire zip and moves one subfolder-->
+    <!--TODO: Maybe add some kind of filter feature to allow to unzip a subdirectory in the zip?-->
     <RemoveDir Directories="$(UnzipFolder)" />
     <Unzip
       SourceFiles="$(ZipFile)"
@@ -48,6 +50,7 @@
       <FileWrites Include="$(UnzipStamp)" />
     </ItemGroup>
   </Target>
+  <!--NOTE: xabuild.exe was compiled on MacOS, unfortunately MSBuild has OS-specific files-->
   <Target Name="FixXABuild" Condition=" '$(OS)' == 'Windows_NT' " Inputs="$(UnzipStamp)" Outputs="$(FixStamp)">
     <ItemGroup>
       <_FileToCopy Include="Microsoft.Build.dll" />
