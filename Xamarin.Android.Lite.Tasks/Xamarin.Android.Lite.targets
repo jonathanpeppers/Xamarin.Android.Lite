@@ -1,5 +1,6 @@
 ﻿<Project>
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ResolveSdks" />
+  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.LinkAssemblies" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ApkSigner" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
@@ -22,18 +23,27 @@
       <AdbToolPath         Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
       <AdbToolExe          Condition=" '$(AdbToolExe)' == '' ">adb</AdbToolExe>
       <JavaToolPath        Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+      <IntermediateAssemblyDirectory>$(IntermediateOutputPath)linked\</IntermediateAssemblyDirectory>
+      <LinkedAssembly>$(IntermediateAssemblyDirectory)$(TargetFileName)</LinkedAssembly>
     </PropertyGroup>
+  </Target>
+  <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembly)">
+    <RemoveDir Directories="$(IntermediateAssemblyDirectory)" />
+    <LinkAssemblies InputAssemblies="$(TargetPath)" OutputAssemblies="$(LinkedAssembly)" />
+    <ItemGroup>
+      <FileWrites Include="$(LinkedAssembly)" />
+    </ItemGroup>
   </Target>
   <Target Name="AppendToApk">
     <ItemGroup>
-      <_Assemblies Include="$(TargetPath)">
+      <_Assemblies Include="$(LinkedAssembly)">
         <ArchivePath>assemblies\$(TargetFileName)</ArchivePath>
         <Compression>Store</Compression>
       </_Assemblies>
     </ItemGroup>
     <AppendToApk Files="@(_Assemblies)" Apk="$(AndroidApkFile)" />
   </Target>
-  <Target Name="SignAndroidPackage" DependsOnTargets="ResolveSdks;AppendToApk;" BeforeTargets="Build">
+  <Target Name="SignAndroidPackage" DependsOnTargets="ResolveSdks;LinkAssemblies;AppendToApk" BeforeTargets="Build">
     <PropertyGroup>
       <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
