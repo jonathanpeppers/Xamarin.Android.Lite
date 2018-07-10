@@ -29,15 +29,22 @@
   </Target>
   <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembly)">
     <RemoveDir Directories="$(IntermediateAssemblyDirectory)" />
-    <LinkAssemblies InputAssemblies="$(TargetPath)" OutputAssemblies="$(LinkedAssembly)" />
+    <ItemGroup>
+      <ResolvedAssemblies Include="..\..\Xamarin.Android.Lite\obj\Release\MonoAndroid81\linksrc\*.dll" />
+    </ItemGroup>
+    <LinkAssemblies
+      MainAssembly="$(TargetPath)"
+      ResolvedAssemblies="@(ResolvedAssemblies)"
+      OutputDirectory="$(IntermediateAssemblyDirectory)"
+    />
     <ItemGroup>
       <FileWrites Include="$(LinkedAssembly)" />
     </ItemGroup>
   </Target>
   <Target Name="AppendToApk">
     <ItemGroup>
-      <_Assemblies Include="$(LinkedAssembly)">
-        <ArchivePath>assemblies\$(TargetFileName)</ArchivePath>
+      <_Assemblies Include="$(IntermediateAssemblyDirectory)*.dll">
+        <ArchivePath>assemblies\</ArchivePath>
         <Compression>Store</Compression>
       </_Assemblies>
     </ItemGroup>

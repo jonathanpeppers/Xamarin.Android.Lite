@@ -1,94 +1,91 @@
-﻿using Microsoft.Build.Framework;
+using Java.Interop.Tools.Cecil;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Mono.Cecil;
-using System;
-using System.Collections.Generic;
+using Mono.Cecil.Cil;
+using Mono.Linker;
+using Mono.Linker.Steps;
+using MonoDroid.Tuner;
 using System.IO;
+using MSBuild = Microsoft.Build.Framework;
 
 namespace Xamarin.Android.Lite.Tasks
 {
 	/// <summary>
 	/// NOTE: this is not a "real" linker, it fixes up assemblies that reference netstandard.dll, making them instead point to mscorlib.dll
 	/// </summary>
-	public class LinkAssemblies : Task
+	public class LinkAssemblies : Task, Mono.Linker.ILogger
 	{
 		[Required]
-		public string [] InputAssemblies { get; set; }
+		public string MainAssembly { get; set; }
+
+		public string [] ResolvedAssemblies { get; set; }
 
 		[Required]
-		public string [] OutputAssemblies { get; set; }
-
-		static readonly Version DotNetVersion = new Version (2, 0, 5, 0);
-
-		/// <summary>
-		/// Mapping of referenced assemblies that need "fixed"
-		/// </summary>
-		static readonly Dictionary<string, AssemblyRef> mapping = new Dictionary<string, AssemblyRef> {
-			{
-				"netstandard",
-				new AssemblyRef {
-					Name = "mscorlib",
-					Alternates = new Dictionary<string, AssemblyRef> {
-						{ "System.Xml", new AssemblyRef { Name = "System.Xml" } }
-					}
-				}
-			}
-		};
-
-		class AssemblyRef
-		{
-			public string Name { get; set; }
-
-			public Version Version { get; set; } = DotNetVersion;
-
-			/// <summary>
-			/// References of namespaces that need "fixed"
-			/// </summary>
-			public Dictionary<string, AssemblyRef> Alternates { get; set; }
-		}
+		public string OutputDirectory { get; set; }
 
 		public override bool Execute ()
 		{
-			using (var resolver = new DefaultAssemblyResolver ()) {
-				var rp = new ReaderParameters {
-					InMemory = true,
-					AssemblyResolver = resolver,
-				};
-				string input, output;
-				for (int i = 0; i < InputAssemblies.Length; i++) {
-					input = InputAssemblies [i];
-					output = OutputAssemblies [i];
+			var rp = new ReaderParameters {
+				InMemory = true,
+			};
+			using (var res = new DirectoryAssemblyResolver (this.CreateTaskLogger (), loadDebugSymbols: false, loadReaderParameters: rp)) {
 
-					resolver.AddSearchDirectory (Path.GetDirectoryName (input));
-
-					var assembly = AssemblyDefinition.ReadAssembly (input, rp);
-					var references = assembly.MainModule.AssemblyReferences;
-					AssemblyNameReference reference;
-					for (int j = 0; j < references.Count; j++) {
-						reference = references [j];
-						if (mapping.TryGetValue (reference.Name, out AssemblyRef target)) {
-							Log.LogMessage (MessageImportance.Low, "Remapping reference from `{0}` to `{1}", reference.Name, target.Name);
-							references [j] = new AssemblyNameReference (target.Name, target.Version);
-						}
-					}
-
-					foreach (var typeReference in assembly.MainModule.GetTypeReferences ()) {
-						if (mapping.TryGetValue (typeReference.Scope.Name, out AssemblyRef target)) {
-							if (target.Alternates != null && target.Alternates.TryGetValue (typeReference.Namespace, out AssemblyRef alternate)) {
-								Log.LogMessage (MessageImportance.Low, "Remapping type from `{0}` to `{1}", typeReference.Scope.Name, alternate.Name);
-								typeReference.Scope = new AssemblyNameReference (alternate.Name, alternate.Version);
-							} else {
-								Log.LogMessage (MessageImportance.Low, "Remapping type from `{0}` to `{1}", typeReference.Scope.Name, target.Name);
-								typeReference.Scope = new AssemblyNameReference (target.Name, target.Version);
-							}
-						}
-					}
-
-					Directory.CreateDirectory (Path.GetDirectoryName (output));
-					assembly.Write (output);
+				// Put every assembly we'll need in the resolver
+				res.Load (MainAssembly);
+				foreach (var assembly in ResolvedAssemblies) {
+					res.Load (Path.GetFullPath (assembly));
 				}
 
+				var resolver = new AssemblyResolver (res.ToResolverCache ());
+				resolver.AddSearchDirectory (OutputDirectory);
+				if (ResolvedAssemblies != null) {
+					foreach (var assembly in ResolvedAssemblies) {
+						resolver.AddSearchDirectory (Path.GetDirectoryName (assembly));
+					}
+				}
+
+				var pipeline = new Pipeline ();
+				pipeline.AppendStep (new FixAbstractMethodsStep ());
+				pipeline.AppendStep (new OutputStep ());
+
+				pipeline.PrependStep (new ResolveFromAssemblyStep (MainAssembly));
+				if (ResolvedAssemblies != null) {
+					foreach (var assembly in ResolvedAssemblies) {
+						pipeline.PrependStep (new ResolveFromAssemblyStep (assembly));
+					}
+				}
+
+				var context = new AndroidLinkContext (pipeline, resolver) {
+					Logger = this,
+					CoreAction = AssemblyAction.Link,
+					UserAction = AssemblyAction.Link,
+					LinkSymbols = true,
+					SymbolReaderProvider = new DefaultSymbolReaderProvider (true),
+					SymbolWriterProvider = new DefaultSymbolWriterProvider (),
+					OutputDirectory = OutputDirectory
+				};
+
+				pipeline.Process (context);
+
 				return !Log.HasLoggedErrors;
+			}
+		}
+
+		public void LogMessage (Mono.Linker.MessageImportance importance, string message, params object [] values)
+		{
+			switch (importance) {
+				case Mono.Linker.MessageImportance.High:
+					Log.LogMessage (MSBuild.MessageImportance.High, message, values);
+					break;
+				case Mono.Linker.MessageImportance.Low:
+					Log.LogMessage (MSBuild.MessageImportance.Low, message, values);
+					break;
+				case Mono.Linker.MessageImportance.Normal:
+					Log.LogMessage (MSBuild.MessageImportance.Normal, message, values);
+					break;
+				default:
+					break;
 			}
 		}
 	}
