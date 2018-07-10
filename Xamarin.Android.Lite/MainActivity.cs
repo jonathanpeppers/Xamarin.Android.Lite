@@ -10,7 +10,7 @@ namespace Xamarin.Android.Lite
 	public class MainActivity : Forms.Platform.Android.FormsAppCompatActivity
 	{
 		const string Tag = "XALite";
-		const string Metadata = "Xamarin.Android.Lite.Application";
+		const string ApplicationMetadata = "Xamarin.Android.Lite.Application";
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -22,20 +22,25 @@ namespace Xamarin.Android.Lite
 			Forms.Forms.Init (this, bundle);
 
 			var applicationInfo = PackageManager.GetApplicationInfo (PackageName, PackageInfoFlags.MetaData);
-			var applicationType = applicationInfo.MetaData.GetString (Metadata);
-			if (!string.IsNullOrEmpty (applicationType)) {
-				var type = Type.GetType (Metadata);
-				if (type != null) {
-					try {
-						LoadApplication ((Forms.Application)Activator.CreateInstance (type));
-					} catch (InvalidCastException) {
-						Log.Error (Tag, "Unable to cast type `{0}` from metadata to Xamarin.Forms.Application!", type);
+			var metadata = applicationInfo?.MetaData;
+			if (metadata != null) {
+				var applicationType = metadata.GetString (ApplicationMetadata);
+				if (!string.IsNullOrEmpty (applicationType)) {
+					var type = Type.GetType (applicationType);
+					if (type != null) {
+						try {
+							LoadApplication ((Forms.Application)Activator.CreateInstance (type));
+						} catch (InvalidCastException) {
+							Log.Error (Tag, "Unable to cast type `{0}` from metadata to Xamarin.Forms.Application!", type);
+						}
+					} else {
+						Log.Error (Tag, "Unable to create type `{0}` from metadata in AndroidManifest.xml!", applicationType);
 					}
 				} else {
-					Log.Error (Tag, "Unable to create type `{0}` from metadata in AndroidManifest.xml!", applicationType);
+					Log.Error (Tag, "Unable to find `{0}` metadata in AndroidManifest.xml!", ApplicationMetadata);
 				}
 			} else {
-				Log.Error (Tag, "Unable to find `{0}` metadata in AndroidManifest.xml!", Metadata);
+				Log.Error (Tag, "Unable to find *any* meta-data in AndroidManifest.xml!");
 			}
 		}
 	}

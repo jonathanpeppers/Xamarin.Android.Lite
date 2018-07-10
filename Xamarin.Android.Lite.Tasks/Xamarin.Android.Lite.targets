@@ -1,6 +1,30 @@
 ﻿<Project>
+  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ResolveSdks" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
-  <Target Name="AppendToApk" BeforeTargets="Build">
+  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ApkSigner" />
+  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
+  <Target Name="ResolveSdks">
+    <ResolveSdks
+      AndroidSdkPath="$(AndroidSdkDirectory)"
+      AndroidNdkPath="$(AndroidNdkDirectory)"
+      JavaSdkPath="$(JavaSdkDirectory)">
+      <Output TaskParameter="AndroidSdkPath"           PropertyName="AndroidSdkDirectory"      Condition=" '$(AndroidSdkDirectory)' == '' " />
+      <Output TaskParameter="AndroidNdkPath"           PropertyName="AndroidNdkDirectory"      Condition=" '$(AndroidNdkDirectory)' == '' " />
+      <Output TaskParameter="JavaSdkPath"              PropertyName="JavaSdkDirectory"         Condition=" '$(JavaSdkDirectory)' == '' " />
+      <Output TaskParameter="AndroidSdkBuildToolsPath" PropertyName="AndroidSdkBuildToolsPath" Condition=" '$(AndroidSdkBuildToolsPath)' == '' " />
+      <Output TaskParameter="ApkSignerJar"             PropertyName="ApkSignerJar"             Condition=" '$(ApkSignerJar)' == '' " />
+      <Output TaskParameter="ZipAlignPath"             PropertyName="ZipAlignToolPath"         Condition=" '$(ZipAlignToolPath)' == '' " />
+    </ResolveSdks>
+    <PropertyGroup>
+      <AndroidSdkDirectory Condition=" '$(AndroidSdkDirectory)' != '' And !HasTrailingSlash('$(AndroidSdkDirectory)') ">$(AndroidSdkDirectory)\</AndroidSdkDirectory>
+      <AndroidNdkDirectory Condition=" '$(AndroidNdkDirectory)' != '' And !HasTrailingSlash('$(AndroidNdkDirectory)') ">$(AndroidNdkDirectory)\</AndroidNdkDirectory>
+      <JavaSdkDirectory    Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
+      <AdbToolPath         Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
+      <AdbToolExe          Condition=" '$(AdbToolExe)' == '' ">adb</AdbToolExe>
+      <JavaToolPath        Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+    </PropertyGroup>
+  </Target>
+  <Target Name="AppendToApk">
     <ItemGroup>
       <_Assemblies Include="$(TargetPath)">
         <ArchivePath>assemblies\$(TargetFileName)</ArchivePath>
@@ -8,5 +32,32 @@
       </_Assemblies>
     </ItemGroup>
     <AppendToApk Files="@(_Assemblies)" Apk="$(AndroidApkFile)" />
+  </Target>
+  <Target Name="SignAndroidPackage" DependsOnTargets="ResolveSdks;AppendToApk;" BeforeTargets="Build">
+    <PropertyGroup>
+      <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
+      <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
+      <AndroidSigningKeyPass   Condition=" '$(AndroidSigningKeyPass)' == '' ">android</AndroidSigningKeyPass>
+      <AndroidSigningStorePass Condition=" '$(AndroidSigningStorePass)' == '' ">android</AndroidSigningStorePass>
+      <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
+    </PropertyGroup>
+    <Delete Files="$(AndroidApkFileSigned)" />
+    <ZipAlign
+      Source="$(AndroidApkFile)"
+      Destination="$(AndroidApkFileSigned)"
+      ToolPath="$(ZipAlignToolPath)"
+      ToolExe="$(ZipalignToolExe)"
+    />
+    <ApkSigner
+      ApkSignerJar="$(ApkSignerJar)"
+      ApkToSign="$(AndroidApkFileSigned)"
+      KeyStore="$(AndroidSigningKeyStore)"
+      KeyAlias="$(AndroidSigningKeyAlias)"
+      KeyPass="$(AndroidSigningKeyPass)"
+      StorePass="$(AndroidSigningStorePass)"
+      ToolPath="$(JavaToolPath)"
+      ToolExe="$(JavaToolExe)"
+      AdditionalArguments="$(AndroidApkSignerAdditionalArguments)"
+    />
   </Target>
 </Project>
