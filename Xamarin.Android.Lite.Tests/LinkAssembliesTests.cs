@@ -7,37 +7,41 @@ namespace Xamarin.Android.Lite.Tests
 	[TestFixture]
 	public class LinkAssembliesTests
 	{
-		//TODO: bring this test back one day
-		//string input, temp;
+		const string Assembly = "Xamarin.Android.Lite.Sample.dll";
+		string input, output, temp;
 
-		//[SetUp]
-		//public void SetUp ()
-		//{
-		//	input = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "Xamarin.Android.Lite.Sample.dll");
-		//	temp = Path.Combine (Path.GetTempPath (), nameof (LinkAssembliesTests));
+		[SetUp]
+		public void SetUp ()
+		{
+			temp = Path.Combine (Path.GetTempPath (), nameof (LinkAssembliesTests));
+			if (Directory.Exists (temp))
+				Directory.Delete (temp, recursive: true);
 
-		//	if (Directory.Exists (temp))
-		//		Directory.Delete (temp, recursive: true);
-		//}
+			input = Path.Combine (temp, "input");
+			output = Path.Combine (temp, "output");
 
-		//[TearDown]
-		//public void TearDown ()
-		//{
-		//	if (Directory.Exists (temp))
-		//		Directory.Delete (temp, recursive: true);
-		//}
+			Directory.CreateDirectory (input);
+			File.Copy (Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), Assembly), Path.Combine (input, Assembly), true);
+		}
 
-		//[Test]
-		//public void Execute ()
-		//{
-		//	var task = new LinkAssemblies {
-		//		BuildEngine = new MockBuildEngine (),
-		//		MainAssembly = input,
-		//		OutputDirectory = temp,
-		//	};
-		//	Assert.IsTrue (task.Execute (), "Execute should succeed!");
-		//	var output = Path.Combine (temp, Path.GetFileName (input));
-		//	FileAssert.Exists (output, $"Output assembly `{output}` should exist!");
-		//}
+		[TearDown]
+		public void TearDown ()
+		{
+			if (Directory.Exists (temp))
+				Directory.Delete (temp, recursive: true);
+		}
+
+		[Test]
+		public void Execute ()
+		{
+			var task = new LinkAssemblies {
+				BuildEngine = new MockBuildEngine (),
+				InputDirectory = input,
+				OutputDirectory = output,
+			};
+			Assert.IsTrue (task.Execute (), "Execute should succeed!");
+			var assembly = Path.Combine (output, Assembly);
+			FileAssert.Exists (assembly, $"Output assembly `{assembly}` should exist!");
+		}
 	}
 }
