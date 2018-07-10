@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
 using System.IO;
 using Xamarin.Android.Lite.Tasks;
 
@@ -8,20 +7,23 @@ namespace Xamarin.Android.Lite.Tests
 	[TestFixture]
 	public class LinkAssembliesTests
 	{
-		string input, output;
+		string input, temp;
 
 		[SetUp]
 		public void SetUp ()
 		{
 			input = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "Xamarin.Android.Lite.Sample.dll");
-			output = Path.Combine (Path.GetTempPath (), Path.GetRandomFileName ());
+			temp = Path.Combine (Path.GetTempPath (), nameof (LinkAssembliesTests));
+
+			if (Directory.Exists (temp))
+				Directory.Delete (temp, recursive: true);
 		}
 
 		[TearDown]
 		public void TearDown ()
 		{
-			if (File.Exists (output))
-				File.Delete (output);
+			if (Directory.Exists (temp))
+				Directory.Delete (temp, recursive: true);
 		}
 
 		[Test]
@@ -29,10 +31,11 @@ namespace Xamarin.Android.Lite.Tests
 		{
 			var task = new LinkAssemblies {
 				BuildEngine = new MockBuildEngine (),
-				InputAssemblies = new [] { input },
-				OutputAssemblies = new [] { output },
+				MainAssembly = input,
+				OutputDirectory = temp,
 			};
 			Assert.IsTrue (task.Execute (), "Execute should succeed!");
+			var output = Path.Combine (temp, Path.GetFileName (input));
 			FileAssert.Exists (output, $"Output assembly `{output}` should exist!");
 		}
 	}

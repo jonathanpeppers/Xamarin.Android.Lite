@@ -33,8 +33,10 @@ namespace Xamarin.Android.Lite.Tasks
 
 				// Put every assembly we'll need in the resolver
 				res.Load (MainAssembly);
-				foreach (var assembly in ResolvedAssemblies) {
-					res.Load (Path.GetFullPath (assembly));
+				if (ResolvedAssemblies != null) {
+					foreach (var assembly in ResolvedAssemblies) {
+						res.Load (Path.GetFullPath (assembly));
+					}
 				}
 
 				var resolver = new AssemblyResolver (res.ToResolverCache ());
