@@ -24,31 +24,28 @@
       <AdbToolExe          Condition=" '$(AdbToolExe)' == '' ">adb</AdbToolExe>
       <JavaToolPath        Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
       <IntermediateAssemblyDirectory>$(IntermediateOutputPath)linked\</IntermediateAssemblyDirectory>
-      <LinkedAssembly>$(IntermediateAssemblyDirectory)$(TargetFileName)</LinkedAssembly>
+      <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
     </PropertyGroup>
   </Target>
-  <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembly)">
+  <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembliesStamp)">
     <RemoveDir Directories="$(IntermediateAssemblyDirectory)" />
+    <LinkAssemblies InputDirectory="$(OutputPath)" OutputDirectory="$(IntermediateAssemblyDirectory)" />
+    <Touch Files="$(LinkedAssembliesStamp)" AlwaysCreate="True" />
     <ItemGroup>
-      <ResolvedAssemblies Include="..\..\Xamarin.Android.Lite\obj\Release\MonoAndroid81\linksrc\*.dll" />
-    </ItemGroup>
-    <LinkAssemblies
-      MainAssembly="$(TargetPath)"
-      ResolvedAssemblies="@(ResolvedAssemblies)"
-      OutputDirectory="$(IntermediateAssemblyDirectory)"
-    />
-    <ItemGroup>
-      <FileWrites Include="$(LinkedAssembly)" />
-    </ItemGroup>
-  </Target>
-  <Target Name="AppendToApk">
-    <ItemGroup>
-      <_Assemblies Include="$(IntermediateAssemblyDirectory)*.dll">
+      <LinkedAssemblies Include="$(IntermediateAssemblyDirectory)*.dll">
         <ArchivePath>assemblies\</ArchivePath>
         <Compression>Store</Compression>
-      </_Assemblies>
+      </LinkedAssemblies>
+      <FileWrites Include="@(LinkedAssemblies)" />
+      <FileWrites Include="$(LinkedAssembliesStamp)" />
     </ItemGroup>
-    <AppendToApk Files="@(_Assemblies)" Apk="$(AndroidApkFile)" />
+  </Target>
+  <Target Name="AppendToApk" Inputs="@(LinkedAssemblies);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
+    <AppendToApk Files="@(LinkedAssemblies)" Apk="$(AndroidApkFile)" />
+    <Touch Files="$(AndroidApkFile).stamp" AlwaysCreate="True" />
+    <ItemGroup>
+      <FileWrites Include="$(AndroidApkFile).stamp" />
+    </ItemGroup>
   </Target>
   <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;LinkAssemblies;AppendToApk">
     <PropertyGroup>

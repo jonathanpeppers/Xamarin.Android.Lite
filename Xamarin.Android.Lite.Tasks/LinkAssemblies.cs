@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 using Mono.Linker;
 using Mono.Linker.Steps;
 using MonoDroid.Tuner;
+using System.Collections.Generic;
 using System.IO;
 using MSBuild = Microsoft.Build.Framework;
 
@@ -17,45 +18,47 @@ namespace Xamarin.Android.Lite.Tasks
 	public class LinkAssemblies : Task, Mono.Linker.ILogger
 	{
 		[Required]
-		public string MainAssembly { get; set; }
-
-		public string [] ResolvedAssemblies { get; set; }
+		public string InputDirectory { get; set; }
 
 		[Required]
 		public string OutputDirectory { get; set; }
 
 		public override bool Execute ()
 		{
+			if (!Directory.Exists (InputDirectory)) {
+				Log.LogError ("{0} does not exist at path `{1}`", nameof (InputDirectory), InputDirectory);
+				return false;
+			}
+
+			var linkerDirectory = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "linker");
+			if (!Directory.Exists (linkerDirectory)) {
+				Log.LogError ("Unable to find linker input assemblies at path `{0}`", linkerDirectory);
+				return false;
+			}
+
 			var rp = new ReaderParameters {
 				InMemory = true,
 			};
 			using (var res = new DirectoryAssemblyResolver (this.CreateTaskLogger (), loadDebugSymbols: false, loadReaderParameters: rp)) {
-
-				// Put every assembly we'll need in the resolver
-				res.Load (MainAssembly);
-				if (ResolvedAssemblies != null) {
-					foreach (var assembly in ResolvedAssemblies) {
-						res.Load (Path.GetFullPath (assembly));
-					}
+				var linkerAssemblies = new List<string> ();
+				linkerAssemblies.AddRange (Directory.EnumerateFiles (InputDirectory, "*.dll"));
+				linkerAssemblies.AddRange (Directory.EnumerateFiles (linkerDirectory, "*.dll"));
+				foreach (var assembly in linkerAssemblies) {
+					res.Load (Path.GetFullPath (assembly));
 				}
 
 				var resolver = new AssemblyResolver (res.ToResolverCache ());
 				resolver.AddSearchDirectory (OutputDirectory);
-				if (ResolvedAssemblies != null) {
-					foreach (var assembly in ResolvedAssemblies) {
-						resolver.AddSearchDirectory (Path.GetDirectoryName (assembly));
-					}
+				foreach (var assembly in linkerAssemblies) {
+					resolver.AddSearchDirectory (Path.GetDirectoryName (assembly));
 				}
 
 				var pipeline = new Pipeline ();
 				pipeline.AppendStep (new FixAbstractMethodsStep ());
 				pipeline.AppendStep (new OutputStep ());
-
-				pipeline.PrependStep (new ResolveFromAssemblyStep (MainAssembly));
-				if (ResolvedAssemblies != null) {
-					foreach (var assembly in ResolvedAssemblies) {
-						pipeline.PrependStep (new ResolveFromAssemblyStep (assembly));
-					}
+				
+				foreach (var assembly in linkerAssemblies) {
+					pipeline.PrependStep (new ResolveFromAssemblyStep (assembly));
 				}
 
 				var context = new AndroidLinkContext (pipeline, resolver) {
