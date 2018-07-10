@@ -32,7 +32,7 @@ namespace Xamarin.Android.Lite.Tasks
 
 		public override bool Execute ()
 		{
-			var sdk = new AndroidSdkInfo (OnLog, AndroidSdkPath, AndroidNdkPath, JavaSdkPath);
+			var sdk = new AndroidSdkInfo (this.CreateTaskLogger (), AndroidSdkPath, AndroidNdkPath, JavaSdkPath);
 
 			AndroidSdkPath = sdk.AndroidSdkPath;
 			AndroidNdkPath = sdk.AndroidNdkPath;
@@ -53,26 +53,6 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 
 			return !Log.HasLoggedErrors;
-		}
-
-		void OnLog (TraceLevel level, string message)
-		{
-			switch (level) {
-				case TraceLevel.Error:
-					Log.LogError (message);
-					break;
-				case TraceLevel.Warning:
-					Log.LogWarning (message);
-					break;
-				case TraceLevel.Info:
-					Log.LogMessage (message);
-					break;
-				case TraceLevel.Verbose:
-					Log.LogMessage (MessageImportance.Low, message);
-					break;
-				default:
-					break;
-			}
 		}
 	}
 }
