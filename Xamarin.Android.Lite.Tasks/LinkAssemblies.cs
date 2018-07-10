@@ -50,7 +50,8 @@ namespace Xamarin.Android.Lite.Tasks
 		public override bool Execute ()
 		{
 			using (var resolver = new DefaultAssemblyResolver ()) {
-				var rp = new ReaderParameters () {
+				var rp = new ReaderParameters {
+					InMemory = true,
 					AssemblyResolver = resolver,
 				};
 				string input, output;
@@ -62,8 +63,11 @@ namespace Xamarin.Android.Lite.Tasks
 
 					var assembly = AssemblyDefinition.ReadAssembly (input, rp);
 					var references = assembly.MainModule.AssemblyReferences;
+					AssemblyNameReference reference;
 					for (int j = 0; j < references.Count; j++) {
-						if (mapping.TryGetValue (references[j].Name, out AssemblyRef target)) {
+						reference = references [j];
+						if (mapping.TryGetValue (reference.Name, out AssemblyRef target)) {
+							Log.LogMessage (MessageImportance.Low, "Remapping reference from `{0}` to `{1}", reference.Name, target.Name);
 							references [j] = new AssemblyNameReference (target.Name, target.Version);
 						}
 					}
@@ -71,8 +75,10 @@ namespace Xamarin.Android.Lite.Tasks
 					foreach (var typeReference in assembly.MainModule.GetTypeReferences ()) {
 						if (mapping.TryGetValue (typeReference.Scope.Name, out AssemblyRef target)) {
 							if (target.Alternates != null && target.Alternates.TryGetValue (typeReference.Namespace, out AssemblyRef alternate)) {
+								Log.LogMessage (MessageImportance.Low, "Remapping type from `{0}` to `{1}", typeReference.Scope.Name, alternate.Name);
 								typeReference.Scope = new AssemblyNameReference (alternate.Name, alternate.Version);
 							} else {
+								Log.LogMessage (MessageImportance.Low, "Remapping type from `{0}` to `{1}", typeReference.Scope.Name, target.Name);
 								typeReference.Scope = new AssemblyNameReference (target.Name, target.Version);
 							}
 						}
