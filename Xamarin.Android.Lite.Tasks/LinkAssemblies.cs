@@ -8,6 +8,8 @@ using Mono.Linker.Steps;
 using MonoDroid.Tuner;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Xamarin.Android.Tasks;
 using MSBuild = Microsoft.Build.Framework;
 
 namespace Xamarin.Android.Lite.Tasks
@@ -42,36 +44,40 @@ namespace Xamarin.Android.Lite.Tasks
 			using (var res = new DirectoryAssemblyResolver (this.CreateTaskLogger (), loadDebugSymbols: false, loadReaderParameters: rp)) {
 				var linkerAssemblies = new List<string> ();
 				linkerAssemblies.AddRange (Directory.EnumerateFiles (InputDirectory, "*.dll"));
-				linkerAssemblies.AddRange (Directory.EnumerateFiles (linkerDirectory, "*.dll"));
+				foreach (var assembly in Directory.EnumerateFiles (linkerDirectory, "*.dll")) {
+					linkerAssemblies.Add (assembly);
+				}
 				foreach (var assembly in linkerAssemblies) {
 					res.Load (Path.GetFullPath (assembly));
 				}
 
-				var resolver = new AssemblyResolver (res.ToResolverCache ());
-				resolver.AddSearchDirectory (OutputDirectory);
-				foreach (var assembly in linkerAssemblies) {
-					resolver.AddSearchDirectory (Path.GetDirectoryName (assembly));
+				using (var resolver = new AssemblyResolver (res.ToResolverCache ())) {
+					resolver.AddSearchDirectory (OutputDirectory);
+					foreach (var assembly in linkerAssemblies) {
+						resolver.AddSearchDirectory (Path.GetDirectoryName (assembly));
+					}
+
+					var pipeline = new Pipeline ();
+					pipeline.AppendStep (new FixAbstractMethodsStep ());
+					pipeline.AppendStep (new OutputStep ());
+
+					foreach (var assembly in linkerAssemblies) {
+						pipeline.PrependStep (new ResolveFromAssemblyStep (assembly));
+					}
+
+					var context = new AndroidLinkContext (pipeline, resolver) {
+						LogMessages = true,
+						Logger = this,
+						CoreAction = AssemblyAction.Link,
+						UserAction = AssemblyAction.Link,
+						LinkSymbols = true,
+						SymbolReaderProvider = new DefaultSymbolReaderProvider (false),
+						SymbolWriterProvider = new DefaultSymbolWriterProvider (),
+						OutputDirectory = OutputDirectory
+					};
+
+					pipeline.Process (context);
 				}
-
-				var pipeline = new Pipeline ();
-				pipeline.AppendStep (new FixAbstractMethodsStep ());
-				pipeline.AppendStep (new OutputStep ());
-				
-				foreach (var assembly in linkerAssemblies) {
-					pipeline.PrependStep (new ResolveFromAssemblyStep (assembly));
-				}
-
-				var context = new AndroidLinkContext (pipeline, resolver) {
-					Logger = this,
-					CoreAction = AssemblyAction.Link,
-					UserAction = AssemblyAction.Link,
-					LinkSymbols = true,
-					SymbolReaderProvider = new DefaultSymbolReaderProvider (true),
-					SymbolWriterProvider = new DefaultSymbolWriterProvider (),
-					OutputDirectory = OutputDirectory
-				};
-
-				pipeline.Process (context);
 
 				return !Log.HasLoggedErrors;
 			}

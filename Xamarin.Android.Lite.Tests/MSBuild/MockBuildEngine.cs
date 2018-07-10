@@ -1,5 +1,5 @@
 ﻿using Microsoft.Build.Framework;
-using System;
+using NUnit.Framework;
 using System.Collections;
 
 namespace Xamarin.Android.Lite.Tests
@@ -18,10 +18,19 @@ namespace Xamarin.Android.Lite.Tests
 
 		public void LogCustomEvent (CustomBuildEventArgs e) { }
 
-		public void LogErrorEvent (BuildErrorEventArgs e) { }
+		public void LogErrorEvent (BuildErrorEventArgs e)
+		{
+			TestContext.Out.WriteLine ("[Error] " + e.Message);
+		}
 
-		public void LogMessageEvent (BuildMessageEventArgs e) { }
+		public void LogMessageEvent (BuildMessageEventArgs e)
+		{
+			TestContext.Out.WriteLine ("[Message] " + e.Message);
+		}
 
-		public void LogWarningEvent (BuildWarningEventArgs e) { }
+		public void LogWarningEvent (BuildWarningEventArgs e)
+		{
+			TestContext.Out.WriteLine ("[Warning] " + e.Message);
+		}
 	}
 }
