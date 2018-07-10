@@ -18,12 +18,19 @@ namespace Xamarin.Android.Lite.Tasks
 		[Required]
 		public string [] OutputAssemblies { get; set; }
 
+		static readonly Version DotNetVersion = new Version (2, 0, 5, 0);
+
+		/// <summary>
+		/// Mapping of referenced assemblies that need "fixed"
+		/// </summary>
 		static readonly Dictionary<string, AssemblyRef> mapping = new Dictionary<string, AssemblyRef> {
 			{
 				"netstandard",
 				new AssemblyRef {
 					Name = "mscorlib",
-					Version = new Version(2, 0, 5, 0),
+					Alternates = new Dictionary<string, AssemblyRef> {
+						{ "System.Xml", new AssemblyRef { Name = "System.Xml" } }
+					}
 				}
 			}
 		};
@@ -32,9 +39,12 @@ namespace Xamarin.Android.Lite.Tasks
 		{
 			public string Name { get; set; }
 
-			public Version Version { get; set; }
+			public Version Version { get; set; } = DotNetVersion;
 
-			public AssemblyRef[] Children { get; set; }
+			/// <summary>
+			/// References of namespaces that need "fixed"
+			/// </summary>
+			public Dictionary<string, AssemblyRef> Alternates { get; set; }
 		}
 
 		public override bool Execute ()
@@ -55,6 +65,16 @@ namespace Xamarin.Android.Lite.Tasks
 					for (int j = 0; j < references.Count; j++) {
 						if (mapping.TryGetValue (references[j].Name, out AssemblyRef target)) {
 							references [j] = new AssemblyNameReference (target.Name, target.Version);
+						}
+					}
+
+					foreach (var typeReference in assembly.MainModule.GetTypeReferences ()) {
+						if (mapping.TryGetValue (typeReference.Scope.Name, out AssemblyRef target)) {
+							if (target.Alternates != null && target.Alternates.TryGetValue (typeReference.Namespace, out AssemblyRef alternate)) {
+								typeReference.Scope = new AssemblyNameReference (alternate.Name, alternate.Version);
+							} else {
+								typeReference.Scope = new AssemblyNameReference (target.Name, target.Version);
+							}
 						}
 					}
 

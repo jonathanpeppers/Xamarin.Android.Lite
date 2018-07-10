@@ -43,7 +43,7 @@
     </ItemGroup>
     <AppendToApk Files="@(_Assemblies)" Apk="$(AndroidApkFile)" />
   </Target>
-  <Target Name="SignAndroidPackage" DependsOnTargets="ResolveSdks;LinkAssemblies;AppendToApk" BeforeTargets="Build">
+  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;LinkAssemblies;AppendToApk">
     <PropertyGroup>
       <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
