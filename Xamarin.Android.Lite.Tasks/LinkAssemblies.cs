@@ -19,7 +19,7 @@ namespace Xamarin.Android.Lite.Tasks
 		[Required]
 		public string MainAssembly { get; set; }
 
-		public ITaskItem [] ResolvedAssemblies { get; set; }
+		public string [] ResolvedAssemblies { get; set; }
 
 		[Required]
 		public string OutputDirectory { get; set; }
@@ -34,21 +34,27 @@ namespace Xamarin.Android.Lite.Tasks
 				// Put every assembly we'll need in the resolver
 				res.Load (MainAssembly);
 				foreach (var assembly in ResolvedAssemblies) {
-					res.Load (Path.GetFullPath (assembly.ItemSpec));
+					res.Load (Path.GetFullPath (assembly));
 				}
 
 				var resolver = new AssemblyResolver (res.ToResolverCache ());
-				//resolver.AddSearchDirectory (OutputDirectory);
-				//if (ResolvedAssemblies != null) {
-				//	foreach (var assembly in ResolvedAssemblies) {
-				//		resolver.AddSearchDirectory (Path.GetDirectoryName (assembly.ItemSpec));
-				//	}
-				//}
+				resolver.AddSearchDirectory (OutputDirectory);
+				if (ResolvedAssemblies != null) {
+					foreach (var assembly in ResolvedAssemblies) {
+						resolver.AddSearchDirectory (Path.GetDirectoryName (assembly));
+					}
+				}
 
 				var pipeline = new Pipeline ();
-				pipeline.AppendStep (new ResolveFromAssemblyStep (MainAssembly));
 				pipeline.AppendStep (new FixAbstractMethodsStep ());
 				pipeline.AppendStep (new OutputStep ());
+
+				pipeline.PrependStep (new ResolveFromAssemblyStep (MainAssembly));
+				if (ResolvedAssemblies != null) {
+					foreach (var assembly in ResolvedAssemblies) {
+						pipeline.PrependStep (new ResolveFromAssemblyStep (assembly));
+					}
+				}
 
 				var context = new AndroidLinkContext (pipeline, resolver) {
 					Logger = this,
