@@ -8,6 +8,5 @@
     <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
     <Exec Command="&quot;$(XABuild)&quot; Xamarin.Android.Lite\Xamarin.Android.Lite.csproj /t:SignAndroidPackage /p:Configuration=Release /bl:xabuild.binlog" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
-    <MSBuild Projects="Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj" Targets="Build" />
   </Target>
 </Project>
