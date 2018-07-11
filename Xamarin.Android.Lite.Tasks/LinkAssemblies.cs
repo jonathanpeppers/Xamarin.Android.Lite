@@ -44,9 +44,7 @@ namespace Xamarin.Android.Lite.Tasks
 			using (var res = new DirectoryAssemblyResolver (this.CreateTaskLogger (), loadDebugSymbols: false, loadReaderParameters: rp)) {
 				var linkerAssemblies = new List<string> ();
 				linkerAssemblies.AddRange (Directory.EnumerateFiles (InputDirectory, "*.dll"));
-				foreach (var assembly in Directory.EnumerateFiles (linkerDirectory, "*.dll")) {
-					linkerAssemblies.Add (assembly);
-				}
+				linkerAssemblies.AddRange (Directory.EnumerateFiles (linkerDirectory, "*.dll"));
 				foreach (var assembly in linkerAssemblies) {
 					res.Load (Path.GetFullPath (assembly));
 				}
