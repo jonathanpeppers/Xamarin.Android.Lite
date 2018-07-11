@@ -4,6 +4,7 @@
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ApkSigner" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
+  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.Adb" />
   <Target Name="ResolveSdks">
     <ResolveSdks
       AndroidSdkPath="$(AndroidSdkDirectory)"
@@ -17,12 +18,12 @@
       <Output TaskParameter="ZipAlignPath"             PropertyName="ZipAlignToolPath"         Condition=" '$(ZipAlignToolPath)' == '' " />
     </ResolveSdks>
     <PropertyGroup>
-      <AndroidSdkDirectory Condition=" '$(AndroidSdkDirectory)' != '' And !HasTrailingSlash('$(AndroidSdkDirectory)') ">$(AndroidSdkDirectory)\</AndroidSdkDirectory>
-      <AndroidNdkDirectory Condition=" '$(AndroidNdkDirectory)' != '' And !HasTrailingSlash('$(AndroidNdkDirectory)') ">$(AndroidNdkDirectory)\</AndroidNdkDirectory>
-      <JavaSdkDirectory    Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
-      <AdbToolPath         Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
-      <AdbToolExe          Condition=" '$(AdbToolExe)' == '' ">adb</AdbToolExe>
-      <JavaToolPath        Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+      <AndroidSdkDirectory  Condition=" '$(AndroidSdkDirectory)' != '' And !HasTrailingSlash('$(AndroidSdkDirectory)') ">$(AndroidSdkDirectory)\</AndroidSdkDirectory>
+      <AndroidNdkDirectory  Condition=" '$(AndroidNdkDirectory)' != '' And !HasTrailingSlash('$(AndroidNdkDirectory)') ">$(AndroidNdkDirectory)\</AndroidNdkDirectory>
+      <JavaSdkDirectory     Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
+      <AdbToolPath          Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
+      <JavaToolPath         Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+      <AndroidApkFileSigned Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
       <IntermediateAssemblyDirectory>$(IntermediateOutputPath)linked\</IntermediateAssemblyDirectory>
       <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
     </PropertyGroup>
@@ -56,13 +57,12 @@
       <FileWrites Include="$(AndroidApkFile).stamp" />
     </ItemGroup>
   </Target>
-  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;FindAssemblies;AppendToApk">
+  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;FindAssemblies;AppendToApk" Inputs="$(AndroidApkFile)" Outputs="$(AndroidApkFileSigned)">
     <PropertyGroup>
       <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
       <AndroidSigningKeyPass   Condition=" '$(AndroidSigningKeyPass)' == '' ">android</AndroidSigningKeyPass>
       <AndroidSigningStorePass Condition=" '$(AndroidSigningStorePass)' == '' ">android</AndroidSigningStorePass>
-      <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
     </PropertyGroup>
     <Delete Files="$(AndroidApkFileSigned)" />
     <ZipAlign
@@ -81,6 +81,13 @@
       ToolPath="$(JavaToolPath)"
       ToolExe="$(JavaToolExe)"
       AdditionalArguments="$(AndroidApkSignerAdditionalArguments)"
+    />
+  </Target>
+  <Target Name="Install" DependsOnTargets="SignAndroidPackage">
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="install -r &quot;$(AndroidApkFileSigned)&quot;"
     />
   </Target>
 </Project>
