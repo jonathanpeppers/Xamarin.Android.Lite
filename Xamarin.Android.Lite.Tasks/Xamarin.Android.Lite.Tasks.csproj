@@ -28,9 +28,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\Xamarin.Android.Lite\obj\Release\MonoAndroid81\linksrc\*.dll" Link="linker\%(FileName).dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 </Project>

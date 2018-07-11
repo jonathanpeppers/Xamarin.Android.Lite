@@ -27,27 +27,36 @@
       <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
     </PropertyGroup>
   </Target>
+  <!--TODO: to be used later with release builds-->
   <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembliesStamp)">
     <RemoveDir Directories="$(IntermediateAssemblyDirectory)" />
     <LinkAssemblies InputDirectory="$(OutputPath)" OutputDirectory="$(IntermediateAssemblyDirectory)" />
     <Touch Files="$(LinkedAssembliesStamp)" AlwaysCreate="True" />
     <ItemGroup>
-      <LinkedAssemblies Include="$(IntermediateAssemblyDirectory)*.dll">
+      <AssembliesForApk Include="$(IntermediateAssemblyDirectory)*.dll">
         <ArchivePath>assemblies\</ArchivePath>
         <Compression>Store</Compression>
-      </LinkedAssemblies>
+      </AssembliesForApk>
       <FileWrites Include="@(LinkedAssemblies)" />
       <FileWrites Include="$(LinkedAssembliesStamp)" />
     </ItemGroup>
   </Target>
-  <Target Name="AppendToApk" Inputs="@(LinkedAssemblies);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
-    <AppendToApk Files="@(LinkedAssemblies)" Apk="$(AndroidApkFile)" />
+  <Target Name="FindAssemblies">
+    <ItemGroup>
+      <AssembliesForApk Include="$(OutputPath)*.dll">
+        <ArchivePath>assemblies\</ArchivePath>
+        <Compression>Store</Compression>
+      </AssembliesForApk>
+    </ItemGroup>
+  </Target>
+  <Target Name="AppendToApk" Inputs="@(AssembliesForApk);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
+    <AppendToApk Files="@(AssembliesForApk)" Apk="$(AndroidApkFile)" />
     <Touch Files="$(AndroidApkFile).stamp" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFile).stamp" />
     </ItemGroup>
   </Target>
-  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;LinkAssemblies;AppendToApk">
+  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;FindAssemblies;AppendToApk">
     <PropertyGroup>
       <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>

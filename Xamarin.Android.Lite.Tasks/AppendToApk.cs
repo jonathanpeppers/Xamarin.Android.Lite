@@ -16,6 +16,11 @@ namespace Xamarin.Android.Lite.Tasks
 
 		public override bool Execute ()
 		{
+			if (Files.Length == 0) {
+				Log.LogError ("No files were specified to be added to the APK!");
+				return false;
+			}
+
 			using (var zip = ZipArchive.Open (Apk.ItemSpec, FileMode.Create)) {
 				ITaskItem file;
 				string archivePath;
