@@ -35,14 +35,81 @@
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidManagedSymbols>true</AndroidManagedSymbols>
+    <AndroidManagedSymbols>false</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <AndroidLinkSkip>
+      FormsViewGroup;
+      Java.Interop;
+      Mono.Security;
+      mscorlib;
+      netstandard;
+      System;
+      System.Collections;
+      System.Collections.Concurrent;
+      System.ComponentModel.Composition;
+      System.Core;
+      System.Data;
+      System.Diagnostics.Debug;
+      System.Diagnostics.StackTrace;
+      System.Dynamic.Runtime;
+      System.Globalization.Extensions;
+      System.IO.Compression;
+      System.IO.Compression.FileSystem;
+      System.Linq;
+      System.Linq.Expressions;
+      System.Net.Http;
+      System.Numerics;
+      System.ObjectModel;
+      System.Reflection;
+      System.Reflection.Extensions;
+      System.Reflection.Primitives;
+      System.Runtime;
+      System.Runtime.Extensions;
+      System.Runtime.InteropServices;
+      System.Runtime.Serialization;
+      System.Runtime.Serialization.Primitives;
+      System.Runtime.Serialization.Xml;
+      System.Security.Cryptography.Algorithms;
+      System.Security.SecureString;
+      System.ServiceModel.Internals;
+      System.Threading;
+      System.Transactions;
+      System.Web.Services;
+      System.Xml;
+      System.Xml.Linq;
+      System.Xml.XPath.XDocument;
+      Xamarin.Android.Arch.Core.Common;
+      Xamarin.Android.Arch.Lifecycle.Common;
+      Xamarin.Android.Arch.Lifecycle.Runtime;
+      Xamarin.Android.Lite;
+      Xamarin.Android.Support.Animated.Vector.Drawable;
+      Xamarin.Android.Support.Annotations;
+      Xamarin.Android.Support.Compat;
+      Xamarin.Android.Support.Core.UI;
+      Xamarin.Android.Support.Core.Utils;
+      Xamarin.Android.Support.Design;
+      Xamarin.Android.Support.Fragment;
+      Xamarin.Android.Support.Media.Compat;
+      Xamarin.Android.Support.Transition;
+      Xamarin.Android.Support.v4;
+      Xamarin.Android.Support.v7.AppCompat;
+      Xamarin.Android.Support.v7.CardView;
+      Xamarin.Android.Support.v7.MediaRouter;
+      Xamarin.Android.Support.v7.Palette;
+      Xamarin.Android.Support.v7.RecyclerView;
+      Xamarin.Android.Support.Vector.Drawable;
+      Xamarin.Forms.Core;
+      Xamarin.Forms.Platform;
+      Xamarin.Forms.Platform.Android;
+      Xamarin.Forms.Xaml;
+    </AndroidLinkSkip>
+    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86;x86_64;arm64-v8a</AndroidSupportedAbis>
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />

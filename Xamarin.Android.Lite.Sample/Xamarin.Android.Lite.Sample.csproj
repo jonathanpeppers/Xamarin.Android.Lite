@@ -11,6 +11,6 @@
     <PropertyGroup>
       <AndroidApkFile>$(OutputPath)com.xamarin.android.lite.apk</AndroidApkFile>
     </PropertyGroup>
-    <Copy SourceFiles="..\Xamarin.Android.Lite\bin\Debug\com.xamarin.android.lite.apk" DestinationFiles="$(AndroidApkFile)" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="..\Xamarin.Android.Lite\bin\Release\com.xamarin.android.lite.apk" DestinationFiles="$(AndroidApkFile)" SkipUnchangedFiles="True" />
   </Target>
 </Project>
