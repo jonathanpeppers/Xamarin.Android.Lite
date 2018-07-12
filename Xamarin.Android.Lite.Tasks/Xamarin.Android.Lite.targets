@@ -28,7 +28,6 @@
       <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
     </PropertyGroup>
   </Target>
-  <!--TODO: to be used later with release builds-->
   <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembliesStamp)">
     <RemoveDir Directories="$(IntermediateAssemblyDirectory)" />
     <LinkAssemblies InputDirectory="$(OutputPath)" OutputDirectory="$(IntermediateAssemblyDirectory)" />
@@ -38,16 +37,8 @@
         <ArchivePath>assemblies\</ArchivePath>
         <Compression>Store</Compression>
       </AssembliesForApk>
-      <FileWrites Include="@(LinkedAssemblies)" />
+      <FileWrites Include="@(AssembliesForApk)" />
       <FileWrites Include="$(LinkedAssembliesStamp)" />
-    </ItemGroup>
-  </Target>
-  <Target Name="FindAssemblies">
-    <ItemGroup>
-      <AssembliesForApk Include="$(OutputPath)*.dll">
-        <ArchivePath>assemblies\</ArchivePath>
-        <Compression>Store</Compression>
-      </AssembliesForApk>
     </ItemGroup>
   </Target>
   <Target Name="AppendToApk" Inputs="@(AssembliesForApk);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
@@ -57,7 +48,7 @@
       <FileWrites Include="$(AndroidApkFile).stamp" />
     </ItemGroup>
   </Target>
-  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;FindAssemblies;AppendToApk" Inputs="$(AndroidApkFile)" Outputs="$(AndroidApkFileSigned)">
+  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;LinkAssemblies;AppendToApk" Inputs="$(AndroidApkFile)" Outputs="$(AndroidApkFileSigned)">
     <PropertyGroup>
       <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
