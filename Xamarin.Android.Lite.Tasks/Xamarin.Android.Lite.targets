@@ -1,6 +1,5 @@
 ﻿<Project>
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ResolveSdks" />
-  <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.LinkAssemblies" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ApkSigner" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
