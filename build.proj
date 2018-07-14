@@ -1,22 +1,28 @@
-<Project>
+<Project DefaultTargets="Build">
   <PropertyGroup>
     <XamarinAndroid>$(MSBuildThisFileDirectory)bin\xamarin-android\</XamarinAndroid>
   </PropertyGroup>
-  <Target Name="Build">
+  <Target Name="Bootstrap">
     <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
     <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Debug" />
     <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Release" />
   </Target>
+  <Target Name="Build">
+    <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Rebuild" />
+    <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Pack" Properties="Configuration=Release" />
+    <Exec Command="msbuild Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage" />
+  </Target>
   <Target Name="Clean">
     <!--NOTE: not cleaning extracted xamarin-android binaries on purpose-->
     <ItemGroup>
       <DirToClean Include="Xamarin.Android.Lite" />
       <DirToClean Include="Xamarin.Android.Lite.Sample" />
-      <DirToClean Include="bin\Debug" />
-      <DirToClean Include="bin\Release" />
+      <DirToDelete Include="bin\Debug" />
+      <DirToDelete Include="bin\Release" />
     </ItemGroup>
     <Exec Command="git clean -dxf @(DirToClean->'%(Identity)', ' ')" />
+    <RemoveDir Directories="@(DirToDelete)" />
   </Target>
 </Project>

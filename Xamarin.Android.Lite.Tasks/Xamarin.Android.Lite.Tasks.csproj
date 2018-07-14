@@ -1,28 +1,62 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
+    <PackageOnlyBuild>true</PackageOnlyBuild>
     <BaseOutputPath>..\bin\</BaseOutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\build\</OutputPath>
     <XamarinAndroidReferencePath>$(BaseOutputPath)xamarin-android\lib\xamarin.android\xbuild\Xamarin\Android\</XamarinAndroidReferencePath>
   </PropertyGroup>
+  <!--NuGet settings-->
+  <PropertyGroup>
+    <PackageId>Xamarin.Android.Lite</PackageId>
+    <PackageVersion>0.1.0.1</PackageVersion>
+    <PackageVersionSuffix>-beta</PackageVersionSuffix>
+    <Authors>Jonathan Peppers</Authors>
+    <Title>Xamarin.Android.Lite</Title>
+    <Description>A &quot;Lite&quot; version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android</Description>
+    <Copyright>$([System.DateTime]::Now.Year) Jonathan Peppers</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/jonathanpeppers/Xamarin.Android.Lite/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jonathanpeppers/Xamarin.Android.Lite/</PackageProjectUrl>
+    <PackageTags>Xamarin Android Xamarin.Android Xamarin.Forms</PackageTags>
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Framework" Version="15.7.179" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.7.179">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <Reference Include="$(XamarinAndroidReferencePath)libZipSharp.dll" />
     <Reference Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Sdk\*">
+      <PackagePath>Sdk\</PackagePath>
+    </Content>
     <Content Include="$(XamarinAndroidReferencePath)libzip.5.0.dylib" Link="libzip.5.0.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\$(TargetFramework)\</PackagePath>
     </Content>
     <Content Include="$(XamarinAndroidReferencePath)libzip.dll" Link="libzip.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\$(TargetFramework)\</PackagePath>
     </Content>
     <Content Include="$(XamarinAndroidReferencePath)x64\libzip.dll" Link="x64\libzip.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\$(TargetFramework)\x64\</PackagePath>
+    </Content>
+    <Content Include="..\bin\$(Configuration)\com.xamarin.android.lite.apk" Condition="Exists('..\bin\$(Configuration)\com.xamarin.android.lite.apk')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\</PackagePath>
+    </Content>
+    <Content Include="Xamarin.Android.Lite.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\</PackagePath>
     </Content>
     <Content Include="Xamarin.Android.Lite.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\</PackagePath>
     </Content>
   </ItemGroup>
 </Project>

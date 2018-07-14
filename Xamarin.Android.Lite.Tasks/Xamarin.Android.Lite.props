@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <_XamarinAndroidLiteImported>True</_XamarinAndroidLiteImported>
+    <_TaskAssembly Condition="Exists('net462\Xamarin.Android.Lite.Tasks.dll')">net462\Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
+    <_TaskAssembly>Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <AssembliesForApk>
+      <ArchivePath>assemblies\</ArchivePath>
+      <Compression>Store</Compression>
+    </AssembliesForApk>
+  </ItemDefinitionGroup>
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.ResolveSdks" />
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.ApkSigner" />
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.Adb" />
+</Project>

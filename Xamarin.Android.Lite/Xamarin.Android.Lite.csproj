@@ -94,7 +94,7 @@
       <Compression>Store</Compression>
     </AssembliesForApk>
   </ItemDefinitionGroup>
-  <UsingTask AssemblyFile="..\bin\Debug\Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
+  <UsingTask AssemblyFile="..\bin\Debug\build\net462\Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
   <Target Name="PrebuildApks" BeforeTargets="SignAndroidPackage" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PropertyGroup>
       <DebugOutput>..\bin\Debug\</DebugOutput>
