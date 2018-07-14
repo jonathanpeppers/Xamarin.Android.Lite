@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Android.Lite", "Xamarin.Android.Lite\Xamarin.Android.Lite.csproj", "{3EB18023-5284-44DA-8EB1-9CD0B4BE8D0B}"
 	ProjectSection(ProjectDependencies) = postProject
+		{D63BBD6E-3E62-46B6-87DE-376D881AA80A} = {D63BBD6E-3E62-46B6-87DE-376D881AA80A}
 		{A4D9C281-6323-4A09-A8D3-0A98D37072C9} = {A4D9C281-6323-4A09-A8D3-0A98D37072C9}
 	EndProjectSection
 EndProject
@@ -17,8 +18,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Android.Lite.Sample
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Android.Lite.Tasks", "Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj", "{D63BBD6E-3E62-46B6-87DE-376D881AA80A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4D9C281-6323-4A09-A8D3-0A98D37072C9} = {A4D9C281-6323-4A09-A8D3-0A98D37072C9}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Android.Lite.Tests", "Xamarin.Android.Lite.Tests\Xamarin.Android.Lite.Tests.csproj", "{61525B57-FF35-4495-9AB8-C7151B51C5B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Android.Lite.Tests", "Xamarin.Android.Lite.Tests\Xamarin.Android.Lite.Tests.csproj", "{61525B57-FF35-4495-9AB8-C7151B51C5B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

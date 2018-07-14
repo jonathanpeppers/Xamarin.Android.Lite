@@ -9,16 +9,5 @@
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="3.1.0.583944" />
   </ItemGroup>
-  <Import Project="..\bin\$(Configuration)\Xamarin.Android.Lite.targets" />
-  <Target Name="CopyApk" BeforeTargets="Build" AfterTargets="SignAndroidPackage">
-    <PropertyGroup>
-      <AndroidApkFile>$(OutputPath)com.xamarin.android.lite.apk</AndroidApkFile>
-      <_XamarinAndroidReleaseAssembliesPath>..\Xamarin.Android.Lite\obj\Release\android\assets\</_XamarinAndroidReleaseAssembliesPath>
-    </PropertyGroup>
-    <ItemGroup>
-      <AssembliesForApk Include="$(_XamarinAndroidReleaseAssembliesPath)FormsViewGroup.dll" />
-      <AssembliesForApk Include="$(_XamarinAndroidReleaseAssembliesPath)Xamarin.*.dll" />
-    </ItemGroup>
-    <Copy SourceFiles="..\Xamarin.Android.Lite\bin\Debug\com.xamarin.android.lite.apk" DestinationFiles="$(AndroidApkFile)" SkipUnchangedFiles="True" />
-  </Target>
+  <Import Project="..\bin\$(Configuration)\Xamarin.Android.Lite.targets" Condition="Exists('..\bin\$(Configuration)\Xamarin.Android.Lite.targets')" />
 </Project>

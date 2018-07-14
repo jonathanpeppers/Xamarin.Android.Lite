@@ -88,4 +88,27 @@
     <Folder Include="Assets\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <ItemDefinitionGroup>
+    <AssembliesForApk>
+      <ArchivePath>assemblies\</ArchivePath>
+      <Compression>Store</Compression>
+    </AssembliesForApk>
+  </ItemDefinitionGroup>
+  <UsingTask AssemblyFile="..\bin\Debug\Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
+  <Target Name="PrebuildApks" BeforeTargets="SignAndroidPackage" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PropertyGroup>
+      <DebugOutput>..\bin\Debug\</DebugOutput>
+      <ReleaseOutput>..\bin\Release\</ReleaseOutput>
+      <ApkName>com.xamarin.android.lite.apk</ApkName>
+      <ReleaseAssemblyPath>$(IntermediateOutputPath)android\assets\</ReleaseAssemblyPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <AssembliesForApk Include="$(ReleaseAssemblyPath)FormsViewGroup.dll" />
+      <AssembliesForApk Include="$(ReleaseAssemblyPath)Xamarin*.dll" />
+    </ItemGroup>
+    <Delete Files="$(ApkPath)" />
+    <Copy SourceFiles="bin\Debug\$(ApkName)" DestinationFolder="$(DebugOutput)" />
+    <AppendToApk Files="@(AssembliesForApk)" Apk="$(DebugOutput)$(ApkName)" />
+    <Copy SourceFiles="$(DebugOutput)$(ApkName)" DestinationFolder="$(ReleaseOutput)" />
+  </Target>
 </Project>

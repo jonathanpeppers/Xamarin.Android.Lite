@@ -5,8 +5,8 @@
   <Target Name="Build">
     <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
     <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
+    <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Debug" />
     <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Release" />
-    <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
   </Target>
 </Project>

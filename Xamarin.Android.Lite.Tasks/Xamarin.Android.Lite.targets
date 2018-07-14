@@ -28,24 +28,42 @@
       <JavaSdkDirectory     Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
       <AdbToolPath          Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
       <JavaToolPath         Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+      <SourceApkFile        Condition=" '$(SourceApkFile)' == '' ">$(MSBuildThisFileDirectory)com.xamarin.android.lite.apk</SourceApkFile>
+      <AndroidApkFile       Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)com.xamarin.android.lite.apk</AndroidApkFile>
       <AndroidApkFileSigned Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
       <IntermediateAssemblyDirectory>$(IntermediateOutputPath)linked\</IntermediateAssemblyDirectory>
       <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
     </PropertyGroup>
   </Target>
-  <Target Name="FindAssemblies">
+  <Target Name="_FindAssemblies">
     <ItemGroup>
       <AssembliesForApk Include="$(OutputPath)*.dll" />
     </ItemGroup>
   </Target>
-  <Target Name="AppendToApk" Inputs="@(AssembliesForApk);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
+  <Target Name="_CopySourceApk" Inputs="$(SourceApkFile)" Outputs="$(AndroidApkFile)">
+    <Copy SourceFiles="$(SourceApkFile)" DestinationFiles="$(AndroidApkFile)" SkipUnchangedFiles="True" />
+    <Touch Files="$(AndroidApkFile)" />
+    <ItemGroup>
+      <FileWrites Include="$(AndroidApkFile)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="_AppendToApk" Inputs="@(AssembliesForApk);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
     <AppendToApk Files="@(AssembliesForApk)" Apk="$(AndroidApkFile)" />
     <Touch Files="$(AndroidApkFile).stamp" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFile).stamp" />
     </ItemGroup>
   </Target>
-  <Target Name="SignAndroidPackage" DependsOnTargets="Build;ResolveSdks;FindAssemblies;AppendToApk" Inputs="$(AndroidApkFile)" Outputs="$(AndroidApkFileSigned)">
+  <PropertyGroup>
+    <SignAndroidPackageDependsOn>
+      Build;
+      ResolveSdks;
+      _FindAssemblies;
+      _CopySourceApk;
+      _AppendToApk;
+    </SignAndroidPackageDependsOn>
+  </PropertyGroup>
+  <Target Name="SignAndroidPackage" DependsOnTargets="$(SignAndroidPackageDependsOn)" Inputs="$(AndroidApkFile)" Outputs="$(AndroidApkFileSigned)">
     <PropertyGroup>
       <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
