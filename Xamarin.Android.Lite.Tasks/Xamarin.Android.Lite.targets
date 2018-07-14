@@ -5,6 +5,12 @@
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ApkSigner" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
   <UsingTask AssemblyFile="Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.Adb" />
+  <ItemDefinitionGroup>
+    <AssembliesForApk>
+      <ArchivePath>assemblies\</ArchivePath>
+      <Compression>Store</Compression>
+    </AssembliesForApk>
+  </ItemDefinitionGroup>
   <Target Name="ResolveSdks">
     <ResolveSdks
       AndroidSdkPath="$(AndroidSdkDirectory)"
@@ -28,26 +34,9 @@
       <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
     </PropertyGroup>
   </Target>
-  <!--TODO: to be used later with release builds-->
-  <Target Name="LinkAssemblies" Inputs="$(TargetPath)" Outputs="$(LinkedAssembliesStamp)">
-    <RemoveDir Directories="$(IntermediateAssemblyDirectory)" />
-    <LinkAssemblies InputDirectory="$(OutputPath)" OutputDirectory="$(IntermediateAssemblyDirectory)" />
-    <Touch Files="$(LinkedAssembliesStamp)" AlwaysCreate="True" />
-    <ItemGroup>
-      <AssembliesForApk Include="$(IntermediateAssemblyDirectory)*.dll">
-        <ArchivePath>assemblies\</ArchivePath>
-        <Compression>Store</Compression>
-      </AssembliesForApk>
-      <FileWrites Include="@(LinkedAssemblies)" />
-      <FileWrites Include="$(LinkedAssembliesStamp)" />
-    </ItemGroup>
-  </Target>
   <Target Name="FindAssemblies">
     <ItemGroup>
-      <AssembliesForApk Include="$(OutputPath)*.dll">
-        <ArchivePath>assemblies\</ArchivePath>
-        <Compression>Store</Compression>
-      </AssembliesForApk>
+      <AssembliesForApk Include="$(OutputPath)*.dll" />
     </ItemGroup>
   </Target>
   <Target Name="AppendToApk" Inputs="@(AssembliesForApk);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
