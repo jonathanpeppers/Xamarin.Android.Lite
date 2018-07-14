@@ -34,6 +34,12 @@
     <Content Include="Sdk\*">
       <PackagePath>Sdk\</PackagePath>
     </Content>
+    <Content Include="$(XamarinAndroidReferencePath)libZipSharp.dll">
+      <PackagePath>build\$(TargetFramework)\</PackagePath>
+    </Content>
+    <Content Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll">
+      <PackagePath>build\$(TargetFramework)\</PackagePath>
+    </Content>
     <Content Include="$(XamarinAndroidReferencePath)libzip.5.0.dylib" Link="libzip.5.0.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\$(TargetFramework)\</PackagePath>
