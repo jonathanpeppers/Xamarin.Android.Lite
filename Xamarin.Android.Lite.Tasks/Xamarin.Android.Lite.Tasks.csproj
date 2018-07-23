@@ -6,12 +6,14 @@
     <BaseOutputPath>..\bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\build\</OutputPath>
     <XamarinAndroidReferencePath>$(BaseOutputPath)xamarin-android\lib\xamarin.android\xbuild\Xamarin\Android\</XamarinAndroidReferencePath>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' And '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</BuildNumber>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' ">1</BuildNumber>
   </PropertyGroup>
   <!--NuGet settings-->
   <PropertyGroup>
     <NoBuild Condition=" '$(TargetFramework)' == 'netstandard2.0' ">true</NoBuild>
     <PackageId>Xamarin.Android.Lite</PackageId>
-    <PackageVersion>0.1.0.8</PackageVersion>
+    <PackageVersion>0.1.0.$(BuildNumber)</PackageVersion>
     <PackageVersionSuffix>-beta</PackageVersionSuffix>
     <Authors>Jonathan Peppers</Authors>
     <Title>Xamarin.Android.Lite</Title>
