@@ -12,7 +12,7 @@
   <Target Name="Build">
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Rebuild" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Pack" Properties="Configuration=Release" />
-    <Exec Command="msbuild Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage" />
+    <Exec Command="&quot;$(MSBuildBinPath)\msbuild&quot; Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage" />
   </Target>
   <Target Name="Clean">
     <!--NOTE: not cleaning extracted xamarin-android binaries on purpose-->
