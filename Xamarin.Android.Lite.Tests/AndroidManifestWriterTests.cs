@@ -134,9 +134,17 @@ namespace Xamarin.Android.Lite.Tests
 				int size = ((stylesOffset == 0) ? chunkSize : stylesOffset) - stringsOffset;
 				strings = new byte [size];
 				Array.ConstrainedCopy (manifest, index, strings, 0, size);
-				string text = Encoding.Unicode.GetString (manifest, index, size);
+
+				TestContext.WriteLine ("STRING TABLE");
+				{
+					for (int i = 0; i < stringOffsets.Length; i++) {
+						TestContext.WriteLine ("\t" + GetString (stringOffsets [i], strings));
+					}
+				}
+				TestContext.WriteLine ("END STRING TABLE");
+				TestContext.WriteLine ();
+
 				index += size;
-				TestContext.WriteLine (text);
 			}
 
 			//Resource IDs
@@ -209,11 +217,21 @@ namespace Xamarin.Android.Lite.Tests
 			int flags = ReadInt (ref index);
 			int attributeCount = ReadInt (ref index) & 0xFFFF;
 			int classAttribute = ReadInt (ref index);
-			int [] attributes = ReadArray (ref index, attributeCount * 5);
 
 			//Try to lookup the name
-			string text = GetString (stringOffsets [name], strings);
-			TestContext.WriteLine ("XML tag: " + text);
+			string nameText = GetString (stringOffsets [name], strings);
+			TestContext.WriteLine ("XML tag: " + nameText);
+
+			for (int i = 0; i < attributeCount; i++) {
+				int attrNs = ReadInt (ref index);
+				int attrName = ReadInt (ref index);
+				int attrValue = ReadInt (ref index);
+				int attrType = ReadInt (ref index);
+				int attrData = ReadInt (ref index);
+
+				string attrNameText = GetString (stringOffsets [attrName], strings);
+				TestContext.WriteLine ($"\tAttribute: {attrNameText}, {ToHex (attrType)} = { attrValue}");
+			}
 		}
 	}
 }

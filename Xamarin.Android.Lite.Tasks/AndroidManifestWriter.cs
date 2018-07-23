@@ -19,6 +19,8 @@ namespace Xamarin.Android.Lite.Tasks
 
 	class AndroidManifestWriter
 	{
+		public const int ATTR_TYPE_STRING = 0x3000008;
+
 		public enum Encoding
 		{
 			Utf16 = 0,
