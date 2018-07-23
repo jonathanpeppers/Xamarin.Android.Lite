@@ -1,8 +1,7 @@
 <Project>
   <PropertyGroup>
     <_XamarinAndroidLiteImported>True</_XamarinAndroidLiteImported>
-    <_TaskAssembly Condition="Exists('net462\Xamarin.Android.Lite.Tasks.dll')">net462\Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
-    <_TaskAssembly>Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
+    <_TaskAssembly>$(MSBuildThisFileDirectory)Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <AssembliesForApk>
