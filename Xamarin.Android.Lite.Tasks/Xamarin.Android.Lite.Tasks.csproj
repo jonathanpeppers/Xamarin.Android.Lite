@@ -62,6 +62,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\x64\</PackagePath>
     </Content>
+    <EmbeddedResource Include="..\bin\$(Configuration)\AndroidManifest.xml" Condition="Exists('..\bin\$(Configuration)\AndroidManifest.xml')" />
     <Content Include="..\bin\$(Configuration)\com.xamarin.android.lite.apk" Condition="Exists('..\bin\$(Configuration)\com.xamarin.android.lite.apk')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>

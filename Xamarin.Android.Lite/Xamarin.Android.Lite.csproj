@@ -95,6 +95,7 @@
     </AssembliesForApk>
   </ItemDefinitionGroup>
   <UsingTask AssemblyFile="..\bin\Debug\build\Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.AppendToApk" />
+  <UsingTask AssemblyFile="..\bin\Debug\build\Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.ExtractFromApk" />
   <UsingTask AssemblyFile="..\bin\Debug\build\Xamarin.Android.Lite.Tasks.dll" TaskName="Xamarin.Android.Lite.Tasks.RemoveFromApk" />
   <Target Name="PrebuildApks" BeforeTargets="SignAndroidPackage" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PropertyGroup>
@@ -112,6 +113,6 @@
     <AppendToApk Files="@(AssembliesForApk)" Apk="$(DebugOutput)$(ApkName)" />
     <ExtractFromApk SourceFiles="AndroidManifest.xml" DestinationFiles="$(DebugOutput)AndroidManifest.xml" Apk="$(DebugOutput)$(ApkName)" />
     <RemoveFromApk Files="AndroidManifest.xml" Apk="$(DebugOutput)$(ApkName)" />
-    <Copy SourceFiles="$(DebugOutput)$(ApkName)" DestinationFolder="$(ReleaseOutput)" />
+    <Copy SourceFiles="$(DebugOutput)$(ApkName);$(DebugOutput)AndroidManifest.xml" DestinationFolder="$(ReleaseOutput)" />
   </Target>
 </Project>
