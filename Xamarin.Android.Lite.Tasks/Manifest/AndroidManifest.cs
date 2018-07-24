@@ -15,6 +15,7 @@ namespace Xamarin.Android.Lite.Tasks
 	class AndroidManifest
 	{
 		const int START_DOC_UNKOWN = 3996;
+		static readonly XName AndroidNS = XNamespace.Get ("http://schemas.android.com/apk/res/android") + "android";
 
 		/// <summary>
 		/// NOTE: does not dispose the stream
@@ -35,7 +36,7 @@ namespace Xamarin.Android.Lite.Tasks
 							int dunno = ReadInt (buffer, stream); //START_DOC_UNKOWN ???
 							break;
 						}
-					case ChunkType.START_STR: {
+					case ChunkType.STR_TABLE: {
 							int chunkSize = ReadInt (buffer, stream);
 							int stringCount = ReadInt (buffer, stream);
 							int styleCount = ReadInt (buffer, stream);
@@ -60,7 +61,7 @@ namespace Xamarin.Android.Lite.Tasks
 							manifest.Resources = new List<int> (resources);
 							break;
 						}
-					case ChunkType.START_NS: {
+					case ChunkType.NS_TABLE: {
 							int chunkSize = ReadInt (buffer, stream);
 							int namespaceCount = ReadInt (buffer, stream);
 							int dunno = ReadInt (buffer, stream); //0xFFFFFFF
@@ -75,7 +76,7 @@ namespace Xamarin.Android.Lite.Tasks
 						}
 					case ChunkType.START_TAG: {
 							if (stringTable.Count == 0) {
-								throw new InvalidOperationException ($"Unexpected file format, {nameof (ChunkType.START_STR)} not found!");
+								throw new InvalidOperationException ($"Unexpected file format, {nameof (ChunkType.STR_TABLE)} not found!");
 							}
 
 							int chunkSize = ReadInt (buffer, stream);
@@ -116,28 +117,31 @@ namespace Xamarin.Android.Lite.Tasks
 									var nsUrl = stringTable [attrNs];
 									attributeName = XName.Get (attrNameText, nsUrl);
 								}
+								XAttribute newAttr;
 								switch ((AttributeType)attrType) {
 									case AttributeType.Integer:
-										xml.SetAttributeValue (attributeName, attrData);
+										newAttr = new XAttribute (attributeName, attrData);
 										break;
 									case AttributeType.String:
-										xml.SetAttributeValue (attributeName, stringTable [attrData]);
+										newAttr = new XAttribute (attributeName, stringTable [attrData]);
 										break;
 									case AttributeType.Resource:
 										//TODO: need the string instead?
-										xml.SetAttributeValue (attributeName, attrData);
+										newAttr = new XAttribute (attributeName, attrData);
 										break;
 									case AttributeType.Enum:
-										xml.SetAttributeValue (attributeName, attrData);
+										newAttr = new XAttribute (attributeName, attrData);
 										break;
 									case AttributeType.Bool:
 										//NOTE: looks like this is -1=True 0=False ???
-										xml.SetAttributeValue (attributeName, attrData == -1);
+										newAttr = new XAttribute (attributeName, attrData == -1);
 										break;
 									default:
-										xml.SetAttributeValue (attributeName, $"[Unknown Data Type: {attrType.ToString ("X")}, Value: {attrData}]");
+										newAttr = new XAttribute (attributeName, $"[Unknown Data Type: {attrType.ToString ("X")}, Value: {attrData}]");
 										break;
 								}
+								newAttr.AddAnnotation (attrType);
+								xml.Add (newAttr);
 							}
 							break;
 						}
@@ -196,6 +200,68 @@ namespace Xamarin.Android.Lite.Tasks
 		/// </summary>
 		public List<string> Strings { get; set; }
 
+		/// <summary>
+		/// This will save to the stream but not close it.
+		/// NOTE: It will also emit the Strings table. We must generate this every time since it is based off the XML Document.
+		/// </summary>
+		public void Save (Stream stream)
+		{
+			if (Document == null)
+				throw new InvalidOperationException ($"{nameof (Document)} must not be null!");
+			if (Resources == null)
+				throw new InvalidOperationException ($"{nameof (Resources)} must not be null!");
+
+			Write (ChunkType.START_DOC, stream);
+			Write (START_DOC_UNKOWN, stream);
+
+			//We have to recalculate the strings table, contains empty string by default?
+			var strings = new List<string> { "" };
+			FindStrings (Document, strings);
+			Strings = strings;
+
+			// Strings table
+			byte [] stringData;
+			var stringOffsets = new List<int> (strings.Count);
+			using (var memory = new MemoryStream ()) {
+				foreach (var @string in strings) {
+					stringOffsets.Add ((int)memory.Position);
+					var bytes = Encoding.Unicode.GetBytes (@string + "\0");
+					var length = BitConverter.GetBytes ((short)((bytes.Length - 2) / 2));
+					memory.Write (length, 0, length.Length);
+					memory.Write (bytes, 0, bytes.Length);
+				}
+				memory.Write (new byte [2], 0, 2);
+				stringData = memory.ToArray ();
+			}
+
+			int chunkSize = stringData.Length + stringOffsets.Count * 4 + 7 * 4;
+			Write (ChunkType.STR_TABLE, stream);
+			Write (chunkSize, stream);                      //chunkSize
+			Write (strings.Count, stream);                  //stringCount
+			Write (0, stream);                              //styleCount
+			Write (0, stream);                              //flags, apparently 0?
+			Write (chunkSize - stringData.Length, stream);  //stringsOffset
+			Write (0, stream);                              //stylesOffset
+			foreach (int offset in stringOffsets) {
+				Write (offset, stream);
+			}
+			stream.Write (stringData, 0, stringData.Length);
+
+			Write (ChunkType.RESOURCES, stream);
+			Write (Resources.Count * 4 + 2, stream);
+			foreach (int resource in Resources) {
+				Write (resource, stream);
+			}
+
+			chunkSize = 5 * 4;
+			Write (ChunkType.NS_TABLE, stream);
+			Write (chunkSize, stream); //chunkSize
+			Write (2, stream);         //namespaceCount
+			Write (-1, stream);        //dunno?
+			Write (strings.IndexOf (AndroidNS.LocalName), stream);
+			Write (strings.IndexOf (AndroidNS.NamespaceName), stream);
+		}
+
 		static void Write (ChunkType value, Stream stream)
 		{
 			Write ((int)value, stream);
@@ -207,12 +273,34 @@ namespace Xamarin.Android.Lite.Tasks
 			stream.Write (bytes, 0, bytes.Length);
 		}
 
-		public void Save (Stream stream)
+		static void FindStrings (XElement element, List<string> strings)
 		{
-			Write (ChunkType.START_DOC, stream);
-			Write (START_DOC_UNKOWN, stream);
+			foreach (var attribute in element.Attributes ()) {
+				AddIfNew (strings, attribute.Name.LocalName);
 
-			var strings = new List<string> ();
+				//HACK: no idea why this is in the strings table
+				if (attribute.Name.Namespace == AndroidNS.NamespaceName && attribute.Name.LocalName == "targetSdkVersion") {
+					AddIfNew (strings, attribute.Value);
+					continue;
+				}
+
+				var annotation = attribute.Annotation (typeof (int));
+				if (annotation == null || (int)annotation == (int)AttributeType.String) {
+					AddIfNew (strings, attribute.Value);
+				}
+			}
+
+			AddIfNew (strings, element.Name.LocalName);
+
+			foreach (var child in element.Elements ()) {
+				FindStrings (child, strings);
+			}
+		}
+
+		static void AddIfNew (List<string> strings, string value)
+		{
+			if (!strings.Contains (value))
+				strings.Add (value);
 		}
 	}
 }

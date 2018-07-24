@@ -9,10 +9,10 @@ namespace Xamarin.Android.Lite.Tasks
 	enum ChunkType
 	{
 		START_DOC = 0x080003,
-		START_STR = 0x1C0001,
+		STR_TABLE = 0x1C0001,
 		END_NS    = 0x100101,
 		RESOURCES = 0x080180,
-		START_NS  = 0x100100,
+		NS_TABLE  = 0x100100,
 		START_TAG = 0x100102,
 		END_TAG   = 0x100103,
 	}

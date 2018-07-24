@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml.Linq;
 using Xamarin.Android.Lite.Tasks;
 
@@ -63,20 +65,27 @@ namespace Xamarin.Android.Lite.Tests
 		[Test]
 		public void WriteManifest ()
 		{
-			var doc = AndroidManifest.Create (binaryManifest);
+			var expectedDoc = AndroidManifest.Create (binaryManifest);
+			var expectedStrings = expectedDoc.Strings;
+
 			var stream = new MemoryStream ();
-			doc.Save (stream);
+			expectedDoc.Save (stream);
+
+			//Compare the string tables
+			var actualStrings = expectedDoc.Strings;
+			var builder = new StringBuilder ();
+			foreach (var @string in expectedStrings) {
+				if (!actualStrings.Contains (@string))
+					builder.AppendLine ($"Does not contain `{@string}`.");
+			}
+			if (builder.Length > 0)
+				Assert.Fail (builder.ToString ());
+			Assert.AreEqual (expectedStrings.Count, actualStrings.Count, "Strings lengths should match!");
 
 			stream.Seek (0, SeekOrigin.Begin);
-			binaryManifest.Seek (0, SeekOrigin.Begin);
+			var actualDoc = AndroidManifest.Create (stream);
 
-			int position = 0, expected, actual;
-			do {
-				expected = binaryManifest.ReadByte ();
-				actual = stream.ReadByte ();
-				Assert.AreEqual (expected, actual, $"Streams differ at position: {position}");
-				position++;
-			} while (expected != -1);
+			Assert.AreEqual (expectedDoc.Document.ToString (), actualDoc.Document.ToString ());
 		}
 	}
 }
