@@ -178,19 +178,10 @@ namespace Xamarin.Android.Lite.Tasks
 
 		static string GetString (int offset, byte [] strings)
 		{
-			int val = ((strings [offset + 1] & 0xFF) << 8 | strings [offset] & 0xFF);
-			int length;
-			if ((val & 0x8000) != 0) {
-				int high = (strings [offset + 3] & 0xFF) << 8;
-				int low = (strings [offset + 2] & 0xFF);
-				int len_value = ((val & 0x7FFF) << 16) + (high + low);
-				offset += 4;
-				length = len_value * 2;
-			} else {
-				offset += 2;
-				length = val * 2;
-			}
-			return Encoding.Unicode.GetString (strings, offset, length);
+			//First two bytes are the length
+			short length = BitConverter.ToInt16 (strings, offset);
+			//Get the string two bytes later, length times two
+			return Encoding.Unicode.GetString (strings, offset + 2, length * 2);
 		}
 
 		public XElement Document { get; set; }
