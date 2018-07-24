@@ -6,7 +6,7 @@ using Xamarin.Android.Lite.Tasks;
 namespace Xamarin.Android.Lite.Tests
 {
 	[TestFixture]
-	public class AndroidManifestWriterTests
+	public class AndroidManifestTests
 	{
 		Stream binaryManifest, textManifest;
 

@@ -159,11 +159,9 @@ namespace Xamarin.Android.Lite.Tasks
 			return manifest;
 		}
 
-		const int IntegerLength = 4;
-
 		static int ReadInt (byte [] buffer, Stream stream)
 		{
-			if (stream.Read (buffer, 0, IntegerLength) != IntegerLength) {
+			if (stream.Read (buffer, 0, 4) != 4) {
 				return 0;
 			}
 			return BitConverter.ToInt32 (buffer, 0);
