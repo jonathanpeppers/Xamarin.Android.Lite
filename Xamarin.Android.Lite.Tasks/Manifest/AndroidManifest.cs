@@ -14,6 +14,8 @@ namespace Xamarin.Android.Lite.Tasks
 	/// </summary>
 	class AndroidManifest
 	{
+		const int START_DOC_UNKOWN = 3996;
+
 		/// <summary>
 		/// NOTE: does not dispose the stream
 		/// </summary>
@@ -24,14 +26,15 @@ namespace Xamarin.Android.Lite.Tasks
 			XElement xml = null;
 
 			var buffer = new byte [4];
-			int [] stringOffsets = null;
-			byte [] strings = null;
+			var stringTable = 
+				manifest.Strings = new List<string> ();
 			int chunk;
 			while ((chunk = ReadInt (buffer, stream)) != -1) {
 				switch ((ChunkType)chunk) {
-					case ChunkType.START_DOC:
-						SkipInt (stream);
-						break;
+					case ChunkType.START_DOC: {
+							int dunno = ReadInt (buffer, stream); //START_DOC_UNKOWN ???
+							break;
+						}
 					case ChunkType.START_STR: {
 							int chunkSize = ReadInt (buffer, stream);
 							int stringCount = ReadInt (buffer, stream);
@@ -40,16 +43,21 @@ namespace Xamarin.Android.Lite.Tasks
 							int stringsOffset = ReadInt (buffer, stream);
 							int stylesOffset = ReadInt (buffer, stream);
 
-							stringOffsets = ReadArray (buffer, stream, stringCount);
+							var stringOffsets = ReadArray (buffer, stream, stringCount);
 							int [] styleOffsets = ReadArray (buffer, stream, styleCount);
 							int size = ((stylesOffset == 0) ? chunkSize : stylesOffset) - stringsOffset;
-							strings = new byte [size];
+							var strings = new byte [size];
 							stream.Read (strings, 0, size);
+
+							for (int i = 0; i < stringOffsets.Length; i++) {
+								stringTable.Add (GetString (stringOffsets [i], strings));
+							}
 							break;
 						}
 					case ChunkType.RESOURCES: {
 							int chunkSize = ReadInt (buffer, stream);
 							int [] resources = ReadArray (buffer, stream, chunkSize / 4 - 2);
+							manifest.Resources = new List<int> (resources);
 							break;
 						}
 					case ChunkType.START_NS: {
@@ -59,14 +67,14 @@ namespace Xamarin.Android.Lite.Tasks
 
 							int [] namespaceData = ReadArray (buffer, stream, namespaceCount);
 							for (int i = 0; i < namespaceCount - 1; i += 2) {
-								var name = GetString (stringOffsets [namespaceData [i]], strings);
-								var url = GetString (stringOffsets [namespaceData [i + 1]], strings);
+								var name = stringTable [namespaceData [i]];
+								var url = stringTable [namespaceData [i + 1]];
 								namespaces [url] = XNamespace.Get (url) + name;
 							}
 							break;
 						}
 					case ChunkType.START_TAG: {
-							if (strings == null || stringOffsets == null) {
+							if (stringTable.Count == 0) {
 								throw new InvalidOperationException ($"Unexpected file format, {nameof (ChunkType.START_STR)} not found!");
 							}
 
@@ -80,7 +88,7 @@ namespace Xamarin.Android.Lite.Tasks
 							int attributeCount = ReadInt (buffer, stream) & 0xFFFF;
 							int classAttribute = ReadInt (buffer, stream);
 
-							string nameText = GetString (stringOffsets [name], strings);
+							string nameText = stringTable [name];
 							if (xml == null) {
 								manifest.Document = xml = new XElement (nameText);
 
@@ -100,12 +108,12 @@ namespace Xamarin.Android.Lite.Tasks
 								int attrType = ReadInt (buffer, stream);
 								int attrData = ReadInt (buffer, stream);
 
-								string attrNameText = GetString (stringOffsets [attrName], strings);
+								string attrNameText = stringTable [attrName];
 								XName attributeName;
 								if (attrNs == -1) {
 									attributeName = attrNameText;
 								} else {
-									var nsUrl = GetString (stringOffsets [attrNs], strings);
+									var nsUrl = stringTable [attrNs];
 									attributeName = XName.Get (attrNameText, nsUrl);
 								}
 								switch ((AttributeType)attrType) {
@@ -113,7 +121,7 @@ namespace Xamarin.Android.Lite.Tasks
 										xml.SetAttributeValue (attributeName, attrData);
 										break;
 									case AttributeType.String:
-										xml.SetAttributeValue (attributeName, GetString (stringOffsets [attrData], strings));
+										xml.SetAttributeValue (attributeName, stringTable [attrData]);
 										break;
 									case AttributeType.Resource:
 										//TODO: need the string instead?
@@ -161,16 +169,6 @@ namespace Xamarin.Android.Lite.Tasks
 			return BitConverter.ToInt32 (buffer, 0);
 		}
 
-		static bool SkipInt (Stream stream)
-		{
-			for (int i = 0; i < IntegerLength; i++) {
-				if (stream.ReadByte () == -1) {
-					return false;
-				}
-			}
-			return true;
-		}
-
 		static int [] ReadArray (byte [] buffer, Stream stream, int length)
 		{
 			int [] value = new int [length];
@@ -198,5 +196,34 @@ namespace Xamarin.Android.Lite.Tasks
 		}
 
 		public XElement Document { get; set; }
+
+		/// <summary>
+		/// Table of resource IDs, found in the binary doc
+		/// </summary>
+		public List<int> Resources { get; set; }
+
+		/// <summary>
+		/// Table of strings, found in the binary doc
+		/// </summary>
+		public List<string> Strings { get; set; }
+
+		static void Write (ChunkType value, Stream stream)
+		{
+			Write ((int)value, stream);
+		}
+
+		static void Write (int value, Stream stream)
+		{
+			var bytes = BitConverter.GetBytes (value);
+			stream.Write (bytes, 0, bytes.Length);
+		}
+
+		public void Save (Stream stream)
+		{
+			Write (ChunkType.START_DOC, stream);
+			Write (START_DOC_UNKOWN, stream);
+
+			var strings = new List<string> ();
+		}
 	}
 }

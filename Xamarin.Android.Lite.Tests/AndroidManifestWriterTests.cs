@@ -59,5 +59,24 @@ namespace Xamarin.Android.Lite.Tests
 
 			Assert.AreEqual (xmlFromText, xmlFromBinary);
 		}
+
+		[Test]
+		public void WriteManifest ()
+		{
+			var doc = AndroidManifest.Create (binaryManifest);
+			var stream = new MemoryStream ();
+			doc.Save (stream);
+
+			stream.Seek (0, SeekOrigin.Begin);
+			binaryManifest.Seek (0, SeekOrigin.Begin);
+
+			int position = 0, expected, actual;
+			do {
+				expected = binaryManifest.ReadByte ();
+				actual = stream.ReadByte ();
+				Assert.AreEqual (expected, actual, $"Streams differ at position: {position}");
+				position++;
+			} while (expected != -1);
+		}
 	}
 }
