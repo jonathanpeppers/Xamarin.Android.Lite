@@ -110,6 +110,7 @@
     <Delete Files="$(ApkPath)" />
     <Copy SourceFiles="bin\Debug\$(ApkName)" DestinationFolder="$(DebugOutput)" />
     <AppendToApk Files="@(AssembliesForApk)" Apk="$(DebugOutput)$(ApkName)" />
+    <ExtractFromApk SourceFiles="AndroidManifest.xml" DestinationFiles="$(DebugOutput)AndroidManifest.xml" Apk="$(DebugOutput)$(ApkName)" />
     <RemoveFromApk Files="AndroidManifest.xml" Apk="$(DebugOutput)$(ApkName)" />
     <Copy SourceFiles="$(DebugOutput)$(ApkName)" DestinationFolder="$(ReleaseOutput)" />
   </Target>

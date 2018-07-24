@@ -1,11 +1,13 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using System;
 using System.IO;
 using Xamarin.Tools.Zip;
 
 namespace Xamarin.Android.Lite.Tasks
 {
+	/// <summary>
+	/// NOTE: currently only used to remove the base AndroidManifest.xml out of the prebuilt APK
+	/// </summary>
 	public class RemoveFromApk : Task
 	{
 		[Required]
@@ -35,14 +37,6 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 
 			return !Log.HasLoggedErrors;
-		}
-
-		static CompressionMethod GetCompression (ITaskItem file)
-		{
-			if (Enum.TryParse (file.GetMetadata ("Compression"), out CompressionMethod compression))
-				return compression;
-
-			return CompressionMethod.Default;
 		}
 	}
 }
