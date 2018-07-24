@@ -17,7 +17,7 @@
     <PackageVersionSuffix>-beta</PackageVersionSuffix>
     <Authors>Jonathan Peppers</Authors>
     <Title>Xamarin.Android.Lite</Title>
-    <Description>A &quot;Lite&quot; version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android</Description>
+    <Description>A "Lite" version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android</Description>
     <Copyright>$([System.DateTime]::Now.Year) Jonathan Peppers</Copyright>
     <PackageLicenseUrl>https://raw.githubusercontent.com/jonathanpeppers/Xamarin.Android.Lite/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/jonathanpeppers/Xamarin.Android.Lite/</PackageProjectUrl>
