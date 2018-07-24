@@ -14,7 +14,6 @@ namespace Xamarin.Android.Lite.Tasks
 	/// </summary>
 	class AndroidManifest
 	{
-		const int START_DOC_UNKOWN = 3996;
 		static readonly XName AndroidNS = XNamespace.Get ("http://schemas.android.com/apk/res/android") + "android";
 
 		/// <summary>
@@ -33,7 +32,7 @@ namespace Xamarin.Android.Lite.Tasks
 			while ((chunk = ReadInt (buffer, stream)) != -1) {
 				switch ((ChunkType)chunk) {
 					case ChunkType.START_DOC: {
-							int dunno = ReadInt (buffer, stream); //START_DOC_UNKOWN ???
+							int length = ReadInt (buffer, stream); //length of stream
 							break;
 						}
 					case ChunkType.STR_TABLE: {
@@ -155,8 +154,14 @@ namespace Xamarin.Android.Lite.Tasks
 							xml = xml.Parent;
 							break;
 						}
+					case ChunkType.END_NS: {
+							int chunkSize = ReadInt (buffer, stream);
+							byte [] bytes = new byte [chunkSize];
+							stream.Read (bytes, 0, chunkSize);
+							break;
+						}
 					default:
-						break;
+						throw new InvalidOperationException ($"Invalid chunk `{chunk.ToString ("X")}` at position `{stream.Position}`!");
 				}
 			}
 
@@ -166,7 +171,7 @@ namespace Xamarin.Android.Lite.Tasks
 		static int ReadInt (byte [] buffer, Stream stream)
 		{
 			if (stream.Read (buffer, 0, 4) != 4) {
-				return 0;
+				return -1;
 			}
 			return BitConverter.ToInt32 (buffer, 0);
 		}
@@ -212,54 +217,64 @@ namespace Xamarin.Android.Lite.Tasks
 				throw new InvalidOperationException ($"{nameof (Resources)} must not be null!");
 
 			Write (ChunkType.START_DOC, stream);
-			Write (START_DOC_UNKOWN, stream);
 
-			//We have to recalculate the strings table, contains empty string by default?
-			var strings = new List<string> { "" };
-			FindStrings (Document, strings);
-			Strings = strings;
+			byte [] bytes;
+			using (var doc = new MemoryStream ()) {
 
-			// Strings table
-			byte [] stringData;
-			var stringOffsets = new List<int> (strings.Count);
-			using (var memory = new MemoryStream ()) {
-				foreach (var @string in strings) {
-					stringOffsets.Add ((int)memory.Position);
-					var bytes = Encoding.Unicode.GetBytes (@string + "\0");
-					var length = BitConverter.GetBytes ((short)((bytes.Length - 2) / 2));
-					memory.Write (length, 0, length.Length);
-					memory.Write (bytes, 0, bytes.Length);
+				//We have to recalculate the strings table, contains empty string by default?
+				var strings = new List<string> { "" };
+				FindStrings (Document, strings);
+				Strings = strings;
+
+				// Strings table
+				byte [] stringData;
+				var stringOffsets = new List<int> (strings.Count);
+				using (var memory = new MemoryStream ()) {
+					foreach (var @string in strings) {
+						stringOffsets.Add ((int)memory.Position);
+						var utf8 = Encoding.Unicode.GetBytes (@string + "\0");
+						var length = BitConverter.GetBytes ((short)((utf8.Length - 2) / 2));
+						memory.Write (length, 0, length.Length);
+						memory.Write (utf8, 0, utf8.Length);
+					}
+					memory.Write (new byte [2], 0, 2);
+					stringData = memory.ToArray ();
 				}
-				memory.Write (new byte [2], 0, 2);
-				stringData = memory.ToArray ();
+
+				int chunkSize = stringData.Length + stringOffsets.Count * 4 + 7 * 4;
+				Write (ChunkType.STR_TABLE, doc);
+				Write (chunkSize, doc);                      //chunkSize
+				Write (strings.Count, doc);                  //stringCount
+				Write (0, doc);                              //styleCount
+				Write (0, doc);                              //flags, apparently 0?
+				Write (chunkSize - stringData.Length, doc);  //stringsOffset
+				Write (0, doc);                              //stylesOffset
+				foreach (int offset in stringOffsets) {
+					Write (offset, doc);
+				}
+				doc.Write (stringData, 0, stringData.Length);
+
+				Write (ChunkType.RESOURCES, doc);
+				Write ((Resources.Count + 2) * 4, doc);
+				foreach (int resource in Resources) {
+					Write (resource, doc);
+				}
+
+				chunkSize = 5 * 4;
+				Write (ChunkType.NS_TABLE, doc);
+				Write (chunkSize, doc); //chunkSize
+				Write (2, doc);         //namespaceCount
+				Write (-1, doc);        //dunno?
+				Write (strings.IndexOf (AndroidNS.LocalName), doc);
+				Write (strings.IndexOf (AndroidNS.NamespaceName), doc);
+
+				Write (Document, doc, strings, 1);
+
+				bytes = doc.ToArray ();
 			}
 
-			int chunkSize = stringData.Length + stringOffsets.Count * 4 + 7 * 4;
-			Write (ChunkType.STR_TABLE, stream);
-			Write (chunkSize, stream);                      //chunkSize
-			Write (strings.Count, stream);                  //stringCount
-			Write (0, stream);                              //styleCount
-			Write (0, stream);                              //flags, apparently 0?
-			Write (chunkSize - stringData.Length, stream);  //stringsOffset
-			Write (0, stream);                              //stylesOffset
-			foreach (int offset in stringOffsets) {
-				Write (offset, stream);
-			}
-			stream.Write (stringData, 0, stringData.Length);
-
-			Write (ChunkType.RESOURCES, stream);
-			Write (Resources.Count * 4 + 2, stream);
-			foreach (int resource in Resources) {
-				Write (resource, stream);
-			}
-
-			chunkSize = 5 * 4;
-			Write (ChunkType.NS_TABLE, stream);
-			Write (chunkSize, stream); //chunkSize
-			Write (2, stream);         //namespaceCount
-			Write (-1, stream);        //dunno?
-			Write (strings.IndexOf (AndroidNS.LocalName), stream);
-			Write (strings.IndexOf (AndroidNS.NamespaceName), stream);
+			Write (bytes.Length + 8, stream);
+			stream.Write (bytes, 0, bytes.Length);
 		}
 
 		static void Write (ChunkType value, Stream stream)
@@ -271,6 +286,33 @@ namespace Xamarin.Android.Lite.Tasks
 		{
 			var bytes = BitConverter.GetBytes (value);
 			stream.Write (bytes, 0, bytes.Length);
+		}
+
+		static void Write (XElement element, Stream stream, List<string> strings, int lineNumber)
+		{
+			int name = strings.IndexOf (element.Name.LocalName);
+			int chunkSize = 0; //TODO
+			Write (ChunkType.START_TAG, stream);
+			Write (chunkSize, stream);
+			Write (lineNumber, stream);
+			Write (-1, stream); //dunno?
+
+			Write (-1, stream); //ns
+			Write (name, stream);
+			Write (0, stream); //flags
+			Write (0, stream); //attributeCount
+			Write (0, stream); //classAsstribute
+
+			foreach (var child in element.Elements ()) {
+				Write (child, stream, strings, lineNumber);
+			}
+
+			Write (ChunkType.END_TAG, stream);
+			Write (6 * 4, stream);
+			Write (lineNumber++, stream);
+			Write (-1, stream); //dunno?
+			Write (-1, stream); //dunno?
+			Write (name, stream);
 		}
 
 		static void FindStrings (XElement element, List<string> strings)
