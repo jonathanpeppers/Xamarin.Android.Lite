@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
@@ -297,11 +298,44 @@ namespace Xamarin.Android.Lite.Tasks
 			Write (lineNumber, stream);
 			Write (-1, stream); //dunno?
 
+			//TODO: slow Linq?
+			var attributes = element.Attributes ().Where (a => a.Name.Namespace != XNamespace.Xmlns).ToArray ();
+
 			Write (-1, stream); //ns
 			Write (name, stream);
 			Write (0, stream); //flags
-			Write (0, stream); //attributeCount
+			Write (attributes.Length, stream); //attributeCount TODO: Linq=bad
 			Write (0, stream); //classAsstribute
+
+			foreach (var attribute in attributes) {
+				var annotation = attribute.Annotation (typeof (int));
+				var attributeType = annotation == null ? AttributeType.Integer : (AttributeType)(int)annotation;
+				if (attribute.Name.Namespace == null) {
+					Write (-1, stream); //no ns
+				} else {
+					Write (strings.IndexOf (attribute.Name.Namespace.NamespaceName), stream);
+				}
+				Write (strings.IndexOf (attribute.Name.LocalName), stream);
+				Write (-1, stream); //attrValue
+				Write ((int)attributeType, stream);
+				switch (attributeType) {
+					case AttributeType.Resource:
+					case AttributeType.Integer:
+					case AttributeType.Enum:
+						int.TryParse (attribute.Value, out int x);
+						Write (x, stream);
+						break;
+					case AttributeType.String:
+						Write (strings.IndexOf (attribute.Value), stream);
+						break;
+					case AttributeType.Bool:
+						bool.TryParse (attribute.Value, out bool b);
+						Write (b ? -1 : 0, stream);
+						break;
+					default:
+						break;
+				}
+			}
 
 			foreach (var child in element.Elements ()) {
 				Write (child, stream, strings, lineNumber);
