@@ -15,7 +15,7 @@ namespace Xamarin.Android.Lite.Tasks
 	/// </summary>
 	class AndroidManifest
 	{
-		static readonly XName AndroidNS = XNamespace.Get ("http://schemas.android.com/apk/res/android") + "android";
+		public static readonly XName AndroidNamespace = XNamespace.Get ("http://schemas.android.com/apk/res/android") + "android";
 
 		/// <summary>
 		/// NOTE: does not dispose the stream
@@ -266,8 +266,8 @@ namespace Xamarin.Android.Lite.Tasks
 				Write (chunkSize, doc); //chunkSize
 				Write (2, doc);         //namespaceCount
 				Write (-1, doc);        //dunno?
-				Write (strings.IndexOf (AndroidNS.LocalName), doc);
-				Write (strings.IndexOf (AndroidNS.NamespaceName), doc);
+				Write (strings.IndexOf (AndroidNamespace.LocalName), doc);
+				Write (strings.IndexOf (AndroidNamespace.NamespaceName), doc);
 
 				Write (Document, doc, strings, 1);
 
@@ -355,7 +355,7 @@ namespace Xamarin.Android.Lite.Tasks
 				AddIfNew (strings, attribute.Name.LocalName);
 
 				//HACK: no idea why this is in the strings table
-				if (attribute.Name.Namespace == AndroidNS.NamespaceName && attribute.Name.LocalName == "targetSdkVersion") {
+				if (attribute.Name.Namespace == AndroidNamespace.NamespaceName && attribute.Name.LocalName == "targetSdkVersion") {
 					AddIfNew (strings, attribute.Value);
 					continue;
 				}
