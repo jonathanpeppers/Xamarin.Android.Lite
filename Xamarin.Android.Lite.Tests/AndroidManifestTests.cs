@@ -61,7 +61,7 @@ namespace Xamarin.Android.Lite.Tests
 
 			Assert.IsTrue (doc.Strings?.Count > 0, "Strings should be non-empty!");
 			Assert.IsTrue (doc.Resources?.Count > 0, "Resources should be non-empty!");
-			Assert.IsFalse (string.IsNullOrEmpty (doc.FileVersion), "FileVersion should be non-empty!");
+			Assert.IsFalse (string.IsNullOrEmpty (doc.PlatformBuildVersionName), "FileVersion should be non-empty!");
 			Assert.AreEqual (xmlFromText, xmlFromBinary);
 		}
 
@@ -84,10 +84,10 @@ namespace Xamarin.Android.Lite.Tests
 		public void WriteManifest ()
 		{
 			var expectedChunks = new StringBuilder ();
-			var expectedDoc = AndroidManifest.Read (binaryManifest, (t, c) => expectedChunks.AppendLine($"{t}, chunkSize: {c}"));
+			var expectedDoc = AndroidManifest.Read (binaryManifest, (t, c, p) => expectedChunks.AppendLine($"{t}, chunkSize: {c}, position: {p}"));
 			var expectedStrings = expectedDoc.Strings;
 			var expectedResources = expectedDoc.Resources;
-			var expectedFileVersion = expectedDoc.FileVersion;
+			var expectedFileVersion = expectedDoc.PlatformBuildVersionName;
 
 			var stream = new MemoryStream ();
 			expectedDoc.Write (stream);
@@ -96,18 +96,18 @@ namespace Xamarin.Android.Lite.Tests
 			//Compare the string tables
 			var actualStrings = expectedDoc.Strings;
 			var actualResources = expectedDoc.Resources;
-			var actualFileVersion = expectedDoc.FileVersion;
+			var actualFileVersion = expectedDoc.PlatformBuildVersionName;
 			ContainsAllStrings (expectedStrings, actualStrings);
 			Assert.AreEqual (expectedResources, expectedResources, "Resources should match!");
 			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			stream.Seek (0, SeekOrigin.Begin);
 			var actualChunks = new StringBuilder ();
-			var actualDoc = AndroidManifest.Read (stream, (t, c) => actualChunks.AppendLine ($"{t}, chunkSize: {c}"));
+			var actualDoc = AndroidManifest.Read (stream, (t, c, p) => actualChunks.AppendLine ($"{t}, chunkSize: {c}, position: {p}"));
 			Assert.AreEqual (expectedChunks.ToString (), actualChunks.ToString (), "Chunk sizes and ordering should match!");
 			actualStrings = actualDoc.Strings;
 			actualResources = actualDoc.Resources;
-			actualFileVersion = actualDoc.FileVersion;
+			actualFileVersion = actualDoc.PlatformBuildVersionName;
 			ContainsAllStrings (expectedStrings, actualStrings);
 			Assert.AreEqual (expectedResources, expectedResources, "Resources should match!");
 			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");

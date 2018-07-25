@@ -17,11 +17,14 @@ namespace Xamarin.Android.Lite.Tasks
 	{
 		public static readonly XName AndroidNamespace = XNamespace.Get ("http://schemas.android.com/apk/res/android") + "android";
 
+		//No idea
+		const int TAG_FLAGS = 1310740;
+
 		/// <summary>
 		/// NOTE: does not dispose the stream
 		/// </summary>
 		/// <param name="onChunk">Mainly used for testing, verifying correctness in tests</param>
-		public static AndroidManifest Read (Stream stream, Action<ChunkType, int> onChunk = null)
+		public static AndroidManifest Read (Stream stream, Action<ChunkType, int, long> onChunk = null)
 		{
 			var manifest = new AndroidManifest ();
 			var namespaces = new Dictionary<string, XName> ();
@@ -32,15 +35,15 @@ namespace Xamarin.Android.Lite.Tasks
 				manifest.Strings = new List<string> ();
 			int chunk;
 			while ((chunk = ReadInt (buffer, stream)) != -1) {
+				int chunkSize = ReadInt (buffer, stream); //length of stream
+				onChunk?.Invoke ((ChunkType)chunk, chunkSize, stream.Position);
+
 				switch ((ChunkType)chunk) {
 					case ChunkType.START_DOC: {
-							int length = ReadInt (buffer, stream); //length of stream
-							onChunk?.Invoke ((ChunkType)chunk, length);
+							//Don't need to do anything
 							break;
 						}
 					case ChunkType.STR_TABLE: {
-							int chunkSize = ReadInt (buffer, stream);
-							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int stringCount = ReadInt (buffer, stream);
 							int styleCount = ReadInt (buffer, stream);
 							int flags = ReadInt (buffer, stream);
@@ -59,15 +62,11 @@ namespace Xamarin.Android.Lite.Tasks
 							break;
 						}
 					case ChunkType.RESOURCES: {
-							int chunkSize = ReadInt (buffer, stream);
-							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int [] resources = ReadArray (buffer, stream, chunkSize / 4 - 2);
 							manifest.Resources = new List<int> (resources);
 							break;
 						}
 					case ChunkType.NS_TABLE: {
-							int chunkSize = ReadInt (buffer, stream);
-							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int namespaceCount = ReadInt (buffer, stream);
 							int dunno = ReadInt (buffer, stream); //0xFFFFFFF
 
@@ -84,8 +83,6 @@ namespace Xamarin.Android.Lite.Tasks
 								throw new InvalidOperationException ($"Unexpected file format, {nameof (ChunkType.STR_TABLE)} not found!");
 							}
 
-							int chunkSize = ReadInt (buffer, stream);
-							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int lineNumber = ReadInt (buffer, stream);
 							int dunno = ReadInt (buffer, stream); //0xFFFFFFFF
 
@@ -152,18 +149,17 @@ namespace Xamarin.Android.Lite.Tasks
 							break;
 						}
 					case ChunkType.END_TAG: {
-							int chunkSize = ReadInt (buffer, stream);
-							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
-							SkipChunk (chunkSize - 8, stream); //-8 is two ints, chunkType and chunkSize
+							int lineNumber = ReadInt (buffer, stream);
+							int dunno = ReadInt (buffer, stream); //0xFFFFFFFF
+							int ns = ReadInt (buffer, stream);
+							int name = ReadInt (buffer, stream);
 							xml = xml.Parent;
 							break;
 						}
 					case ChunkType.END_DOC: {
-							int chunkSize = ReadInt (buffer, stream);
-							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int fileVersion = ReadInt (buffer, stream);
 							int [] dunno = ReadArray (buffer, stream, 3); //-1, android, NS url
-							manifest.FileVersion = stringTable [fileVersion];
+							manifest.PlatformBuildVersionName = stringTable [fileVersion];
 							break;
 						}
 					default:
@@ -218,9 +214,9 @@ namespace Xamarin.Android.Lite.Tasks
 		public List<string> Strings { get; set; }
 
 		/// <summary>
-		/// Apparently there is some kind of file version?
+		/// Apparently the document footer contains this
 		/// </summary>
-		public string FileVersion { get; set; }
+		public string PlatformBuildVersionName { get; set; }
 
 		/// <summary>
 		/// This will save to the stream but not close it.
@@ -232,8 +228,8 @@ namespace Xamarin.Android.Lite.Tasks
 				throw new InvalidOperationException ($"{nameof (Document)} must not be null!");
 			if (Resources == null)
 				throw new InvalidOperationException ($"{nameof (Resources)} must not be null!");
-			if (string.IsNullOrEmpty (FileVersion))
-				throw new InvalidOperationException ($"{nameof (FileVersion)} must not be blank!");
+			if (string.IsNullOrEmpty (PlatformBuildVersionName))
+				throw new InvalidOperationException ($"{nameof (PlatformBuildVersionName)} must not be blank!");
 
 			Write (ChunkType.START_DOC, stream);
 
@@ -288,12 +284,13 @@ namespace Xamarin.Android.Lite.Tasks
 				Write (strings.IndexOf (AndroidNamespace.LocalName), memory);
 				Write (strings.IndexOf (AndroidNamespace.NamespaceName), memory);
 
-				Write (Document, memory, strings, 1);
+				int lineNumber = 1;
+				Write (Document, memory, strings, ref lineNumber);
 
 				chunkSize = 6 * 4;
 				Write (ChunkType.END_DOC, memory);
 				Write (chunkSize, memory); //chunkSize
-				Write (strings.IndexOf (FileVersion), memory); //Some kind of Android version?
+				Write (strings.IndexOf (PlatformBuildVersionName), memory);
 				Write (-1, memory);
 				Write (strings.IndexOf (AndroidNamespace.LocalName), memory);
 				Write (strings.IndexOf (AndroidNamespace.NamespaceName), memory);
@@ -316,7 +313,7 @@ namespace Xamarin.Android.Lite.Tasks
 			stream.Write (bytes, 0, bytes.Length);
 		}
 
-		static void Write (XElement element, Stream stream, List<string> strings, int lineNumber)
+		static void Write (XElement element, Stream stream, List<string> strings, ref int lineNumber)
 		{
 			int name = strings.IndexOf (element.Name.LocalName);
 			Write (ChunkType.START_TAG, stream);
@@ -324,7 +321,7 @@ namespace Xamarin.Android.Lite.Tasks
 			//NOTE: have to write to an intermediate stream so we know the chunkSize
 			byte [] bytes;
 			using (var memory = new MemoryStream ()) {
-				Write (lineNumber, memory);
+				Write (++lineNumber, memory);
 				Write (-1, memory); //dunno?
 
 				//TODO: slow Linq?
@@ -332,20 +329,24 @@ namespace Xamarin.Android.Lite.Tasks
 
 				Write (-1, memory); //ns
 				Write (name, memory);
-				Write (0, memory); //flags
+				Write (TAG_FLAGS, memory); //flags
 				Write (attributes.Length, memory); //attributeCount
 				Write (0, memory); //classAsstribute
 
 				foreach (var attribute in attributes) {
 					var annotation = attribute.Annotation (typeof (int));
 					var attributeType = annotation == null ? AttributeType.Integer : (AttributeType)(int)annotation;
-					if (attribute.Name.Namespace == null) {
+					if (string.IsNullOrEmpty (attribute.Name.Namespace.NamespaceName)) {
 						Write (-1, memory); //no ns
 					} else {
 						Write (strings.IndexOf (attribute.Name.Namespace.NamespaceName), memory);
 					}
 					Write (strings.IndexOf (attribute.Name.LocalName), memory);
-					Write (-1, memory); //attrValue
+					if (attributeType == AttributeType.String || attribute.Name == "platformBuildVersionCode") {
+						Write (strings.IndexOf (attribute.Value), memory); //attrValue
+					} else {
+						Write (-1, memory); //attrValue
+					}
 					Write ((int)attributeType, memory);
 					switch (attributeType) {
 						case AttributeType.Resource:
@@ -374,14 +375,14 @@ namespace Xamarin.Android.Lite.Tasks
 			stream.Write (bytes, 0, bytes.Length);
 
 			foreach (var child in element.Elements ()) {
-				Write (child, stream, strings, lineNumber);
+				Write (child, stream, strings, ref lineNumber);
 			}
 
 			Write (ChunkType.END_TAG, stream);
 			Write (6 * 4, stream);
-			Write (lineNumber++, stream);
+			Write (lineNumber, stream);
 			Write (-1, stream); //dunno?
-			Write (-1, stream); //dunno?
+			Write (-1, stream); //namespace
 			Write (name, stream);
 		}
 
