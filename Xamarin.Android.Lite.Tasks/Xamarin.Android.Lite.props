@@ -15,4 +15,5 @@
   <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.ZipAlign" />
   <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.Adb" />
   <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.GenerateManifest" />
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.DetectPackages" />
 </Project>

@@ -23,6 +23,7 @@
       <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)$(AndroidPackageName).apk</AndroidApkFile>
       <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
       <AndroidApplicationClass Condition=" '$(AndroidApplicationClass)' == '' ">$(RootNamespace).App, $(AssemblyName)</AndroidApplicationClass>
+      <AndroidApiLevel>27</AndroidApiLevel>
       <IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</IntermediateProps>
       <AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
     </PropertyGroup>
@@ -107,7 +108,18 @@
       AdditionalArguments="$(AndroidApkSignerAdditionalArguments)"
     />
   </Target>
-  <Target Name="Install" DependsOnTargets="SignAndroidPackage">
+  <Target Name="_DetectRuntime">
+    <DetectPackages
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      ApiLevel="$(AndroidApiLevel)"
+      PackageName="$(AndroidPackageName)">
+      <Output ItemName="_RuntimeVersion" TaskParameter="RuntimeVersion" />
+      <Output ItemName="_PlatformRuntimeVersion" TaskParameter="PlatformRuntimeVersion" />
+      <Output ItemName="_PackageVersion" TaskParameter="PackageVersion" />
+    </DetectPackages>
+  </Target>
+  <Target Name="Install" DependsOnTargets="SignAndroidPackage;_DetectRuntime">
     <Adb
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
