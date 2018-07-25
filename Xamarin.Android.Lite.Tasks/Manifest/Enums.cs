@@ -10,7 +10,7 @@ namespace Xamarin.Android.Lite.Tasks
 	{
 		START_DOC = 0x080003,
 		STR_TABLE = 0x1C0001,
-		END_NS    = 0x100101,
+		END_DOC   = 0x100101,
 		RESOURCES = 0x080180,
 		NS_TABLE  = 0x100100,
 		START_TAG = 0x100102,

@@ -27,7 +27,7 @@ namespace Xamarin.Android.Lite.Tasks
 			XElement xml = null;
 
 			var buffer = new byte [4];
-			var stringTable = 
+			var stringTable =
 				manifest.Strings = new List<string> ();
 			int chunk;
 			while ((chunk = ReadInt (buffer, stream)) != -1) {
@@ -147,18 +147,15 @@ namespace Xamarin.Android.Lite.Tasks
 						}
 					case ChunkType.END_TAG: {
 							int chunkSize = ReadInt (buffer, stream);
-							int lineNumber = ReadInt (buffer, stream);
-							int dunno = ReadInt (buffer, stream); //0xFFFFFFF
-
-							int [] stuff = ReadArray (buffer, stream, 2);
-
+							SkipChunk (chunkSize - 8, stream); //-8 is two ints, chunkType and chunkSize
 							xml = xml.Parent;
 							break;
 						}
-					case ChunkType.END_NS: {
+					case ChunkType.END_DOC: {
 							int chunkSize = ReadInt (buffer, stream);
-							byte [] bytes = new byte [chunkSize];
-							stream.Read (bytes, 0, chunkSize);
+							int fileVersion = ReadInt (buffer, stream);
+							int [] dunno = ReadArray (buffer, stream, 3); //-1, android, NS url
+							manifest.FileVersion = stringTable [fileVersion];
 							break;
 						}
 					default:
@@ -167,6 +164,12 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 
 			return manifest;
+		}
+
+		static void SkipChunk (int chunkSize, Stream stream)
+		{
+			byte [] bytes = new byte [chunkSize];
+			stream.Read (bytes, 0, bytes.Length);
 		}
 
 		static int ReadInt (byte [] buffer, Stream stream)
@@ -207,6 +210,11 @@ namespace Xamarin.Android.Lite.Tasks
 		public List<string> Strings { get; set; }
 
 		/// <summary>
+		/// Apparently there is some kind of file version?
+		/// </summary>
+		public string FileVersion { get; set; }
+
+		/// <summary>
 		/// This will save to the stream but not close it.
 		/// NOTE: It will also emit the Strings table. We must generate this every time since it is based off the XML Document.
 		/// </summary>
@@ -216,6 +224,8 @@ namespace Xamarin.Android.Lite.Tasks
 				throw new InvalidOperationException ($"{nameof (Document)} must not be null!");
 			if (Resources == null)
 				throw new InvalidOperationException ($"{nameof (Resources)} must not be null!");
+			if (string.IsNullOrEmpty (FileVersion))
+				throw new InvalidOperationException ($"{nameof (FileVersion)} must not be blank!");
 
 			Write (ChunkType.START_DOC, stream);
 
@@ -261,7 +271,7 @@ namespace Xamarin.Android.Lite.Tasks
 					Write (resource, doc);
 				}
 
-				chunkSize = 5 * 4;
+				chunkSize = 6 * 4;
 				Write (ChunkType.NS_TABLE, doc);
 				Write (chunkSize, doc); //chunkSize
 				Write (2, doc);         //namespaceCount
@@ -270,6 +280,14 @@ namespace Xamarin.Android.Lite.Tasks
 				Write (strings.IndexOf (AndroidNamespace.NamespaceName), doc);
 
 				Write (Document, doc, strings, 1);
+
+				chunkSize = 6 * 4;
+				Write (ChunkType.END_DOC, doc);
+				Write (chunkSize, doc); //chunkSize
+				Write (strings.IndexOf (FileVersion), doc); //Some kind of Android version?
+				Write (-1, doc);
+				Write (strings.IndexOf (AndroidNamespace.LocalName), doc);
+				Write (strings.IndexOf (AndroidNamespace.NamespaceName), doc);
 
 				bytes = doc.ToArray ();
 			}

@@ -58,6 +58,9 @@ namespace Xamarin.Android.Lite.Tests
 			var xmlFromBinary = doc.Document.ToString ();
 			var xmlFromText = LoadText ();
 
+			Assert.IsTrue (doc.Strings?.Count > 0, "Strings should be non-empty!");
+			Assert.IsTrue (doc.Resources?.Count > 0, "Resources should be non-empty!");
+			Assert.IsFalse (string.IsNullOrEmpty (doc.FileVersion), "FileVersion should be non-empty!");
 			Assert.AreEqual (xmlFromText, xmlFromBinary);
 		}
 
@@ -66,12 +69,16 @@ namespace Xamarin.Android.Lite.Tests
 		{
 			var expectedDoc = AndroidManifest.Create (binaryManifest);
 			var expectedStrings = expectedDoc.Strings;
+			var expectedResources = expectedDoc.Resources;
+			var expectedFileVersion = expectedDoc.FileVersion;
 
 			var stream = new MemoryStream ();
 			expectedDoc.Save (stream);
 
 			//Compare the string tables
 			var actualStrings = expectedDoc.Strings;
+			var actualResources = expectedDoc.Resources;
+			var actualFileVersion = expectedDoc.FileVersion;
 			var builder = new StringBuilder ();
 			foreach (var @string in expectedStrings) {
 				if (!actualStrings.Contains (@string))
@@ -80,6 +87,8 @@ namespace Xamarin.Android.Lite.Tests
 			if (builder.Length > 0)
 				Assert.Fail (builder.ToString ());
 			Assert.AreEqual (expectedStrings.Count, actualStrings.Count, "Strings lengths should match!");
+			Assert.AreEqual (expectedResources, expectedResources, "Resources should match!");
+			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			stream.Seek (0, SeekOrigin.Begin);
 			var actualDoc = AndroidManifest.Create (stream);
