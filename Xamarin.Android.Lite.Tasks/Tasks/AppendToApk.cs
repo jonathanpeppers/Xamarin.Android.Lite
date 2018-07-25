@@ -28,10 +28,9 @@ namespace Xamarin.Android.Lite.Tasks
 					file = Files [i];
 					archivePath = file.GetMetadata ("ArchivePath");
 
-					//NOTE: always use / on Android
 					if (archivePath != null) {
 						archivePath = Path.Combine (archivePath, Path.GetFileName (file.ItemSpec));
-						archivePath = archivePath.Replace (Path.DirectorySeparatorChar, '/');
+						archivePath = archivePath.ToAndroidPath ();
 					}
 
 					zip.AddFile (file.ItemSpec, archivePath, compressionMethod: GetCompression (file), overwriteExisting: true);

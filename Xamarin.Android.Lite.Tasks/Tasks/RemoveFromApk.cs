@@ -25,8 +25,7 @@ namespace Xamarin.Android.Lite.Tasks
 
 			using (var zip = ZipArchive.Open (Apk.ItemSpec, FileMode.Create)) {
 				foreach (var file in Files) {
-					//NOTE: always use / on Android
-					var pathInZip = file.Replace (Path.DirectorySeparatorChar, '/');
+					var pathInZip = file.ToAndroidPath ();
 					if (zip.ContainsEntry (pathInZip)) {
 						Log.LogMessage (MessageImportance.Low, "Removing `{0}` from zip `{1}`", pathInZip, Apk.ItemSpec);
 						zip.DeleteEntry (pathInZip);

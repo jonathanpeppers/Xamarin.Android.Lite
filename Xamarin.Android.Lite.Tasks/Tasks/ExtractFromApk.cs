@@ -39,8 +39,7 @@ namespace Xamarin.Android.Lite.Tasks
 					var file = SourceFiles [i];
 					var destination = DestinationFiles [i];
 
-					//NOTE: always use / on Android
-					var pathInZip = file.Replace (Path.DirectorySeparatorChar, '/');
+					var pathInZip = file.ToAndroidPath ();
 					if (entries.TryGetValue (pathInZip, out ZipEntry entry)) {
 						Log.LogMessage (MessageImportance.Low, "Extracting `{0}` to `{1}`", pathInZip, destination);
 						using (var stream = File.Create (destination))
