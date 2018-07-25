@@ -20,7 +20,8 @@ namespace Xamarin.Android.Lite.Tasks
 		/// <summary>
 		/// NOTE: does not dispose the stream
 		/// </summary>
-		public static AndroidManifest Read (Stream stream)
+		/// <param name="onChunk">Mainly used for testing, verifying correctness in tests</param>
+		public static AndroidManifest Read (Stream stream, Action<ChunkType, int> onChunk = null)
 		{
 			var manifest = new AndroidManifest ();
 			var namespaces = new Dictionary<string, XName> ();
@@ -34,10 +35,12 @@ namespace Xamarin.Android.Lite.Tasks
 				switch ((ChunkType)chunk) {
 					case ChunkType.START_DOC: {
 							int length = ReadInt (buffer, stream); //length of stream
+							onChunk?.Invoke ((ChunkType)chunk, length);
 							break;
 						}
 					case ChunkType.STR_TABLE: {
 							int chunkSize = ReadInt (buffer, stream);
+							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int stringCount = ReadInt (buffer, stream);
 							int styleCount = ReadInt (buffer, stream);
 							int flags = ReadInt (buffer, stream);
@@ -57,12 +60,14 @@ namespace Xamarin.Android.Lite.Tasks
 						}
 					case ChunkType.RESOURCES: {
 							int chunkSize = ReadInt (buffer, stream);
+							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int [] resources = ReadArray (buffer, stream, chunkSize / 4 - 2);
 							manifest.Resources = new List<int> (resources);
 							break;
 						}
 					case ChunkType.NS_TABLE: {
 							int chunkSize = ReadInt (buffer, stream);
+							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int namespaceCount = ReadInt (buffer, stream);
 							int dunno = ReadInt (buffer, stream); //0xFFFFFFF
 
@@ -80,6 +85,7 @@ namespace Xamarin.Android.Lite.Tasks
 							}
 
 							int chunkSize = ReadInt (buffer, stream);
+							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int lineNumber = ReadInt (buffer, stream);
 							int dunno = ReadInt (buffer, stream); //0xFFFFFFFF
 
@@ -147,12 +153,14 @@ namespace Xamarin.Android.Lite.Tasks
 						}
 					case ChunkType.END_TAG: {
 							int chunkSize = ReadInt (buffer, stream);
+							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							SkipChunk (chunkSize - 8, stream); //-8 is two ints, chunkType and chunkSize
 							xml = xml.Parent;
 							break;
 						}
 					case ChunkType.END_DOC: {
 							int chunkSize = ReadInt (buffer, stream);
+							onChunk?.Invoke ((ChunkType)chunk, chunkSize);
 							int fileVersion = ReadInt (buffer, stream);
 							int [] dunno = ReadArray (buffer, stream, 3); //-1, android, NS url
 							manifest.FileVersion = stringTable [fileVersion];
@@ -362,7 +370,7 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 
 			//chunkSize
-			Write ((bytes.Length + 2) * 4, stream);
+			Write (bytes.Length + 2 * 4, stream);
 			stream.Write (bytes, 0, bytes.Length);
 
 			foreach (var child in element.Elements ()) {

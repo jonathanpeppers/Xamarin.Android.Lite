@@ -83,7 +83,8 @@ namespace Xamarin.Android.Lite.Tests
 		[Test]
 		public void WriteManifest ()
 		{
-			var expectedDoc = AndroidManifest.Read (binaryManifest);
+			var expectedChunks = new StringBuilder ();
+			var expectedDoc = AndroidManifest.Read (binaryManifest, (t, c) => expectedChunks.AppendLine($"{t}, chunkSize: {c}"));
 			var expectedStrings = expectedDoc.Strings;
 			var expectedResources = expectedDoc.Resources;
 			var expectedFileVersion = expectedDoc.FileVersion;
@@ -101,7 +102,9 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			stream.Seek (0, SeekOrigin.Begin);
-			var actualDoc = AndroidManifest.Read (stream);
+			var actualChunks = new StringBuilder ();
+			var actualDoc = AndroidManifest.Read (stream, (t, c) => actualChunks.AppendLine ($"{t}, chunkSize: {c}"));
+			Assert.AreEqual (expectedChunks.ToString (), actualChunks.ToString (), "Chunk sizes and ordering should match!");
 			actualStrings = actualDoc.Strings;
 			actualResources = actualDoc.Resources;
 			actualFileVersion = actualDoc.FileVersion;
