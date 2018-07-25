@@ -13,21 +13,48 @@
       <Output TaskParameter="ZipAlignPath"             PropertyName="ZipAlignToolPath"         Condition=" '$(ZipAlignToolPath)' == '' " />
     </ResolveSdks>
     <PropertyGroup>
-      <AndroidSdkDirectory  Condition=" '$(AndroidSdkDirectory)' != '' And !HasTrailingSlash('$(AndroidSdkDirectory)') ">$(AndroidSdkDirectory)\</AndroidSdkDirectory>
-      <AndroidNdkDirectory  Condition=" '$(AndroidNdkDirectory)' != '' And !HasTrailingSlash('$(AndroidNdkDirectory)') ">$(AndroidNdkDirectory)\</AndroidNdkDirectory>
-      <JavaSdkDirectory     Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
-      <AdbToolPath          Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
-      <JavaToolPath         Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
-      <SourceApkFile        Condition=" '$(SourceApkFile)' == '' ">$(MSBuildThisFileDirectory)com.xamarin.android.lite.apk</SourceApkFile>
-      <AndroidApkFile       Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)com.xamarin.android.lite.apk</AndroidApkFile>
-      <AndroidApkFileSigned Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
-      <IntermediateAssemblyDirectory>$(IntermediateOutputPath)linked\</IntermediateAssemblyDirectory>
-      <LinkedAssembliesStamp>$(IntermediateAssemblyDirectory)linked.stamp</LinkedAssembliesStamp>
+      <AndroidSdkDirectory     Condition=" '$(AndroidSdkDirectory)' != '' And !HasTrailingSlash('$(AndroidSdkDirectory)') ">$(AndroidSdkDirectory)\</AndroidSdkDirectory>
+      <AndroidNdkDirectory     Condition=" '$(AndroidNdkDirectory)' != '' And !HasTrailingSlash('$(AndroidNdkDirectory)') ">$(AndroidNdkDirectory)\</AndroidNdkDirectory>
+      <JavaSdkDirectory        Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
+      <AdbToolPath             Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
+      <JavaToolPath            Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+      <SourceApkFile           Condition=" '$(SourceApkFile)' == '' ">$(MSBuildThisFileDirectory)com.xamarin.android.lite.apk</SourceApkFile>
+      <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)com.xamarin.android.lite.apk</AndroidApkFile>
+      <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
+      <AndroidPackageName      Condition=" '$(AndroidPackageName)' == '' ">com.$(ProjectName.ToLowerInvariant())</AndroidPackageName>
+      <AndroidApplicationClass Condition=" '$(AndroidApplicationClass)' == '' ">$(RootNamespace).App</AndroidApplicationClass>
+      <IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</IntermediateProps>
+      <AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
     </PropertyGroup>
   </Target>
-  <Target Name="_FindAssemblies">
+  <Target Name="_FindApkInputs">
+    <ItemGroup>
+      <_Properties Include="AndroidPackageName=$(AndroidPackageName)" />
+      <_Properties Include="AndroidApplicationClass=$(AndroidApplicationClass)" />
+      <_Properties Include="AndroidVersionCode=$(AndroidVersionCode)" />
+      <_Properties Include="AndroidVersionName=$(AndroidVersionName)" />
+    </ItemGroup>
+    <WriteLinesToFile
+      File="$(IntermediateProps)"
+      Lines="@(_Properties)"
+      Overwrite="True"
+      WriteOnlyWhenDifferent="True"
+    />
     <ItemGroup>
       <AssembliesForApk Include="$(OutputPath)*.dll" />
+      <FileWrites Include="$(IntermediateProps)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="_GenerateManifest" Inputs="$(IntermediateProps)" Outputs="$(AndroidManifest)">
+    <GenerateManifest
+      DestinationFile="$(AndroidManifest)"
+      PackageName="$(AndroidPackageName)"
+      ApplicationClass="$(AndroidApplicationClass)"
+      VersionCode="$(AndroidVersionCode)"
+      VersionName="$(AndroidVersionName)"
+    />
+    <ItemGroup>
+      <FileWrites Include="$(AndroidManifest)" />
     </ItemGroup>
   </Target>
   <Target Name="_CopySourceApk" Inputs="$(SourceApkFile)" Outputs="$(AndroidApkFile)">
@@ -37,8 +64,8 @@
       <FileWrites Include="$(AndroidApkFile)" />
     </ItemGroup>
   </Target>
-  <Target Name="_AppendToApk" Inputs="@(AssembliesForApk);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
-    <AppendToApk Files="@(AssembliesForApk)" Apk="$(AndroidApkFile)" />
+  <Target Name="_AppendToApk" Inputs="@(AssembliesForApk);$(AndroidManifest);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
+    <AppendToApk Files="@(AssembliesForApk);$(AndroidManifest)" Apk="$(AndroidApkFile)" />
     <Touch Files="$(AndroidApkFile).stamp" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFile).stamp" />
@@ -48,7 +75,8 @@
     <SignAndroidPackageDependsOn>
       Build;
       ResolveSdks;
-      _FindAssemblies;
+      _FindApkInputs;
+      _GenerateManifest;
       _CopySourceApk;
       _AppendToApk;
     </SignAndroidPackageDependsOn>
