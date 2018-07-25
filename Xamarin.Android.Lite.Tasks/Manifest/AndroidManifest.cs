@@ -219,6 +219,38 @@ namespace Xamarin.Android.Lite.Tasks
 		public string PlatformBuildVersionName { get; set; }
 
 		/// <summary>
+		/// NOTE: to mutate attributes, you *must* go through this method to update the Strings table
+		/// </summary>
+		public void Mutate (XElement element, XName name, string value)
+		{
+			var attribute = element.Attribute (name);
+			if (attribute == null)
+				throw new InvalidOperationException ($"Attribute `{name.LocalName}` not found on element `{element.Name.LocalName}`!");
+
+			if (Strings == null)
+				throw new InvalidOperationException ($"{nameof (Strings)} must not be null!");
+
+			var annotation = attribute.Annotation (typeof (int));
+			if (annotation == null)
+				throw new InvalidOperationException ($"Attribute `{name.LocalName}` on element `{element.Name.LocalName}` must have an annotation to know its data type!");
+
+			if ((AttributeType)(int)annotation == AttributeType.String) {
+				if (attribute.Value != value) {
+					int index = Strings.IndexOf (attribute.Value);
+					if (index != -1) {
+						Strings.RemoveAt (index);
+						Strings.Insert (index, value);
+					} else {
+						throw new InvalidOperationException ($"Existing string value `{attribute.Value}` did not exist!");
+					}
+					attribute.Value = value;
+				}
+			} else {
+				attribute.Value = value;
+			}
+		}
+
+		/// <summary>
 		/// This will save to the stream but not close it.
 		/// NOTE: It will also emit the Strings table. We must generate this every time since it is based off the XML Document.
 		/// </summary>
@@ -236,11 +268,8 @@ namespace Xamarin.Android.Lite.Tasks
 			//NOTE: have to write to an intermediate stream so we know the chunkSize
 			byte [] bytes;
 			using (var memory = new MemoryStream ()) {
-
-				//We have to recalculate the strings table, contains empty string by default?
-				var strings = new List<string> { AndroidNamespace.LocalName, AndroidNamespace.Namespace.NamespaceName, "" };
-				FindStrings (Document, strings);
-				Strings = strings;
+				//NOTE: was once generated, we reuse Strings table now
+				var strings = Strings;
 
 				// Strings table
 				byte [] stringData;
@@ -335,7 +364,7 @@ namespace Xamarin.Android.Lite.Tasks
 
 				foreach (var attribute in attributes) {
 					var annotation = attribute.Annotation (typeof (int));
-					var attributeType = annotation == null ? AttributeType.Integer : (AttributeType)(int)annotation;
+					var attributeType = annotation == null ? AttributeType.String : (AttributeType)(int)annotation;
 					if (string.IsNullOrEmpty (attribute.Name.Namespace.NamespaceName)) {
 						Write (-1, memory); //no ns
 					} else {
@@ -384,36 +413,6 @@ namespace Xamarin.Android.Lite.Tasks
 			Write (-1, stream); //dunno?
 			Write (-1, stream); //namespace
 			Write (name, stream);
-		}
-
-		static void FindStrings (XElement element, List<string> strings)
-		{
-			foreach (var attribute in element.Attributes ()) {
-				AddIfNew (strings, attribute.Name.LocalName);
-
-				//HACK: no idea why this is in the strings table
-				if (attribute.Name.Namespace == AndroidNamespace.NamespaceName && attribute.Name.LocalName == "targetSdkVersion") {
-					AddIfNew (strings, attribute.Value);
-					continue;
-				}
-
-				var annotation = attribute.Annotation (typeof (int));
-				if (annotation != null && (int)annotation == (int)AttributeType.String) {
-					AddIfNew (strings, attribute.Value);
-				}
-			}
-
-			AddIfNew (strings, element.Name.LocalName);
-
-			foreach (var child in element.Elements ()) {
-				FindStrings (child, strings);
-			}
-		}
-
-		static void AddIfNew (List<string> strings, string value)
-		{
-			if (!strings.Contains (value))
-				strings.Add (value);
 		}
 	}
 }

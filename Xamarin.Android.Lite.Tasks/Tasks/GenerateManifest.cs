@@ -2,7 +2,6 @@
 using Microsoft.Build.Utilities;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace Xamarin.Android.Lite.Tasks
 {
@@ -45,26 +44,25 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 
 			var ns = AndroidManifest.AndroidNamespace.Namespace;
-			manifestElement.SetAttributeValue ("package", PackageName);
-			manifestElement.SetAttributeValue (ns + "versionCode", versionCode);
-			manifestElement.SetAttributeValue (ns + "versionName", versionName);
+			manifest.Mutate (manifestElement, "package", PackageName);
+			manifest.Mutate (manifestElement, ns + "versionCode", versionCode);
+			manifest.Mutate (manifestElement, ns + "versionName", versionName);
 
 			var metadata = application.Elements ("meta-data").Where (e => e.Attribute (ns + "name")?.Value == ApplicationMetadata).FirstOrDefault ();
 			if (metadata == null) {
-				metadata = new XElement ("meta-data");
-				metadata.SetAttributeValue (ns + "name", ApplicationMetadata);
-				application.Add (metadata);
+				Log.LogError ("No `meta-data` element found!");
+				return false;
 			}
-			metadata.SetAttributeValue (ns + "value", ApplicationClass);
+			manifest.Mutate (metadata, ns + "value", ApplicationClass);
 
 			//NOTE: two other Xamarin.Android implementation-specific places *may* need the package name replaced
-			var authorities = application.Element ("provider")?.Attribute (ns + "authorities");
-			if (authorities != null)
-				authorities.Value = PackageName + ".mono.MonoRuntimeProvider.__mono_init_";
+			var provider = application.Element ("provider");
+			if (provider != null)
+				manifest.Mutate (provider, ns + "authorities", PackageName + ".mono.MonoRuntimeProvider.__mono_init_");
 
-			var category = application.Element ("receiver")?.Element ("intent-filter")?.Element ("category")?.Attribute (ns + "name");
+			var category = application.Element ("receiver")?.Element ("intent-filter")?.Element ("category");
 			if (category != null)
-				category.Value = "mono.android.intent.category.SEPPUKU." + PackageName;
+				manifest.Mutate (category, ns + "name", "mono.android.intent.category.SEPPUKU." + PackageName);
 
 			using (var stream = File.Create (DestinationFile)) {
 				manifest.Write (stream);
