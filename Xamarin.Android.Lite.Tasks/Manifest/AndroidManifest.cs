@@ -242,7 +242,7 @@ namespace Xamarin.Android.Lite.Tasks
 			using (var memory = new MemoryStream ()) {
 
 				//We have to recalculate the strings table, contains empty string by default?
-				var strings = new List<string> { "" };
+				var strings = new List<string> { AndroidNamespace.LocalName, AndroidNamespace.Namespace.NamespaceName, "" };
 				FindStrings (Document, strings);
 				Strings = strings;
 
@@ -397,7 +397,7 @@ namespace Xamarin.Android.Lite.Tasks
 				}
 
 				var annotation = attribute.Annotation (typeof (int));
-				if (annotation == null || (int)annotation == (int)AttributeType.String) {
+				if (annotation != null && (int)annotation == (int)AttributeType.String) {
 					AddIfNew (strings, attribute.Value);
 				}
 			}
