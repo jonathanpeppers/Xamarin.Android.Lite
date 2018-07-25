@@ -229,8 +229,9 @@ namespace Xamarin.Android.Lite.Tasks
 
 			Write (ChunkType.START_DOC, stream);
 
+			//NOTE: have to write to an intermediate stream so we know the chunkSize
 			byte [] bytes;
-			using (var doc = new MemoryStream ()) {
+			using (var memory = new MemoryStream ()) {
 
 				//We have to recalculate the strings table, contains empty string by default?
 				var strings = new List<string> { "" };
@@ -240,56 +241,56 @@ namespace Xamarin.Android.Lite.Tasks
 				// Strings table
 				byte [] stringData;
 				var stringOffsets = new List<int> (strings.Count);
-				using (var memory = new MemoryStream ()) {
+				using (var stringsMemory = new MemoryStream ()) {
 					foreach (var @string in strings) {
-						stringOffsets.Add ((int)memory.Position);
+						stringOffsets.Add ((int)stringsMemory.Position);
 						var utf8 = Encoding.Unicode.GetBytes (@string + "\0");
 						var length = BitConverter.GetBytes ((short)((utf8.Length - 2) / 2));
-						memory.Write (length, 0, length.Length);
-						memory.Write (utf8, 0, utf8.Length);
+						stringsMemory.Write (length, 0, length.Length);
+						stringsMemory.Write (utf8, 0, utf8.Length);
 					}
-					memory.Write (new byte [2], 0, 2);
-					stringData = memory.ToArray ();
+					stringsMemory.Write (new byte [2], 0, 2);
+					stringData = stringsMemory.ToArray ();
 				}
 
 				int chunkSize = stringData.Length + stringOffsets.Count * 4 + 7 * 4;
-				Write (ChunkType.STR_TABLE, doc);
-				Write (chunkSize, doc);                      //chunkSize
-				Write (strings.Count, doc);                  //stringCount
-				Write (0, doc);                              //styleCount
-				Write (0, doc);                              //flags, apparently 0?
-				Write (chunkSize - stringData.Length, doc);  //stringsOffset
-				Write (0, doc);                              //stylesOffset
+				Write (ChunkType.STR_TABLE, memory);
+				Write (chunkSize, memory);                      //chunkSize
+				Write (strings.Count, memory);                  //stringCount
+				Write (0, memory);                              //styleCount
+				Write (0, memory);                              //flags, apparently 0?
+				Write (chunkSize - stringData.Length, memory);  //stringsOffset
+				Write (0, memory);                              //stylesOffset
 				foreach (int offset in stringOffsets) {
-					Write (offset, doc);
+					Write (offset, memory);
 				}
-				doc.Write (stringData, 0, stringData.Length);
+				memory.Write (stringData, 0, stringData.Length);
 
-				Write (ChunkType.RESOURCES, doc);
-				Write ((Resources.Count + 2) * 4, doc);
+				Write (ChunkType.RESOURCES, memory);
+				Write ((Resources.Count + 2) * 4, memory);
 				foreach (int resource in Resources) {
-					Write (resource, doc);
+					Write (resource, memory);
 				}
 
 				chunkSize = 6 * 4;
-				Write (ChunkType.NS_TABLE, doc);
-				Write (chunkSize, doc); //chunkSize
-				Write (2, doc);         //namespaceCount
-				Write (-1, doc);        //dunno?
-				Write (strings.IndexOf (AndroidNamespace.LocalName), doc);
-				Write (strings.IndexOf (AndroidNamespace.NamespaceName), doc);
+				Write (ChunkType.NS_TABLE, memory);
+				Write (chunkSize, memory); //chunkSize
+				Write (2, memory);         //namespaceCount
+				Write (-1, memory);        //dunno?
+				Write (strings.IndexOf (AndroidNamespace.LocalName), memory);
+				Write (strings.IndexOf (AndroidNamespace.NamespaceName), memory);
 
-				Write (Document, doc, strings, 1);
+				Write (Document, memory, strings, 1);
 
 				chunkSize = 6 * 4;
-				Write (ChunkType.END_DOC, doc);
-				Write (chunkSize, doc); //chunkSize
-				Write (strings.IndexOf (FileVersion), doc); //Some kind of Android version?
-				Write (-1, doc);
-				Write (strings.IndexOf (AndroidNamespace.LocalName), doc);
-				Write (strings.IndexOf (AndroidNamespace.NamespaceName), doc);
+				Write (ChunkType.END_DOC, memory);
+				Write (chunkSize, memory); //chunkSize
+				Write (strings.IndexOf (FileVersion), memory); //Some kind of Android version?
+				Write (-1, memory);
+				Write (strings.IndexOf (AndroidNamespace.LocalName), memory);
+				Write (strings.IndexOf (AndroidNamespace.NamespaceName), memory);
 
-				bytes = doc.ToArray ();
+				bytes = memory.ToArray ();
 			}
 
 			Write (bytes.Length + 8, stream);
@@ -310,50 +311,59 @@ namespace Xamarin.Android.Lite.Tasks
 		static void Write (XElement element, Stream stream, List<string> strings, int lineNumber)
 		{
 			int name = strings.IndexOf (element.Name.LocalName);
-			int chunkSize = 0; //TODO
 			Write (ChunkType.START_TAG, stream);
-			Write (chunkSize, stream);
-			Write (lineNumber, stream);
-			Write (-1, stream); //dunno?
 
-			//TODO: slow Linq?
-			var attributes = element.Attributes ().Where (a => a.Name.Namespace != XNamespace.Xmlns).ToArray ();
+			//NOTE: have to write to an intermediate stream so we know the chunkSize
+			byte [] bytes;
+			using (var memory = new MemoryStream ()) {
+				Write (lineNumber, memory);
+				Write (-1, memory); //dunno?
 
-			Write (-1, stream); //ns
-			Write (name, stream);
-			Write (0, stream); //flags
-			Write (attributes.Length, stream); //attributeCount TODO: Linq=bad
-			Write (0, stream); //classAsstribute
+				//TODO: slow Linq?
+				var attributes = element.Attributes ().Where (a => a.Name.Namespace != XNamespace.Xmlns).ToArray ();
 
-			foreach (var attribute in attributes) {
-				var annotation = attribute.Annotation (typeof (int));
-				var attributeType = annotation == null ? AttributeType.Integer : (AttributeType)(int)annotation;
-				if (attribute.Name.Namespace == null) {
-					Write (-1, stream); //no ns
-				} else {
-					Write (strings.IndexOf (attribute.Name.Namespace.NamespaceName), stream);
+				Write (-1, memory); //ns
+				Write (name, memory);
+				Write (0, memory); //flags
+				Write (attributes.Length, memory); //attributeCount
+				Write (0, memory); //classAsstribute
+
+				foreach (var attribute in attributes) {
+					var annotation = attribute.Annotation (typeof (int));
+					var attributeType = annotation == null ? AttributeType.Integer : (AttributeType)(int)annotation;
+					if (attribute.Name.Namespace == null) {
+						Write (-1, memory); //no ns
+					} else {
+						Write (strings.IndexOf (attribute.Name.Namespace.NamespaceName), memory);
+					}
+					Write (strings.IndexOf (attribute.Name.LocalName), memory);
+					Write (-1, memory); //attrValue
+					Write ((int)attributeType, memory);
+					switch (attributeType) {
+						case AttributeType.Resource:
+						case AttributeType.Integer:
+						case AttributeType.Enum:
+							int.TryParse (attribute.Value, out int x);
+							Write (x, memory);
+							break;
+						case AttributeType.String:
+							Write (strings.IndexOf (attribute.Value), memory);
+							break;
+						case AttributeType.Bool:
+							bool.TryParse (attribute.Value, out bool b);
+							Write (b ? -1 : 0, memory);
+							break;
+						default:
+							break;
+					}
 				}
-				Write (strings.IndexOf (attribute.Name.LocalName), stream);
-				Write (-1, stream); //attrValue
-				Write ((int)attributeType, stream);
-				switch (attributeType) {
-					case AttributeType.Resource:
-					case AttributeType.Integer:
-					case AttributeType.Enum:
-						int.TryParse (attribute.Value, out int x);
-						Write (x, stream);
-						break;
-					case AttributeType.String:
-						Write (strings.IndexOf (attribute.Value), stream);
-						break;
-					case AttributeType.Bool:
-						bool.TryParse (attribute.Value, out bool b);
-						Write (b ? -1 : 0, stream);
-						break;
-					default:
-						break;
-				}
+
+				bytes = memory.ToArray ();
 			}
+
+			//chunkSize
+			Write ((bytes.Length + 2) * 4, stream);
+			stream.Write (bytes, 0, bytes.Length);
 
 			foreach (var child in element.Elements ()) {
 				Write (child, stream, strings, lineNumber);
