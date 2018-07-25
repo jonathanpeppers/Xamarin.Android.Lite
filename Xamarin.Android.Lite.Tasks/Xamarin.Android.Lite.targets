@@ -114,12 +114,39 @@
       ToolExe="$(AdbToolExe)"
       ApiLevel="$(AndroidApiLevel)"
       PackageName="$(AndroidPackageName)">
-      <Output ItemName="_RuntimeVersion" TaskParameter="RuntimeVersion" />
-      <Output ItemName="_PlatformRuntimeVersion" TaskParameter="PlatformRuntimeVersion" />
-      <Output ItemName="_PackageVersion" TaskParameter="PackageVersion" />
+      <Output PropertyName="_RuntimeVersion" TaskParameter="RuntimeVersion" />
+      <Output PropertyName="_PlatformRuntimeVersion" TaskParameter="PlatformRuntimeVersion" />
+      <Output PropertyName="_PackageVersion" TaskParameter="PackageVersion" />
     </DetectPackages>
   </Target>
-  <Target Name="Install" DependsOnTargets="SignAndroidPackage;_DetectRuntime">
+  <Target Name="_GetAbi" Condition=" '$(_RuntimeVersion)' == '' Or '$(_PlatformRuntimeVersion)' == '' ">
+    <GetAbi
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)">
+      <Output PropertyName="_PreferredAbi" TaskParameter="PreferredAbi" />
+      <Output PropertyName="_SupportedAbis" TaskParameter="SupportedAbis" />
+    </GetAbi>
+  </Target>
+  <Target Name="_InstallRuntime" DependsOnTargets="_GetAbi" Condition=" '$(_RuntimeVersion)' == '' ">
+    <PropertyGroup>
+      <_SharedRuntime>$(MSBuildExtensionsPath)\Xamarin\Android\Mono.Android.DebugRuntime-$(_PreferredAbi).apk</_SharedRuntime>
+    </PropertyGroup>
+    <Error Text="Cannot install shared Mono runtime, could not determine device's ABI." Condition=" '$(_PreferredAbi)' == '' " />
+    <Error Text="Cannot install shared Mono runtime, $(_SharedRuntime) not found." Condition=" !Exists('$(_SharedRuntime)') " />
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="install -r &quot;$(_SharedRuntime)&quot;"
+    />
+  </Target>
+  <PropertyGroup>
+    <InstallDependsOn>
+      SignAndroidPackage;
+      _DetectRuntime;
+      _InstallRuntime;
+    </InstallDependsOn>
+  </PropertyGroup>
+  <Target Name="Install" DependsOnTargets="$(InstallDependsOn)">
     <Adb
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
