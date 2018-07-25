@@ -18,11 +18,11 @@
       <JavaSdkDirectory        Condition=" '$(JavaSdkDirectory)' != '' And !HasTrailingSlash('$(JavaSdkDirectory)') ">$(JavaSdkDirectory)\</JavaSdkDirectory>
       <AdbToolPath             Condition=" '$(AndroidSdkDirectory)' != '' ">$(AndroidSdkDirectory)platform-tools\</AdbToolPath>
       <JavaToolPath            Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
+      <AndroidPackageName      Condition=" '$(AndroidPackageName)' == '' ">com.$(AssemblyName.ToLowerInvariant())</AndroidPackageName>
       <SourceApkFile           Condition=" '$(SourceApkFile)' == '' ">$(MSBuildThisFileDirectory)com.xamarin.android.lite.apk</SourceApkFile>
-      <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)com.xamarin.android.lite.apk</AndroidApkFile>
+      <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)$(AndroidPackageName).apk</AndroidApkFile>
       <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
-      <AndroidPackageName      Condition=" '$(AndroidPackageName)' == '' ">com.$(ProjectName.ToLowerInvariant())</AndroidPackageName>
-      <AndroidApplicationClass Condition=" '$(AndroidApplicationClass)' == '' ">$(RootNamespace).App</AndroidApplicationClass>
+      <AndroidApplicationClass Condition=" '$(AndroidApplicationClass)' == '' ">$(RootNamespace).App, $(AssemblyName)</AndroidApplicationClass>
       <IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</IntermediateProps>
       <AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
     </PropertyGroup>
