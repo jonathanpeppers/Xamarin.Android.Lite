@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
@@ -64,6 +65,21 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (xmlFromText, xmlFromBinary);
 		}
 
+		/// <summary>
+		/// NOTE: strings are not ordered the same
+		/// </summary>
+		void ContainsAllStrings (IList<string> expected, IList<string> actual)
+		{
+			var builder = new StringBuilder ();
+			foreach (var @string in expected) {
+				if (!actual.Contains (@string))
+					builder.AppendLine ($"Does not contain `{@string}`.");
+			}
+			if (builder.Length > 0)
+				Assert.Fail (builder.ToString ());
+			Assert.AreEqual (expected.Count, actual.Count, "Strings lengths should match!");
+		}
+
 		[Test]
 		public void WriteManifest ()
 		{
@@ -74,24 +90,24 @@ namespace Xamarin.Android.Lite.Tests
 
 			var stream = new MemoryStream ();
 			expectedDoc.Save (stream);
+			Assert.AreEqual (binaryManifest.Length, stream.Length, "Stream lengths should match!");
 
 			//Compare the string tables
 			var actualStrings = expectedDoc.Strings;
 			var actualResources = expectedDoc.Resources;
 			var actualFileVersion = expectedDoc.FileVersion;
-			var builder = new StringBuilder ();
-			foreach (var @string in expectedStrings) {
-				if (!actualStrings.Contains (@string))
-					builder.AppendLine ($"Does not contain `{@string}`.");
-			}
-			if (builder.Length > 0)
-				Assert.Fail (builder.ToString ());
-			Assert.AreEqual (expectedStrings.Count, actualStrings.Count, "Strings lengths should match!");
+			ContainsAllStrings (expectedStrings, actualStrings);
 			Assert.AreEqual (expectedResources, expectedResources, "Resources should match!");
 			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			stream.Seek (0, SeekOrigin.Begin);
 			var actualDoc = AndroidManifest.Create (stream);
+			actualStrings = actualDoc.Strings;
+			actualResources = actualDoc.Resources;
+			actualFileVersion = actualDoc.FileVersion;
+			ContainsAllStrings (expectedStrings, actualStrings);
+			Assert.AreEqual (expectedResources, expectedResources, "Resources should match!");
+			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			Assert.AreEqual (expectedDoc.Document.ToString (), actualDoc.Document.ToString ());
 		}
