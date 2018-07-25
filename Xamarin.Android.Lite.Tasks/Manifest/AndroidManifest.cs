@@ -20,7 +20,7 @@ namespace Xamarin.Android.Lite.Tasks
 		/// <summary>
 		/// NOTE: does not dispose the stream
 		/// </summary>
-		public static AndroidManifest Create (Stream stream)
+		public static AndroidManifest Read (Stream stream)
 		{
 			var manifest = new AndroidManifest ();
 			var namespaces = new Dictionary<string, XName> ();
@@ -218,7 +218,7 @@ namespace Xamarin.Android.Lite.Tasks
 		/// This will save to the stream but not close it.
 		/// NOTE: It will also emit the Strings table. We must generate this every time since it is based off the XML Document.
 		/// </summary>
-		public void Save (Stream stream)
+		public void Write (Stream stream)
 		{
 			if (Document == null)
 				throw new InvalidOperationException ($"{nameof (Document)} must not be null!");

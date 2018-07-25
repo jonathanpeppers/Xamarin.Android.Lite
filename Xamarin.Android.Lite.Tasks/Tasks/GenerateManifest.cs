@@ -27,7 +27,7 @@ namespace Xamarin.Android.Lite.Tasks
 		{
 			AndroidManifest manifest;
 			using (var stream = GetType ().Assembly.GetManifestResourceStream ("Xamarin.Android.Lite.Tasks.AndroidManifest.xml")) {
-				manifest = AndroidManifest.Create (stream);
+				manifest = AndroidManifest.Read (stream);
 			}
 
 			string versionCode = string.IsNullOrEmpty (VersionCode) ? "1" : VersionCode;
@@ -67,7 +67,7 @@ namespace Xamarin.Android.Lite.Tasks
 				category.Value = "mono.android.intent.category.SEPPUKU." + PackageName;
 
 			using (var stream = File.Create (DestinationFile)) {
-				manifest.Save (stream);
+				manifest.Write (stream);
 			}
 
 			return !Log.HasLoggedErrors;

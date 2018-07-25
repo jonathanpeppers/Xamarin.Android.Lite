@@ -55,7 +55,7 @@ namespace Xamarin.Android.Lite.Tests
 		[Test]
 		public void ReadManifest ()
 		{
-			var doc = AndroidManifest.Create (binaryManifest);
+			var doc = AndroidManifest.Read (binaryManifest);
 			var xmlFromBinary = doc.Document.ToString ();
 			var xmlFromText = LoadText ();
 
@@ -83,13 +83,13 @@ namespace Xamarin.Android.Lite.Tests
 		[Test]
 		public void WriteManifest ()
 		{
-			var expectedDoc = AndroidManifest.Create (binaryManifest);
+			var expectedDoc = AndroidManifest.Read (binaryManifest);
 			var expectedStrings = expectedDoc.Strings;
 			var expectedResources = expectedDoc.Resources;
 			var expectedFileVersion = expectedDoc.FileVersion;
 
 			var stream = new MemoryStream ();
-			expectedDoc.Save (stream);
+			expectedDoc.Write (stream);
 			Assert.AreEqual (binaryManifest.Length, stream.Length, "Stream lengths should match!");
 
 			//Compare the string tables
@@ -101,7 +101,7 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			stream.Seek (0, SeekOrigin.Begin);
-			var actualDoc = AndroidManifest.Create (stream);
+			var actualDoc = AndroidManifest.Read (stream);
 			actualStrings = actualDoc.Strings;
 			actualResources = actualDoc.Resources;
 			actualFileVersion = actualDoc.FileVersion;
