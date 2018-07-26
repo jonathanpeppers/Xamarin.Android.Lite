@@ -12,6 +12,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="md5dcb6eccdc824e0677ffae8ccdde42930.KeepAliveService" />
+        <receiver android:label="Essentials Battery Broadcast Receiver" android:name="md5d630c3d3bfb5f5558520331566132d97.BatteryBroadcastReceiver" android:enabled="true" android:exported="false" />
+        <receiver android:label="Essentials Connectivity Broadcast Receiver" android:name="md5d630c3d3bfb5f5558520331566132d97.ConnectivityBroadcastReceiver" android:enabled="true" android:exported="false" />
+        <receiver android:label="Essentials Power Broadcast Receiver" android:name="md5d630c3d3bfb5f5558520331566132d97.PowerBroadcastReceiver" android:enabled="true" android:exported="false" />
         <provider android:name="mono.MonoRuntimeProvider" android:exported="false" android:authorities="com.xamarin.android.lite.mono.MonoRuntimeProvider.__mono_init__" android:initOrder="2147483647" />
         <receiver android:name="mono.android.Seppuku">
             <intent-filter>

@@ -91,7 +91,6 @@ namespace Xamarin.Android.Lite.Tests
 
 			var stream = new MemoryStream ();
 			expectedDoc.Write (stream);
-			Assert.AreEqual (binaryManifest.Length, stream.Length, "Stream lengths should match!");
 
 			//Compare the string tables
 			var actualStrings = expectedDoc.Strings;
@@ -113,6 +112,8 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (expectedFileVersion, actualFileVersion, "FileVersion should match!");
 
 			Assert.AreEqual (expectedDoc.Document.ToString (), actualDoc.Document.ToString ());
+
+			Assert.AreEqual (binaryManifest.Length, stream.Length, "Stream lengths should match!");
 		}
 	}
 }
