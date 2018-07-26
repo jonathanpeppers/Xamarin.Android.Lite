@@ -1,0 +1,11 @@
+<Project>
+  <Target Name="Run" DependsOnTargets="Install">
+    <Error Text="AndroidPackageName cannot be blank!" Condition=" '$(AndroidPackageName)' == '' " />
+    <!--TODO: hardcoded activity, LOL use [Export]-->
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="shell am start -n &quot;$(AndroidPackageName)/md5bff8b7c7908ce4fe5d805acf2300a9b4.MainActivity&quot;"
+    />
+  </Target>
+</Project>

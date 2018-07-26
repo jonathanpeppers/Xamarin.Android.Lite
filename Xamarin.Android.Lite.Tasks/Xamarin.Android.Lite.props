@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <_TaskAssembly>$(MSBuildThisFileDirectory)Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
+    <!--NOTE: this allows us to replace the built-in Run target-->
+    <CustomAfterMicrosoftCommonTargets>$(MSBuildThisFileDirectory)After.targets</CustomAfterMicrosoftCommonTargets>
     <XamarinAndroidPath>$(MSBuildExtensionsPath)\Xamarin\Android\</XamarinAndroidPath>
     <XamarinAndroidPath Condition=" !Exists('$(XamarinAndroidPath)') ">/Library/Frameworks/Xamarin.Android.framework/Versions/Current/lib/xamarin.android/xbuild/Xamarin/Android/</XamarinAndroidPath>
     <XamarinAndroidPath Condition=" !Exists('$(XamarinAndroidPath)') "></XamarinAndroidPath>
