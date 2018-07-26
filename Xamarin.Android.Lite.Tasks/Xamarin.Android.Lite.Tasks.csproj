@@ -13,8 +13,7 @@
   <PropertyGroup>
     <NoBuild Condition=" '$(TargetFramework)' == 'netstandard2.0' ">true</NoBuild>
     <PackageId>Xamarin.Android.Lite</PackageId>
-    <PackageVersion>0.1.0.$(BuildNumber)</PackageVersion>
-    <PackageVersionSuffix>-beta</PackageVersionSuffix>
+    <PackageVersion>0.1.0.$(BuildNumber)-preview</PackageVersion>
     <Authors>Jonathan Peppers</Authors>
     <Title>Xamarin.Android.Lite</Title>
     <Description>A "Lite" version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android</Description>
