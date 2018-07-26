@@ -121,13 +121,6 @@
       <Output PropertyName="_PlatformRuntimeVersion" TaskParameter="PlatformRuntimeVersion" />
       <Output PropertyName="_PackageVersion" TaskParameter="PackageVersion" />
     </DetectPackages>
-    <GetExternalStorageDirectory
-      ToolPath="$(AdbToolPath)"
-      ToolExe="$(AdbToolExe)"
-      PackageName="$(AndroidPackageName)">
-      <Output ItemName="_FastDevDirectories" TaskParameter="Directories" />
-      <Output PropertyName="_ExternalStorageDirectory" TaskParameter="ExternalStorageDirectory" />
-    </GetExternalStorageDirectory>
   </Target>
   <Target Name="_GetAbi" Condition=" '$(_RuntimeVersion)' == '' Or '$(_PlatformRuntimeVersion)' == '' ">
     <GetAbi
@@ -163,6 +156,15 @@
   <Target Name="_CheckApk"  Condition=" '$(_PackageVersion)' == '' ">
     <Delete Files="$(AndroidApkFileSigned).upload.stamp" />
   </Target>
+  <Target Name="_FindDirectories">
+    <GetExternalStorageDirectory
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      PackageName="$(AndroidPackageName)">
+      <Output ItemName="_FastDevDirectories" TaskParameter="Directories" />
+      <Output PropertyName="_ExternalStorageDirectory" TaskParameter="ExternalStorageDirectory" />
+    </GetExternalStorageDirectory>
+  </Target>
   <Target Name="_InstallApk" Inputs="$(AndroidApkFileSigned)" Outputs="$(AndroidApkFileSigned).upload.stamp">
     <Adb
       ToolPath="$(AdbToolPath)"
@@ -191,6 +193,7 @@
       _InstallRuntime;
       _InstallPlatformRuntime;
       _CheckApk;
+      _FindDirectories;
       _InstallApk;
     </InstallDependsOn>
   </PropertyGroup>
