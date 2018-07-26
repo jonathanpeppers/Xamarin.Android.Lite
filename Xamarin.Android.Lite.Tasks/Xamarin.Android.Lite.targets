@@ -1,5 +1,5 @@
 ﻿<Project>
-  <Import Project="Xamarin.Android.Lite.props" />
+  <Import Project="Xamarin.Android.Lite.props" Condition=" '$(XamarinAndroidLiteImported)' != 'True' " />
   <Target Name="ResolveSdks">
     <Error Text="Xamarin.Android.Lite requires Xamarin.Android is installed!" Condition=" '$(XamarinAndroidPath)' == '' Or !Exists('$(XamarinAndroidPath)') " />
     <ResolveSdks

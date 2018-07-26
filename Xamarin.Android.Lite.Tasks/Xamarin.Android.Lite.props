@@ -6,6 +6,7 @@
     <XamarinAndroidPath>$(MSBuildExtensionsPath)\Xamarin\Android\</XamarinAndroidPath>
     <XamarinAndroidPath Condition=" !Exists('$(XamarinAndroidPath)') ">/Library/Frameworks/Xamarin.Android.framework/Versions/Current/lib/xamarin.android/xbuild/Xamarin/Android/</XamarinAndroidPath>
     <XamarinAndroidPath Condition=" !Exists('$(XamarinAndroidPath)') "></XamarinAndroidPath>
+    <XamarinAndroidLiteImported>True</XamarinAndroidLiteImported>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <AssembliesForApk>
