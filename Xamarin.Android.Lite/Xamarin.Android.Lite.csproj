@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="3.1.0.583944" />
+    <PackageReference Include="Xamarin.Essentials" Version="0.8.0-preview" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2.1" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2.1" />
@@ -102,11 +103,18 @@
       <DebugOutput>..\bin\Debug\</DebugOutput>
       <ReleaseOutput>..\bin\Release\</ReleaseOutput>
       <ApkName>com.xamarin.android.lite.apk</ApkName>
-      <ReleaseAssemblyPath>$(IntermediateOutputPath)android\assets\</ReleaseAssemblyPath>
+      <DebugAssemblyPath>$(BaseIntermediateOutputPath)Debug\android\assets\</DebugAssemblyPath>
+      <ReleaseAssemblyPath>$(BaseIntermediateOutputPath)Release\android\assets\</ReleaseAssemblyPath>
     </PropertyGroup>
     <ItemGroup>
+      <!--NOTE: we want these assemblies linked -->
       <AssembliesForApk Include="$(ReleaseAssemblyPath)FormsViewGroup.dll" />
-      <AssembliesForApk Include="$(ReleaseAssemblyPath)Xamarin*.dll" />
+      <AssembliesForApk Include="$(ReleaseAssemblyPath)Xamarin.Android.*.dll" />
+      <AssembliesForApk Include="$(ReleaseAssemblyPath)Xamarin.Forms.Platform*.dll" />
+      <!--NOTE: we want these assemblies unlinked -->
+      <AssembliesForApk Include="$(DebugAssemblyPath)Xamarin.Forms.Core.dll" />
+      <AssembliesForApk Include="$(DebugAssemblyPath)Xamarin.Forms.Xaml.dll" />
+      <AssembliesForApk Include="$(DebugAssemblyPath)Xamarin.Essentials.dll" />
     </ItemGroup>
     <Delete Files="$(DebugOutput)$(ApkName);$(DebugOutput)AndroidManifest.xml;$(ReleaseOutput)$(ApkName);$(ReleaseOutput)AndroidManifest.xml;" />
     <Copy SourceFiles="bin\Debug\$(ApkName)" DestinationFolder="$(DebugOutput)" />

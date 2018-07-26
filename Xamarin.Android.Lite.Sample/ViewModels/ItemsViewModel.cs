@@ -47,7 +47,7 @@ namespace Xamarin.Android.Lite.Sample.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Console.WriteLine(ex);
             }
             finally
             {

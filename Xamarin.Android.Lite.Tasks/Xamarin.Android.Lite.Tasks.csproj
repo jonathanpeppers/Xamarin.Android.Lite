@@ -34,6 +34,9 @@
     <PackageReference Include="Xamarin.Forms" Version="3.1.0.583944" Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
       <PrivateAssets>none</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Xamarin.Essentials" Version="0.8.0-preview" Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+      <PrivateAssets>none</PrivateAssets>
+    </PackageReference>
     <Reference Include="$(XamarinAndroidReferencePath)libZipSharp.dll" />
     <Reference Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll" />
   </ItemGroup>
