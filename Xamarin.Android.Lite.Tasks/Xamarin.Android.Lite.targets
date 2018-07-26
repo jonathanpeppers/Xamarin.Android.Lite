@@ -119,6 +119,13 @@
       <Output PropertyName="_PlatformRuntimeVersion" TaskParameter="PlatformRuntimeVersion" />
       <Output PropertyName="_PackageVersion" TaskParameter="PackageVersion" />
     </DetectPackages>
+    <GetExternalStorageDirectory
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      PackageName="$(AndroidPackageName)">
+      <Output ItemName="_FastDevDirectories" TaskParameter="Directories" />
+      <Output PropertyName="_ExternalStorageDirectory" TaskParameter="ExternalStorageDirectory" />
+    </GetExternalStorageDirectory>
   </Target>
   <Target Name="_GetAbi" Condition=" '$(_RuntimeVersion)' == '' Or '$(_PlatformRuntimeVersion)' == '' ">
     <GetAbi
@@ -160,6 +167,16 @@
       ToolExe="$(AdbToolExe)"
       Command="install -r &quot;$(AndroidApkFileSigned)&quot;"
     />
+    <CreateProperty Value="True">
+      <Output TaskParameter="ValueSetByTask" PropertyName="_ApkWasInstalled"/>
+    </CreateProperty>
+    <!--TODO: custom task here so we don't use ContinueOnError=True, it causes warnings-->
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="shell mkdir &quot;%(_FastDevDirectories.Identity)&quot;"
+      ContinueOnError="True"
+    />
     <Touch Files="$(AndroidApkFileSigned).upload.stamp" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFileSigned).upload.stamp" />
@@ -176,19 +193,11 @@
     </InstallDependsOn>
   </PropertyGroup>
   <Target Name="Install" DependsOnTargets="$(InstallDependsOn)">
-    <GetExternalStorageDirectory
+    <KillApp
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
-      PackageName="$(AndroidPackageName)">
-      <Output ItemName="_FastDevDirectories" TaskParameter="Directories" />
-      <Output PropertyName="_ExternalStorageDirectory" TaskParameter="ExternalStorageDirectory" />
-    </GetExternalStorageDirectory>
-    <!--TODO: custom task here so we don't use ContinueOnError=True, it causes warnings-->
-    <Adb
-      ToolPath="$(AdbToolPath)"
-      ToolExe="$(AdbToolExe)"
-      Command="shell mkdir &quot;%(_FastDevDirectories.Identity)&quot;"
-      ContinueOnError="True"
+      PackageName="$(AndroidPackageName)"
+      Condition=" '$(_ApkWasInstalled)' != 'True' "
     />
     <Adb
       ToolPath="$(AdbToolPath)"

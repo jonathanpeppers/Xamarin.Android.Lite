@@ -17,4 +17,5 @@
   <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.DetectPackages" />
   <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.GetAbi" />
   <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.GetExternalStorageDirectory" />
+  <UsingTask AssemblyFile="$(_TaskAssembly)" TaskName="Xamarin.Android.Lite.Tasks.KillApp" />
 </Project>
