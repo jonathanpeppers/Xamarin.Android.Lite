@@ -38,6 +38,9 @@
     <Content Include="$(XamarinAndroidReferencePath)libZipSharp.dll">
       <PackagePath>build\</PackagePath>
     </Content>
+    <Content Include="$(XamarinAndroidReferencePath)libZipSharp.dll.config">
+      <PackagePath>build\</PackagePath>
+    </Content>
     <Content Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll">
       <PackagePath>build\</PackagePath>
     </Content>
