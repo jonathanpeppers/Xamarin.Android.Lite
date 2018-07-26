@@ -1,6 +1,9 @@
 <Project>
   <PropertyGroup>
     <_TaskAssembly>$(MSBuildThisFileDirectory)Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
+    <XamarinAndroidPath>$(MSBuildExtensionsPath)\Xamarin\Android\</XamarinAndroidPath>
+    <XamarinAndroidPath Condition=" !Exists('$(XamarinAndroidPath)') ">/Library/Frameworks/Xamarin.Android.framework/Versions/Current/lib/xamarin.android/xbuild/Xamarin/Android/</XamarinAndroidPath>
+    <XamarinAndroidPath Condition=" !Exists('$(XamarinAndroidPath)') "></XamarinAndroidPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <AssembliesForApk>
