@@ -1,6 +1,7 @@
 ﻿<Project>
   <Import Project="Xamarin.Android.Lite.props" Condition=" '$(_XamarinAndroidLiteImported)' != 'True' " />
   <Target Name="ResolveSdks">
+    <Error Text="Xamarin.Android.Lite requires Xamarin.Android is installed!" Condition=" !Exists('$(MSBuildExtensionsPath)\Xamarin\Android') " />
     <ResolveSdks
       AndroidSdkPath="$(AndroidSdkDirectory)"
       AndroidNdkPath="$(AndroidNdkDirectory)"
@@ -139,11 +140,23 @@
       Command="install -r &quot;$(_SharedRuntime)&quot;"
     />
   </Target>
+  <Target Name="_InstallPlatformRuntime" DependsOnTargets="_GetAbi" Condition=" '$(_PlatformRuntimeVersion)' == '' ">
+    <PropertyGroup>
+      <_PlatformRuntime>$(MSBuildThisFileDirectory)\Mono.Android.Platform.ApiLevel_$(AndroidApiLevel).apk</_PlatformRuntime>
+    </PropertyGroup>
+    <Error Text="Cannot install API $(AndroidApiLevel) runtime, $(_PlatformRuntime) not found." Condition=" !Exists('$(_PlatformRuntime)') " />
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="install -r &quot;$(_PlatformRuntime)&quot;"
+    />
+  </Target>
   <PropertyGroup>
     <InstallDependsOn>
       SignAndroidPackage;
       _DetectRuntime;
       _InstallRuntime;
+      _InstallPlatformRuntime;
     </InstallDependsOn>
   </PropertyGroup>
   <Target Name="Install" DependsOnTargets="$(InstallDependsOn)">

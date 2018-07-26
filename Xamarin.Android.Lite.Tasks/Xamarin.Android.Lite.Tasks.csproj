@@ -67,6 +67,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
     </Content>
+    <Content Include="..\apks\*.apk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\</PackagePath>
+    </Content>
     <Content Include="Xamarin.Android.Lite.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
