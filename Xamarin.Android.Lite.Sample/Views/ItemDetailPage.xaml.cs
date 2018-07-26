@@ -8,7 +8,6 @@ using Xamarin.Android.Lite.Sample.ViewModels;
 
 namespace Xamarin.Android.Lite.Sample.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ItemDetailPage : ContentPage
 	{
         ItemDetailViewModel viewModel;
