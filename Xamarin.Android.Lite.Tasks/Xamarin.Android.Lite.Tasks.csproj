@@ -38,9 +38,6 @@
     <Reference Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Sdk\*">
-      <PackagePath>Sdk\</PackagePath>
-    </Content>
     <Content Include="$(OutputPath)Xamarin.Android.Lite.Tasks.dll">
       <PackagePath>build\</PackagePath>
     </Content>

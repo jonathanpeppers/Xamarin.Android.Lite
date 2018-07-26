@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <_XamarinAndroidLiteImported>True</_XamarinAndroidLiteImported>
     <_TaskAssembly>$(MSBuildThisFileDirectory)Xamarin.Android.Lite.Tasks.dll</_TaskAssembly>
   </PropertyGroup>
   <ItemDefinitionGroup>
