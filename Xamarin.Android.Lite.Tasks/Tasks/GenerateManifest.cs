@@ -44,11 +44,12 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 
 			var ns = AndroidManifest.AndroidNamespace.Namespace;
+			var name = ns + "name";
 			manifest.Mutate (manifestElement, "package", PackageName);
 			manifest.Mutate (manifestElement, ns + "versionCode", versionCode);
 			manifest.Mutate (manifestElement, ns + "versionName", versionName);
 
-			var metadata = application.Elements ("meta-data").Where (e => e.Attribute (ns + "name")?.Value == ApplicationMetadata).FirstOrDefault ();
+			var metadata = application.Elements ("meta-data").Where (e => e.Attribute (name)?.Value == ApplicationMetadata).FirstOrDefault ();
 			if (metadata == null) {
 				Log.LogError ("No `meta-data` element found!");
 				return false;
@@ -60,9 +61,13 @@ namespace Xamarin.Android.Lite.Tasks
 			if (provider != null)
 				manifest.Mutate (provider, ns + "authorities", PackageName + ".mono.MonoRuntimeProvider.__mono_init_");
 
-			var category = application.Element ("receiver")?.Element ("intent-filter")?.Element ("category");
+			var category = application.Elements ("receiver")
+				.Where (e => e.Attribute (name)?.Value == "mono.android.Seppuku")
+				.FirstOrDefault ()?
+				.Element ("intent-filter")?
+				.Element ("category");
 			if (category != null)
-				manifest.Mutate (category, ns + "name", "mono.android.intent.category.SEPPUKU." + PackageName);
+				manifest.Mutate (category, name, "mono.android.intent.category.SEPPUKU." + PackageName);
 
 			using (var stream = File.Create (DestinationFile)) {
 				manifest.Write (stream);
