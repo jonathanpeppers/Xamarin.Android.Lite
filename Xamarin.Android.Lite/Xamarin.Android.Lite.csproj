@@ -108,7 +108,7 @@
       <AssembliesForApk Include="$(ReleaseAssemblyPath)FormsViewGroup.dll" />
       <AssembliesForApk Include="$(ReleaseAssemblyPath)Xamarin*.dll" />
     </ItemGroup>
-    <Delete Files="$(ApkPath)" />
+    <Delete Files="$(DebugOutput)$(ApkName);$(DebugOutput)AndroidManifest.xml;$(ReleaseOutput)$(ApkName);$(ReleaseOutput)AndroidManifest.xml;" />
     <Copy SourceFiles="bin\Debug\$(ApkName)" DestinationFolder="$(DebugOutput)" />
     <AppendToApk Files="@(AssembliesForApk)" Apk="$(DebugOutput)$(ApkName)" />
     <ExtractFromApk SourceFiles="AndroidManifest.xml" DestinationFiles="$(DebugOutput)AndroidManifest.xml" Apk="$(DebugOutput)$(ApkName)" />

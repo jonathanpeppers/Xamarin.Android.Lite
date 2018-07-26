@@ -20,12 +20,11 @@ namespace Xamarin.Android.Lite.Tasks
 		public string PackageVersion { get; set; }
 
 		const string IntentAction = "mono.android.intent.action.PACKAGE_VERSIONS";
-		const string DebugRuntime = "Mono.Android.DebugRuntime";
-		const string PlatformRuntime = "Mono.Android.Platform.ApiLevel";
+		const string Data = "com.xamarin.mono.android.PackageVersions";
 
 		protected override string GenerateBroadcastCommand ()
 		{
-			return $"-a {IntentAction} -e packages \"{DebugRuntime},{PlatformRuntime}_{ApiLevel},{PackageName}\" -n \"{DebugRuntime}/com.xamarin.mono.android.PackageVersions\"";
+			return $"-a {IntentAction} -e packages \"{Utils.DebugRuntime},{Utils.PlatformRuntime}_{ApiLevel},{PackageName}\" -n \"{Utils.DebugRuntime}/{Data}\"";
 		}
 
 		protected override void OnData (string data)
@@ -37,9 +36,9 @@ namespace Xamarin.Android.Lite.Tasks
 				if (split.Length == 2) {
 					var key = split [0];
 					var value = split [1];
-					if (key == DebugRuntime) {
+					if (key == Utils.DebugRuntime) {
 						RuntimeVersion = value;
-					} else if (key == PlatformRuntime + "_" + ApiLevel) {
+					} else if (key == Utils.PlatformRuntime + "_" + ApiLevel) {
 						PlatformRuntimeVersion = value;
 					} else if (key == PackageName) {
 						PackageVersion = value;

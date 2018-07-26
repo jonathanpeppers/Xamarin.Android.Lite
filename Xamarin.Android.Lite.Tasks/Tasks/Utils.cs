@@ -9,6 +9,9 @@ namespace Xamarin.Android.Lite.Tasks
 {
 	static class Utils
 	{
+		public const string DebugRuntime = "Mono.Android.DebugRuntime";
+		public const string PlatformRuntime = "Mono.Android.Platform.ApiLevel";
+
 		/// <summary>
 		/// NOTE: always use / on Android
 		/// </summary>

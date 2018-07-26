@@ -3,6 +3,8 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Xamarin.Android.Lite
 {
@@ -26,6 +28,13 @@ namespace Xamarin.Android.Lite
 			if (metadata != null) {
 				var applicationType = metadata.GetString (ApplicationMetadata);
 				if (!string.IsNullOrEmpty (applicationType)) {
+					var assemblyName = applicationType.Split (',').Last ();
+					var assembly = Assembly.Load (assemblyName);
+					if (assembly == null) {
+						Log.Error (Tag, "Unable to load assembly `{0}`!", assemblyName);
+						return;
+					}
+
 					var type = Type.GetType (applicationType);
 					if (type != null) {
 						try {

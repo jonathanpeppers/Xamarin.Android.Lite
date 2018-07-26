@@ -43,7 +43,7 @@
       WriteOnlyWhenDifferent="True"
     />
     <ItemGroup>
-      <AssembliesForApk Include="$(OutputPath)*.dll" />
+      <AssembliesToDeploy Include="$(OutputPath)*.dll" />
       <FileWrites Include="$(IntermediateProps)" />
     </ItemGroup>
   </Target>
@@ -66,8 +66,8 @@
       <FileWrites Include="$(AndroidApkFile)" />
     </ItemGroup>
   </Target>
-  <Target Name="_AppendToApk" Inputs="@(AssembliesForApk);$(AndroidManifest);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
-    <AppendToApk Files="@(AssembliesForApk);$(AndroidManifest)" Apk="$(AndroidApkFile)" />
+  <Target Name="_AppendToApk" Inputs="$(AndroidManifest);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
+    <AppendToApk Files="$(AndroidManifest)" Apk="$(AndroidApkFile)" />
     <Touch Files="$(AndroidApkFile).stamp" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFile).stamp" />
@@ -151,19 +151,49 @@
       Command="install -r &quot;$(_PlatformRuntime)&quot;"
     />
   </Target>
+  <Target Name="_CheckApk"  Condition=" '$(_PackageVersion)' == '' ">
+    <Delete Files="$(AndroidApkFileSigned).upload.stamp" />
+  </Target>
+  <Target Name="_InstallApk" Inputs="$(AndroidApkFileSigned)" Outputs="$(AndroidApkFileSigned).upload.stamp">
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="install -r &quot;$(AndroidApkFileSigned)&quot;"
+    />
+    <Touch Files="$(AndroidApkFileSigned).upload.stamp" AlwaysCreate="True" />
+    <ItemGroup>
+      <FileWrites Include="$(AndroidApkFileSigned).upload.stamp" />
+    </ItemGroup>
+  </Target>
   <PropertyGroup>
     <InstallDependsOn>
       SignAndroidPackage;
       _DetectRuntime;
       _InstallRuntime;
       _InstallPlatformRuntime;
+      _CheckApk;
+      _InstallApk;
     </InstallDependsOn>
   </PropertyGroup>
   <Target Name="Install" DependsOnTargets="$(InstallDependsOn)">
+    <GetExternalStorageDirectory
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      PackageName="$(AndroidPackageName)">
+      <Output ItemName="_FastDevDirectories" TaskParameter="Directories" />
+      <Output PropertyName="_ExternalStorageDirectory" TaskParameter="ExternalStorageDirectory" />
+    </GetExternalStorageDirectory>
+    <!--TODO: custom task here so we don't use ContinueOnError=True, it causes warnings-->
     <Adb
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
-      Command="install -r &quot;$(AndroidApkFileSigned)&quot;"
+      Command="shell mkdir &quot;%(_FastDevDirectories.Identity)&quot;"
+      ContinueOnError="True"
+    />
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="push &quot;%(AssembliesToDeploy.Identity)&quot; &quot;$(_ExternalStorageDirectory)&quot;"
     />
   </Target>
 </Project>
