@@ -331,3 +331,4 @@ ASALocalRun/
 
 # Project Specific
 Resource.designer.cs
+.nugetapikey

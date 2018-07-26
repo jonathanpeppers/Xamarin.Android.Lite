@@ -26,4 +26,12 @@
     <Exec Command="git clean -dxf @(DirToClean->'%(Identity)', ' ')" />
     <RemoveDir Directories="@(DirToDelete)" />
   </Target>
+  <Target Name="Publish">
+    <Error Text="Please supply `/p:NuGetPackage` !" Condition=" '$(NuGetPackage)' == '' " />
+    <Error Text=".nugetapikey does not exist!" Condition=" !Exists('.nugetapikey') " />
+    <ReadLinesFromFile File=".nugetapikey">
+      <Output PropertyName="_ApiKey" TaskParameter="Lines" />
+    </ReadLinesFromFile>
+    <Exec Command=".nuget\NuGet.exe push &quot;$(NuGetPackage)&quot; $(_ApiKey) -Source https://api.nuget.org/v3/index.json" />
+  </Target>
 </Project>
