@@ -1,5 +1,7 @@
 ﻿<Project>
   <Import Project="Xamarin.Android.Lite.props" />
+  <!--NOTE: importing here allows us to replace the Run target-->
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Target Name="ResolveSdks">
     <Error Text="Xamarin.Android.Lite requires Xamarin.Android is installed!" Condition=" !Exists('$(MSBuildExtensionsPath)\Xamarin\Android') " />
     <ResolveSdks
@@ -203,6 +205,14 @@
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
       Command="push &quot;%(AssembliesToDeploy.Identity)&quot; &quot;$(_ExternalStorageDirectory)&quot;"
+    />
+  </Target>
+  <Target Name="Run" DependsOnTargets="Install">
+    <!--TODO: hardcoded activity, LOL use [Export]-->
+    <Adb
+      ToolPath="$(AdbToolPath)"
+      ToolExe="$(AdbToolExe)"
+      Command="shell am start -n &quot;$(AndroidPackageName)/md5bff8b7c7908ce4fe5d805acf2300a9b4.MainActivity&quot;"
     />
   </Target>
 </Project>
