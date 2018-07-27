@@ -9,6 +9,10 @@ If you would like it to be "a real thing", show your support! Star
 this Github repo, like the YouTube video, post on social media,
 comment, etc.! Every bit helps!_
 
+Download Xamarin.Android.Lite on [NuGet](https://www.nuget.org/packages/Xamarin.Android.Lite)
+
+[![NuGet](https://img.shields.io/nuget/dt/Xamarin.Android.Lite.svg)](https://www.nuget.org/packages/Xamarin.Android.Lite)
+
 ![Xamarin.Android.Lite](docs/Xamarin.Android.Lite.gif)
 
 # Demo Video
