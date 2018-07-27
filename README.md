@@ -14,8 +14,11 @@ comment, etc.! Every bit helps!_
 # How do I use it?
 
 The easiest way to create a new project, is to use the Xamarin.Forms
-project template in Visual Studio. Just check one platform, and delete
-the platform-specific project.
+project template in Visual Studio. Just check one platform, use
+`NetStandard`, and delete the platform-specific project.
+
+_NOTE: shared projects won't work (or make sense),
+Xamarin.Android.Lite is for NetStandard only_
 
 Edit your project file to look something like:
 ```xml
@@ -30,8 +33,9 @@ Edit your project file to look something like:
 </Project>
 ```
 
-Remove the existing `<PackageReference />` to Xamarin.Forms, as
-Xamarin.Android.Lite is pinned to a specific version of Xamarin.Forms.
+Remove the existing `<PackageReference />` to Xamarin.Forms from the
+Xamarin.Forms project template, as Xamarin.Android.Lite is pinned to a
+specific version of Xamarin.Forms.
 
 To run the app:
 - Launch the emulator, or connect an Android device via USB
@@ -52,6 +56,28 @@ This command gets you going!
 
 Visit the [MSBuild documentation](docs/MSBuild.md) for further details
 about MSBuild (project) properties.
+
+# How do the build times compare?
+
+Comparing the `Install` target deploying to an emulator and device
+(Pixel 2). I deleted `bin`/`obj` and ran `msbuild /t:Restore` before
+timing each test. On the `Second Install`, I modified a XAML file and
+ran `/t:Install` again.
+
+Xamarin.Android.Lite
+- Emulator / First Install - `Time Elapsed 00:00:06.54`
+- Emulator / Second Install - `Time Elapsed 00:00:03.01`
+- Device / First Install - `Time Elapsed 00:00:05.60`
+- Device / Second Install - `Time Elapsed 00:00:02.71`
+
+Xamarin.Android "proper"
+- Emulator / First Install - `Time Elapsed 00:00:49.46`
+- Emulator / Second Install - `Time Elapsed 00:00:06.22`
+- Device / First Install - `Time Elapsed 00:00:46.87`
+- Device / Second Install - `Time Elapsed 00:00:05.95`
+
+_NOTE: I compared this times on Windows with Visual Studio 15.7.5,
+using the default Xamarin.Forms Master Detail project template._
 
 # What's in the box?
 
