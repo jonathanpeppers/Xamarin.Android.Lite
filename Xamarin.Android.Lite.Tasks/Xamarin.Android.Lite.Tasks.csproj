@@ -16,11 +16,14 @@
     <PackageVersion>0.1.0.$(BuildNumber)-preview</PackageVersion>
     <Authors>Jonathan Peppers</Authors>
     <Title>Xamarin.Android.Lite</Title>
-    <Description>A "Lite" version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android</Description>
+    <Description>A "Lite" version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android.
+
+DISCLAIMER: I created this project during Microsoft's #HackWeek 2018. It is not "a real thing" or endorsed/supported by Xamarin/Microsoft. If you would like it to be "a real thing", show your support! Star this Github repo, like the YouTube video, post on social media, comment, etc.! Every bit helps!
+    </Description>
     <Copyright>$([System.DateTime]::Now.Year) Jonathan Peppers</Copyright>
     <PackageLicenseUrl>https://raw.githubusercontent.com/jonathanpeppers/Xamarin.Android.Lite/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/jonathanpeppers/Xamarin.Android.Lite/</PackageProjectUrl>
-    <PackageTags>Xamarin Android Xamarin.Android Xamarin.Forms</PackageTags>
+    <PackageTags>Xamarin Android Xamarin.Android Xamarin.Forms Xamarin.Essentials</PackageTags>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
   <ItemGroup>
