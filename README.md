@@ -11,6 +11,10 @@ comment, etc.! Every bit helps!_
 
 ![Xamarin.Android.Lite](docs/Xamarin.Android.Lite.gif)
 
+# Demo Video
+
+[![Xamarin.Android.Lite](https://img.youtube.com/vi/x8v88Ukukj8/0.jpg)](https://youtu.be/x8v88Ukukj8)
+
 # How do I use it?
 
 The easiest way to create a new project, is to use the Xamarin.Forms
@@ -78,6 +82,18 @@ Xamarin.Android "proper"
 
 _NOTE: I compared this times on Windows with Visual Studio 15.7.5,
 using the default Xamarin.Forms Master Detail project template._
+
+# What are the limitations?
+
+Mark Seeman on an episode of [.NET Rocks](https://www.dotnetrocks.com/?show=1542)
+talked about: "constraints liberate". I don't know if he originated
+the idea, but that is definitely what is happening here.
+
+- `NetStandard` 2.0 projects only, Xamarin.Forms only
+- `Mono.Android.dll` or native APIs? Nope.
+- Android resources/assets? Nope. Use `EmbeddedResource`.
+- Debugging? Sadly, not yet.
+- Release builds? Not yet.
 
 # What's in the box?
 
