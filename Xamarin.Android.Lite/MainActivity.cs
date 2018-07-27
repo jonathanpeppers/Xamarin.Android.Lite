@@ -22,7 +22,7 @@ namespace Xamarin.Android.Lite
 
 			base.OnCreate (bundle);
 			Essentials.Platform.Init(this, bundle);
-            Forms.Forms.Init (this, bundle);
+			Forms.Forms.Init (this, bundle);
 
 			var applicationInfo = PackageManager.GetApplicationInfo (PackageName, PackageInfoFlags.MetaData);
 			var metadata = applicationInfo?.MetaData;
