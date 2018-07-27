@@ -19,6 +19,15 @@ Download Xamarin.Android.Lite on [NuGet](https://www.nuget.org/packages/Xamarin.
 
 [![Xamarin.Android.Lite](https://img.youtube.com/vi/x8v88Ukukj8/0.jpg)](https://youtu.be/x8v88Ukukj8)
 
+_NOTE: in the video, I have `MSBuild.exe` in my `PATH` example on how
+to do this [here](https://stackoverflow.com/a/12608705/132442)._
+
+The path to my MSBuild is:
+
+`C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin`
+
+Mac users can just run `msbuild` and it works...
+
 # How do I use it?
 
 The easiest way to create a new project, is to use the Xamarin.Forms
