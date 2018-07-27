@@ -2,7 +2,7 @@
 
 # All files
 [*]
-indent_style = space
+indent_style = tab
 
 # Xml files
 [*.cs]

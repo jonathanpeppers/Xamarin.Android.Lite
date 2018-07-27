@@ -21,7 +21,7 @@ namespace Xamarin.Android.Lite
 			ToolbarResource = Resource.Layout.Toolbar;
 
 			base.OnCreate (bundle);
-            Essentials.Platform.Init(this, bundle);
+			Essentials.Platform.Init(this, bundle);
             Forms.Forms.Init (this, bundle);
 
 			var applicationInfo = PackageManager.GetApplicationInfo (PackageName, PackageInfoFlags.MetaData);
@@ -54,10 +54,10 @@ namespace Xamarin.Android.Lite
 			}
 		}
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] global::Android.Content.PM.Permission[] grantResults) {
-            Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+		public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] global::Android.Content.PM.Permission[] grantResults) {
+			Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+			base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+		}
     }
 }
 
