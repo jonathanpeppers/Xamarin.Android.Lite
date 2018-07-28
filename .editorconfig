@@ -1,0 +1,11 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+
+[*]
+indent_style = tab
+[*.{xml,xaml,targets,proj,csproj,props}]
+indent_style = space
+
+[*.{xml,xaml}]
+indent_size = 4
+[*.{targets,proj,csproj,props}]
+indent_size = 2

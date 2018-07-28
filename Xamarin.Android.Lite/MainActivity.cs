@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Android.Util;
 using System;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Xamarin.Android.Lite
 			ToolbarResource = Resource.Layout.Toolbar;
 
 			base.OnCreate (bundle);
-
+			Essentials.Platform.Init(this, bundle);
 			Forms.Forms.Init (this, bundle);
 
 			var applicationInfo = PackageManager.GetApplicationInfo (PackageName, PackageInfoFlags.MetaData);
@@ -52,6 +53,11 @@ namespace Xamarin.Android.Lite
 				Log.Error (Tag, "Unable to find *any* meta-data in AndroidManifest.xml!");
 			}
 		}
-	}
+
+		public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission [] grantResults) {
+			Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+			base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+		}
+    }
 }
 
