@@ -1,5 +1,7 @@
-﻿using Xamarin.Forms;
+﻿using System;
 using Xamarin.Android.Lite.Sample.Views;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 #if DEBUG
@@ -15,6 +17,10 @@ namespace Xamarin.Android.Lite.Sample
 		public App ()
 		{
 			InitializeComponent();
+
+			Connectivity.ConnectivityChanged += e => {
+				Console.WriteLine ("ConnectivityChanged, NetworkAccess: {0}", e.NetworkAccess);
+			};
 
 			MainPage = new MainPage();
 		}
