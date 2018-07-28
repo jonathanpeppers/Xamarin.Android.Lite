@@ -1,9 +1,11 @@
 # To learn more about .editorconfig see https://aka.ms/editorconfigdocs
 
-# All files
 [*]
 indent_style = tab
+[*.{xml,xaml,targets,proj,csproj,props}]
+indent_style = space
 
-# Xml files
-[*.cs]
+[*.{xml,xaml}]
 indent_size = 4
+[*.{targets,proj,csproj,props}]
+indent_size = 2
