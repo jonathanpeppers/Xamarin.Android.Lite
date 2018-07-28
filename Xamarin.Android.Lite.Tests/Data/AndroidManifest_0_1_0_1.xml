@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.xamarin.android.lite" >
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="27" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <application android:label="Xamarin.Android.Lite" android:icon="@mipmap/icon" android:name="android.app.Application" android:debuggable="true" android:allowBackup="true">
+        <meta-data android:name="Xamarin.Android.Lite.Application" android:value="Xamarin.Android.Lite.Sample.App, Xamarin.Android.Lite.Sample" />
+        <activity android:theme="@style/MainTheme" android:label="Xamarin.Android.Lite" android:icon="@mipmap/icon" android:name="md5bff8b7c7908ce4fe5d805acf2300a9b4.MainActivity" android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <provider android:name="mono.MonoRuntimeProvider" android:exported="false" android:authorities="com.xamarin.android.lite.mono.MonoRuntimeProvider.__mono_init__" android:initOrder="2147483647" />
+        <receiver android:name="mono.android.Seppuku">
+            <intent-filter>
+                <action android:name="mono.android.intent.action.SEPPUKU" />
+                <category android:name="mono.android.intent.category.SEPPUKU.com.xamarin.android.lite" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

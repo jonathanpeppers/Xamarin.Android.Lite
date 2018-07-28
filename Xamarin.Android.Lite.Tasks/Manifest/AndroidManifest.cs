@@ -282,9 +282,11 @@ namespace Xamarin.Android.Lite.Tasks
 						stringsMemory.Write (length, 0, length.Length);
 						stringsMemory.Write (utf8, 0, utf8.Length);
 					}
-					//TODO: I had to remove this when I added Xamarin.Essentials
-					//      I need to figure out what is going on here, I suspect it's padding bytes to be divisible by 4 or something
-					//stringsMemory.Write (new byte [2], 0, 2);
+					//NOTE: binary AndroidManifest.xml is always a multiple of 4 bytes
+					int spareBytes = (int)(stringsMemory.Length % 4);
+					if (spareBytes != 0) {
+						stringsMemory.Write (new byte [spareBytes], 0, spareBytes);
+					}
 					stringData = stringsMemory.ToArray ();
 				}
 

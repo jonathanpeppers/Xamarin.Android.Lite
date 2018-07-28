@@ -12,19 +12,11 @@ namespace Xamarin.Android.Lite.Tests
 	{
 		Stream binaryManifest, textManifest;
 
-		[SetUp]
-		public void SetUp ()
-		{
-			var path = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "Data");
-			textManifest = File.OpenRead (Path.Combine (path, "AndroidManifest.xml"));
-			binaryManifest = File.OpenRead (Path.Combine (path, "AndroidManifest.xml.bin"));
-		}
-
 		[TearDown]
 		public void TearDown ()
 		{
-			textManifest.Dispose ();
-			binaryManifest.Dispose ();
+			textManifest?.Dispose ();
+			binaryManifest?.Dispose ();
 		}
 
 		/// <summary>
@@ -52,19 +44,6 @@ namespace Xamarin.Android.Lite.Tests
 			return xml.ToString ();
 		}
 
-		[Test]
-		public void ReadManifest ()
-		{
-			var doc = AndroidManifest.Read (binaryManifest);
-			var xmlFromBinary = doc.Document.ToString ();
-			var xmlFromText = LoadText ();
-
-			Assert.IsTrue (doc.Strings?.Count > 0, "Strings should be non-empty!");
-			Assert.IsTrue (doc.Resources?.Count > 0, "Resources should be non-empty!");
-			Assert.IsFalse (string.IsNullOrEmpty (doc.PlatformBuildVersionName), "FileVersion should be non-empty!");
-			Assert.AreEqual (xmlFromText, xmlFromBinary);
-		}
-
 		/// <summary>
 		/// NOTE: strings are not ordered the same
 		/// </summary>
@@ -80,11 +59,29 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (expected.Count, actual.Count, "Strings lengths should match!");
 		}
 
-		[Test]
-		public void WriteManifest ()
+		void Setup (string name)
+		{
+			var path = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "Data");
+			textManifest = File.OpenRead (Path.Combine (path, $"AndroidManifest_{name}.xml"));
+			binaryManifest = File.OpenRead (Path.Combine (path, $"AndroidManifest_{name}.xml.bin"));
+		}
+
+		void Read ()
+		{
+			var doc = AndroidManifest.Read (binaryManifest);
+			var xmlFromBinary = doc.Document.ToString ();
+			var xmlFromText = LoadText ();
+
+			Assert.IsTrue (doc.Strings?.Count > 0, "Strings should be non-empty!");
+			Assert.IsTrue (doc.Resources?.Count > 0, "Resources should be non-empty!");
+			Assert.IsFalse (string.IsNullOrEmpty (doc.PlatformBuildVersionName), "FileVersion should be non-empty!");
+			Assert.AreEqual (xmlFromText, xmlFromBinary);
+		}
+
+		void Write ()
 		{
 			var expectedChunks = new StringBuilder ();
-			var expectedDoc = AndroidManifest.Read (binaryManifest, (t, c, p) => expectedChunks.AppendLine($"{t}, chunkSize: {c}, position: {p}"));
+			var expectedDoc = AndroidManifest.Read (binaryManifest, (t, c, p) => expectedChunks.AppendLine ($"{t}, chunkSize: {c}, position: {p}"));
 			var expectedStrings = expectedDoc.Strings;
 			var expectedResources = expectedDoc.Resources;
 			var expectedFileVersion = expectedDoc.PlatformBuildVersionName;
@@ -114,6 +111,50 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (expectedDoc.Document.ToString (), actualDoc.Document.ToString ());
 
 			Assert.AreEqual (binaryManifest.Length, stream.Length, "Stream lengths should match!");
+		}
+
+		[Test]
+		public void Read_0_1_0_1 ()
+		{
+			Setup ("0_1_0_1");
+			Read ();
+		}
+
+		[Test]
+		public void Write__0_1_0_1()
+		{
+			Setup ("0_1_0_1");
+			Write ();
+		}
+
+		[Test]
+		public void Read_0_1_0_38 ()
+		{
+			Setup ("0_1_0_38");
+			Read ();
+		}
+
+		[Test]
+		public void Write__0_1_0_38 ()
+		{
+			Setup ("0_1_0_38");
+			Write ();
+		}
+
+		//vNext
+		[Test]
+		public void Read_0_1_0_X ()
+		{
+			Setup ("0_1_0_X");
+			Read ();
+		}
+
+		//vNext
+		[Test]
+		public void Write__0_1_0_X ()
+		{
+			Setup ("0_1_0_X");
+			Write ();
 		}
 	}
 }

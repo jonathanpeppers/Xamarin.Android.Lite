@@ -43,6 +43,16 @@ namespace Xamarin.Android.Lite.Tests
   <uses-permission android:name=""android.permission.INTERNET"" />
   <uses-permission android:name=""android.permission.READ_EXTERNAL_STORAGE"" />
   <uses-permission android:name=""android.permission.WRITE_EXTERNAL_STORAGE"" />
+  <uses-permission android:name=""android.permission.ACCESS_NETWORK_STATE"" />
+  <uses-permission android:name=""android.permission.BATTERY_STATS"" />
+  <uses-permission android:name=""android.permission.CAMERA"" />
+  <uses-permission android:name=""android.permission.FLASHLIGHT"" />
+  <uses-permission android:name=""android.permission.ACCESS_COARSE_LOCATION"" />
+  <uses-permission android:name=""android.permission.ACCESS_FINE_LOCATION"" />
+  <uses-permission android:name=""android.permission.VIBRATE"" />
+  <uses-feature android:name=""android.hardware.location"" android:required=""false"" />
+  <uses-feature android:name=""android.hardware.location.gps"" android:required=""false"" />
+  <uses-feature android:name=""android.hardware.location.network"" android:required=""false"" />
   <application android:label=""Xamarin.Android.Lite"" android:icon=""2130903040"" android:name=""android.app.Application"" android:debuggable=""true"" android:allowBackup=""true"">
     <meta-data android:name=""Xamarin.Android.Lite.Application"" android:value=""My.Namespace.App, MyAssembly"" />
     <activity android:theme=""2131493263"" android:label=""Xamarin.Android.Lite"" android:icon=""2130903040"" android:name=""md5bff8b7c7908ce4fe5d805acf2300a9b4.MainActivity"" android:configChanges=""1152"">
