@@ -6,14 +6,13 @@
     <BaseOutputPath>..\bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\build\</OutputPath>
     <XamarinAndroidReferencePath>$(BaseOutputPath)xamarin-android\lib\xamarin.android\xbuild\Xamarin\Android\</XamarinAndroidReferencePath>
-    <BuildNumber Condition=" '$(BuildNumber)' == '' And '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</BuildNumber>
-    <BuildNumber Condition=" '$(BuildNumber)' == '' ">1</BuildNumber>
   </PropertyGroup>
+  <Import Project="..\Configuration.props" />
   <!--NuGet settings-->
   <PropertyGroup>
     <NoBuild Condition=" '$(TargetFramework)' == 'netstandard2.0' ">true</NoBuild>
     <PackageId>Xamarin.Android.Lite</PackageId>
-    <PackageVersion>0.1.0.$(BuildNumber)-preview</PackageVersion>
+    <PackageVersion>$(XamarinAndroidLiteFullVersion)</PackageVersion>
     <Authors>Jonathan Peppers</Authors>
     <Title>Xamarin.Android.Lite</Title>
     <Description>A "Lite" version of Xamarin.Android: MSBuild targets to configure a NetStandard library as a Xamarin.Forms app for Android.
@@ -29,8 +28,8 @@ DISCLAIMER: I created this project during Microsoft's #HackWeek 2018. It is not 
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework"      Version="15.7.179" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179" PrivateAssets="all" />
-    <PackageReference Include="Xamarin.Forms"                  Version="[3.1.0.583944]"  PrivateAssets="none" Condition=" '$(TargetFramework)' == 'netstandard2.0' " />
-    <PackageReference Include="Xamarin.Essentials"             Version="[0.8.0-preview]" PrivateAssets="none" Condition=" '$(TargetFramework)' == 'netstandard2.0' " />
+    <PackageReference Include="Xamarin.Forms"                  Version="$(XamarinFormsVersion)"      PrivateAssets="none" Condition=" '$(TargetFramework)' == 'netstandard2.0' " />
+    <PackageReference Include="Xamarin.Essentials"             Version="$(XamarinEssentialsVersion)" PrivateAssets="none" Condition=" '$(TargetFramework)' == 'netstandard2.0' " />
     <Reference Include="$(XamarinAndroidReferencePath)libZipSharp.dll" />
     <Reference Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll" />
   </ItemGroup>

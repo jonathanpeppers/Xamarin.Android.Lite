@@ -1,0 +1,16 @@
+<Project>
+  <!--NOTE: putting repo-wide MSBuild properties here-->
+  <PropertyGroup>
+    <XamarinAndroidLiteVersion>0.1.0</XamarinAndroidLiteVersion>
+    <XamarinAndroidLiteSuffix>-preview</XamarinAndroidLiteSuffix>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' And '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</BuildNumber>
+    <BuildNumber Condition=" '$(BuildNumber)' == '' ">1</BuildNumber>
+    <XamarinAndroidLiteFullVersion>$(XamarinAndroidLiteVersion).$(BuildNumber)$(XamarinAndroidLiteSuffix)</XamarinAndroidLiteFullVersion>
+    <XamarinFormsVersion>[3.1.0.583944]</XamarinFormsVersion>
+    <XamarinEssentialsVersion>[0.8.0-preview]</XamarinEssentialsVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(IncludePackageReference)' == 'True' ">
+    <PackageReference Include="Xamarin.Forms" Version="$(XamarinFormsVersion)" />
+    <PackageReference Include="Xamarin.Essentials" Version="$(XamarinEssentialsVersion)" />
+  </ItemGroup>
+</Project>
