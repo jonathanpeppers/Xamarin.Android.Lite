@@ -45,7 +45,7 @@ Edit your project file to look something like:
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="**\*.png" />
-    <PackageReference Include="Xamarin.Android.Lite" Version="0.1.0.36-preview" />
+    <PackageReference Include="Xamarin.Android.Lite" Version="0.1.0.43-preview" />
   </ItemGroup>
 </Project>
 ```
