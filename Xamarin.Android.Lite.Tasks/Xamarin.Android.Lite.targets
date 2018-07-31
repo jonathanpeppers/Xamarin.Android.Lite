@@ -208,4 +208,14 @@
       Command="push &quot;%(AssembliesToDeploy.Identity)&quot; &quot;$(_ExternalStorageDirectory)&quot;"
     />
   </Target>
+  <Target Name="_CleanXamarinAndroidLite">
+    <ItemGroup>
+      <_FilesToDelete Include="$(IntermediateProps)" />
+      <_FilesToDelete Include="$(AndroidManifest)" />
+      <_FilesToDelete Include="$(AndroidApkFile)" />
+      <_FilesToDelete Include="$(AndroidApkFile).stamp" />
+      <_FilesToDelete Include="$(AndroidApkFileSigned)" />
+    </ItemGroup>
+    <Delete Files="@(_FilesToDelete)" />
+  </Target>
 </Project>

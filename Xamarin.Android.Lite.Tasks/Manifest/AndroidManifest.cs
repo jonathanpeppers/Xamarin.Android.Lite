@@ -20,6 +20,12 @@ namespace Xamarin.Android.Lite.Tasks
 		//No idea
 		const int TAG_FLAGS = 1310740;
 
+		public static AndroidManifest Read (string path)
+		{
+			using (var stream = File.OpenRead (path))
+				return Read (stream);
+		}
+
 		/// <summary>
 		/// NOTE: does not dispose the stream
 		/// </summary>
