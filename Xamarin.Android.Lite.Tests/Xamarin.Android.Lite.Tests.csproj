@@ -3,6 +3,7 @@
     <TargetFramework>net462</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+  <Import Project="..\Configuration.props" />
   <ItemGroup>
     <Content Include="Data\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -18,5 +19,15 @@
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj" />
     <ProjectReference Include="..\Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" />
+    <Reference Include="$(XamarinAndroidReferencePath)libZipSharp.dll" />
+    <Content Include="$(XamarinAndroidReferencePath)libzip.5.0.dylib" Link="libzip.5.0.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(XamarinAndroidReferencePath)libzip.dll" Link="libzip.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(XamarinAndroidReferencePath)x64\libzip.dll" Link="x64\libzip.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
