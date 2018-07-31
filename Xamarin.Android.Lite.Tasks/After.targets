@@ -1,4 +1,11 @@
 <Project>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      ResolveSdks;
+      _CleanXamarinAndroidLite;
+    </CleanDependsOn>
+  </PropertyGroup>
   <Target Name="Run" DependsOnTargets="Install">
     <Error Text="AndroidPackageName cannot be blank!" Condition=" '$(AndroidPackageName)' == '' " />
     <!--TODO: hardcoded activity, LOL use [Export]-->

@@ -77,6 +77,11 @@ namespace Xamarin.Android.Lite.Tests
 			Build (projectFile, "Restore");
 		}
 
+		public static void Clean (string projectFile)
+		{
+			Build (projectFile, "Clean");
+		}
+
 		public static void Build (string projectFile, string target = "Build", string additionalArgs = "")
 		{
 			var psi = new ProcessStartInfo {

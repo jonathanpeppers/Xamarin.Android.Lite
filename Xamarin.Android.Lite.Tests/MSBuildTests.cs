@@ -100,5 +100,31 @@ namespace Xamarin.Android.Lite.Tests
 			var apkPath = Path.Combine (binDirectory, packageName + "-Signed.apk");
 			FileAssert.Exists (apkPath);
 		}
+
+		[Test]
+		public void Clean ()
+		{
+			var project = MSBuild.NewProject (testDirectory);
+
+			var projectFile = Path.Combine (tempDirectory, "test.csproj");
+			project.Save (projectFile);
+			MSBuild.Restore (projectFile);
+			MSBuild.Build (projectFile, "SignAndroidPackage");
+			MSBuild.Clean (projectFile);
+			
+			//Seriously, I am disgusted by them
+			var offensiveFiles = new List<string> ();
+			offensiveFiles.AddRange (Directory.EnumerateFiles (binDirectory, "*", SearchOption.AllDirectories));
+			offensiveFiles.AddRange (Directory.EnumerateFiles (objDirectory, "*", SearchOption.AllDirectories));
+			if (offensiveFiles.Count > 0) {
+				var message = new StringBuilder ();
+				message.AppendLine ("Files should not exist:");
+				offensiveFiles.Aggregate (message, (m, f) => m.AppendLine (f));
+				Assert.Fail (message.ToString ());
+			}
+
+			//Build one more time, checking we should not have to /t:Restore again
+			MSBuild.Build (projectFile, "SignAndroidPackage");
+		}
 	}
 }
