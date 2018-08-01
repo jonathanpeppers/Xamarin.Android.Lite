@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Xamarin.Android.Lite.Tasks;
+using Xamarin.Tools.Zip;
 
 namespace Xamarin.Android.Lite.Tests
 {
@@ -99,6 +100,75 @@ namespace Xamarin.Android.Lite.Tests
 
 			var apkPath = Path.Combine (binDirectory, packageName + "-Signed.apk");
 			FileAssert.Exists (apkPath);
+		}
+
+		[Test]
+		public void SignAndroidPackage_UpdateProperties ()
+		{
+			string versionCode = "1234",
+				versionName = "1.2.3.4",
+				packageName = "com.mycompany.myapp";
+
+			var versionCodeElement = MSBuild.NewElement ("AndroidVersionCode").WithValue (versionCode);
+			var versionNameElement = MSBuild.NewElement ("AndroidVersionName").WithValue (versionName);
+			var packageNameElement = MSBuild.NewElement ("AndroidPackageName").WithValue (packageName);
+
+			var project = MSBuild.NewProject (testDirectory);
+			var propertyGroup = MSBuild.NewElement ("PropertyGroup");
+			propertyGroup.Add (versionCodeElement);
+			propertyGroup.Add (versionNameElement);
+			propertyGroup.Add (packageNameElement);
+			project.AddFirst (propertyGroup);
+
+			var projectFile = Path.Combine (tempDirectory, "test.csproj");
+			project.Save (projectFile);
+			MSBuild.Restore (projectFile);
+			MSBuild.Build (projectFile, "SignAndroidPackage");
+
+			versionCodeElement.Value = versionCode = "99";
+			versionNameElement.Value = versionName = "2.0";
+			packageNameElement.Value = packageName = "com.mycompany.myapp2";
+			project.Save (projectFile);
+			MSBuild.Build (projectFile, "SignAndroidPackage");
+
+			var manifestPath = Path.Combine (objDirectory, "AndroidManifest.xml");
+			FileAssert.Exists (manifestPath);
+			var ns = AndroidManifest.AndroidNamespace.Namespace;
+			var manifest = AndroidManifest.Read (manifestPath);
+			Assert.AreEqual (versionCode, manifest.Document.Attribute (ns + "versionCode")?.Value, "versionCode should match");
+			Assert.AreEqual (versionName, manifest.Document.Attribute (ns + "versionName")?.Value, "versionName should match");
+			Assert.AreEqual (packageName, manifest.Document.Attribute ("package")?.Value, "package should match");
+		}
+
+		[Test]
+		public void ApkShouldChangeDuringNuGetUpgrade ()
+		{
+			var baseApk = Path.Combine (testDirectory, "..", "..", "..", "bin", MSBuild.Configuration, "build", "com.xamarin.android.lite.apk");
+			FileAssert.Exists (baseApk);
+			var backup = Path.GetTempFileName ();
+			File.Copy (baseApk, backup, true);
+			try {
+				var project = MSBuild.NewProject (testDirectory);
+				var projectFile = Path.Combine (tempDirectory, "test.csproj");
+				project.Save (projectFile);
+				MSBuild.Restore (projectFile);
+				MSBuild.Build (projectFile, "SignAndroidPackage");
+
+				//Simulate a NuGet upgrade, as if the base APK changed
+				using (var zip = ZipArchive.Open (baseApk, FileMode.Append)) {
+					zip.AddEntry (new byte [0], "foo.txt");
+				}
+
+				MSBuild.Build (projectFile, "SignAndroidPackage");
+
+				var builtApk = Path.Combine (binDirectory, "com.test.apk");
+				using (var zip = ZipArchive.Open (baseApk, FileMode.Open)) {
+					Assert.IsTrue (zip.ContainsEntry ("foo.txt"), "APK should be updated!");
+				}
+			} finally {
+				File.Copy (backup, baseApk, true);
+				File.Delete (backup);
+			}
 		}
 
 		[Test]

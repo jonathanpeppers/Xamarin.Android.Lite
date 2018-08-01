@@ -8,6 +8,7 @@
     <XamarinAndroidLiteFullVersion>$(XamarinAndroidLiteVersion).$(BuildNumber)$(XamarinAndroidLiteSuffix)</XamarinAndroidLiteFullVersion>
     <XamarinFormsVersion>[3.1.0.583944]</XamarinFormsVersion>
     <XamarinEssentialsVersion>[0.8.0-preview]</XamarinEssentialsVersion>
+    <XamarinAndroidReferencePath>$(MSBuildThisFileDirectory)bin\xamarin-android\lib\xamarin.android\xbuild\Xamarin\Android\</XamarinAndroidReferencePath>
   </PropertyGroup>
   <ItemGroup Condition=" '$(IncludePackageReference)' == 'True' ">
     <PackageReference Include="Xamarin.Forms" Version="$(XamarinFormsVersion)" />

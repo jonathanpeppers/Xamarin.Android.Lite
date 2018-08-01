@@ -5,7 +5,6 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <BaseOutputPath>..\bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\build\</OutputPath>
-    <XamarinAndroidReferencePath>$(BaseOutputPath)xamarin-android\lib\xamarin.android\xbuild\Xamarin\Android\</XamarinAndroidReferencePath>
   </PropertyGroup>
   <Import Project="..\Configuration.props" />
   <!--NuGet settings-->

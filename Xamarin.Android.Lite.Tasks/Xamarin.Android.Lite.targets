@@ -59,9 +59,8 @@
       <FileWrites Include="$(AndroidManifest)" />
     </ItemGroup>
   </Target>
-  <Target Name="_CopySourceApk" Inputs="$(SourceApkFile)" Outputs="$(AndroidApkFile)">
+  <Target Name="_CopySourceApk">
     <Copy SourceFiles="$(SourceApkFile)" DestinationFiles="$(AndroidApkFile)" SkipUnchangedFiles="True" />
-    <Touch Files="$(AndroidApkFile)" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFile)" />
     </ItemGroup>
