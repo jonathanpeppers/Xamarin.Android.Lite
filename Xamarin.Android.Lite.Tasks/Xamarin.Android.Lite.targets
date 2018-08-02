@@ -84,7 +84,7 @@
   </PropertyGroup>
   <Target Name="SignAndroidPackage" DependsOnTargets="$(SignAndroidPackageDependsOn)" Inputs="$(AndroidApkFile)" Outputs="$(AndroidApkFileSigned)">
     <PropertyGroup>
-      <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(LocalAppData)\Xamarin\Mono for Android\debug.keystore</AndroidSigningKeyStore>
+      <AndroidSigningKeyStore  Condition=" '$(AndroidSigningKeyStore)' == '' ">$(MSBuildThisFileDirectory)debug.keystore</AndroidSigningKeyStore>
       <AndroidSigningKeyAlias  Condition=" '$(AndroidSigningKeyAlias)' == '' ">androiddebugkey</AndroidSigningKeyAlias>
       <AndroidSigningKeyPass   Condition=" '$(AndroidSigningKeyPass)' == '' ">android</AndroidSigningKeyPass>
       <AndroidSigningStorePass Condition=" '$(AndroidSigningStorePass)' == '' ">android</AndroidSigningStorePass>

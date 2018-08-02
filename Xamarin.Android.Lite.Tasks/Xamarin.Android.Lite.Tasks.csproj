@@ -62,7 +62,7 @@ DISCLAIMER: I created this project during Microsoft's #HackWeek 2018. It is not 
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
     </Content>
-    <Content Include="..\apks\*.apk">
+    <Content Include="..\assets\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
     </Content>
