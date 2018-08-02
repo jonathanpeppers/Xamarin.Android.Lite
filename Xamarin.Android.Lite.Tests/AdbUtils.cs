@@ -26,7 +26,7 @@ namespace Xamarin.Android.Lite.Tests
 
 		public static AndroidSdkInfo AndroidSdk => androidSdk.Value;
 
-		static (string stdout, string stderr) RunAdbCommand (string command)
+		public static (string stdout, string stderr) RunCommand (string command)
 		{
 			string ext = Environment.OSVersion.Platform != PlatformID.Unix ? ".exe" : "";
 			string adb = Path.Combine (AndroidSdk.AndroidSdkPath, "platform-tools", "adb" + ext);
@@ -55,7 +55,7 @@ namespace Xamarin.Android.Lite.Tests
 
 		static int? GetDeviceApiLevel ()
 		{
-			var (stdout, stderr) = RunAdbCommand ("shell getprop ro.build.version.sdk");
+			var (stdout, stderr) = RunCommand ("shell getprop ro.build.version.sdk");
 			if (int.TryParse (stdout, out int apiLevel)) {
 				return apiLevel;
 			}
