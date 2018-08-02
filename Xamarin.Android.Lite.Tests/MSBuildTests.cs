@@ -43,6 +43,13 @@ namespace Xamarin.Android.Lite.Tests
 			}
 		}
 
+		void EnsureDeviceConnected ()
+		{
+			if (!AdbUtils.IsDeviceConnected) {
+				Assert.Ignore ("This test requires a connected emulator/device.");
+			}
+		}
+
 		[Test]
 		public void SignAndroidPackage_DefaultProperties ()
 		{
@@ -195,6 +202,30 @@ namespace Xamarin.Android.Lite.Tests
 
 			//Build one more time, checking we should not have to /t:Restore again
 			MSBuild.Build (projectFile, "SignAndroidPackage");
+		}
+
+		[Test]
+		public void Install ()
+		{
+			EnsureDeviceConnected ();
+
+			var project = MSBuild.NewProject (testDirectory);
+			var projectFile = Path.Combine (tempDirectory, "test.csproj");
+			project.Save (projectFile);
+			MSBuild.Restore (projectFile);
+			MSBuild.Build (projectFile, "Install");
+		}
+
+		[Test]
+		public void Run ()
+		{
+			EnsureDeviceConnected ();
+
+			var project = MSBuild.NewProject (testDirectory);
+			var projectFile = Path.Combine (tempDirectory, "test.csproj");
+			project.Save (projectFile);
+			MSBuild.Restore (projectFile);
+			MSBuild.Build (projectFile, "Run");
 		}
 	}
 }
