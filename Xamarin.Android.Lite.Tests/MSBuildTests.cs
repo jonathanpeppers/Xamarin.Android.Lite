@@ -188,11 +188,17 @@ namespace Xamarin.Android.Lite.Tests
 			MSBuild.Restore (projectFile);
 			MSBuild.Build (projectFile, "SignAndroidPackage");
 			MSBuild.Clean (projectFile);
+
+			var allowedFiles = new [] {
+				//NOTE: apparently MSBuild 15.7.179 leaves this behind? $(ProjectAssetsCache) file
+				"test.assets.cache",
+			};
 			
 			//Seriously, I am disgusted by them
 			var offensiveFiles = new List<string> ();
-			offensiveFiles.AddRange (Directory.EnumerateFiles (binDirectory, "*", SearchOption.AllDirectories));
-			offensiveFiles.AddRange (Directory.EnumerateFiles (objDirectory, "*", SearchOption.AllDirectories));
+			offensiveFiles.AddRange (Directory.EnumerateFiles (binDirectory, "*", SearchOption.AllDirectories).Where (f => !allowedFiles.Contains (Path.GetFileName (f))));
+			offensiveFiles.AddRange (Directory.EnumerateFiles (objDirectory, "*", SearchOption.AllDirectories).Where (f => !allowedFiles.Contains (Path.GetFileName (f))));
+
 			if (offensiveFiles.Count > 0) {
 				var message = new StringBuilder ();
 				message.AppendLine ("Files should not exist:");
