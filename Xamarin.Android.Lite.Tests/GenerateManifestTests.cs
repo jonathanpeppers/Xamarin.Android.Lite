@@ -65,6 +65,7 @@ namespace Xamarin.Android.Lite.Tests
     <receiver android:label=""Essentials Battery Broadcast Receiver"" android:name=""md5d630c3d3bfb5f5558520331566132d97.BatteryBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
     <receiver android:label=""Essentials Connectivity Broadcast Receiver"" android:name=""md5d630c3d3bfb5f5558520331566132d97.ConnectivityBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
     <receiver android:label=""Essentials Power Broadcast Receiver"" android:name=""md5d630c3d3bfb5f5558520331566132d97.PowerBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
+    <receiver android:name=""md51558244f76c53b6aeda52c8a337f2c37.PowerSaveModeBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
     <provider android:name=""mono.MonoRuntimeProvider"" android:exported=""false"" android:authorities=""com.test.app.mono.MonoRuntimeProvider.__mono_init_"" android:initOrder=""2147483647"" />
     <receiver android:name=""mono.android.Seppuku"">
       <intent-filter>

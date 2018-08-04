@@ -18,7 +18,7 @@ namespace Xamarin.Android.Lite.Sample
 		{
 			InitializeComponent();
 
-			Connectivity.ConnectivityChanged += e => {
+			Connectivity.ConnectivityChanged += (s, e) => {
 				Console.WriteLine ("ConnectivityChanged, NetworkAccess: {0}", e.NetworkAccess);
 			};
 

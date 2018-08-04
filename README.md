@@ -115,8 +115,8 @@ Xamarin.Essentials to get the best APIs available for NetStandard.
 
 Currently using:
 
-    <PackageReference Include="Xamarin.Forms" Version="3.1.0.583944" />
-    <PackageReference Include="Xamarin.Essentials" Version="0.8.0-preview" />
+    <PackageReference Include="Xamarin.Forms" Version="3.1.0.697729" />
+    <PackageReference Include="Xamarin.Essentials" Version="0.9.1-preview" />
 
 If another library is deemed useful here, let me know--I could bundle
 it!

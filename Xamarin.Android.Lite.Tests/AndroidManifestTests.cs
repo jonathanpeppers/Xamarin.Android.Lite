@@ -113,6 +113,8 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (binaryManifest.Length, stream.Length, "Stream lengths should match!");
 		}
 
+		//NOTE: over time I have backed up and validated previous NuGet version's binary AndroidManifest.xml file
+
 		[Test]
 		public void Read_0_1_0_1 ()
 		{
@@ -141,19 +143,31 @@ namespace Xamarin.Android.Lite.Tests
 			Write ();
 		}
 
-		//vNext
 		[Test]
-		public void Read_0_1_0_X ()
+		public void Read_0_1_0_43 ()
 		{
-			Setup ("0_1_0_X");
+			Setup ("0_1_0_43");
 			Read ();
 		}
 
-		//vNext
 		[Test]
-		public void Write__0_1_0_X ()
+		public void Write__0_1_0_43 ()
 		{
-			Setup ("0_1_0_X");
+			Setup ("0_1_0_43");
+			Write ();
+		}
+
+		[Test]
+		public void Read_vNext ()
+		{
+			Setup ("vNext");
+			Read ();
+		}
+
+		[Test]
+		public void Write_vNext ()
+		{
+			Setup ("vNext");
 			Write ();
 		}
 	}
