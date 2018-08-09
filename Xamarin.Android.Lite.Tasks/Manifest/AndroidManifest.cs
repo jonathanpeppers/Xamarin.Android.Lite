@@ -247,7 +247,7 @@ namespace Xamarin.Android.Lite.Tasks
 						Strings.RemoveAt (index);
 						Strings.Insert (index, value);
 					} else {
-						throw new InvalidOperationException ($"Existing string value `{attribute.Value}` did not exist!");
+						Strings.Add (value);
 					}
 					attribute.Value = value;
 				}

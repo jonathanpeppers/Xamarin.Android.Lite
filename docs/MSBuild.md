@@ -29,6 +29,16 @@ NDK
   `Type.GetType`. It defaults to `$(RootNamespace).App, $(AssemblyName)`
   if omitted.
 
+`<AndroidAppTitle></AndroidAppTitle>`
+- the `android:label` of your `<application />` in the
+  `AndroidManifest.xml` file. It defaults to `$(ProjectName)` if
+  omitted.
+
+`<AndroidActivityTitle></AndroidActivityTitle>`
+- the `android:label` of your `<activity />` in the
+  `AndroidManifest.xml` file. It defaults to `$(ProjectName)` if
+  omitted.
+
 ### Signing properties
 
 _TODO: Xamarin.Android.Lite assumes these already exist! Meaning you

@@ -18,9 +18,16 @@ namespace Xamarin.Android.Lite.Tasks
 		[Required]
 		public string ApplicationClass { get; set; }
 
+		[Required]
+		public string ActivityName { get; set; }
+
 		public string VersionCode { get; set; }
 
 		public string VersionName { get; set; }
+
+		public string AppTitle { get; set; }
+
+		public string ActivityTitle { get; set; }
 
 		public override bool Execute ()
 		{
@@ -49,6 +56,10 @@ namespace Xamarin.Android.Lite.Tasks
 			manifest.Mutate (manifestElement, ns + "versionCode", versionCode);
 			manifest.Mutate (manifestElement, ns + "versionName", versionName);
 
+			if (!string.IsNullOrEmpty (AppTitle)) {
+				manifest.Mutate (application, ns + "label", AppTitle);
+			}
+
 			var metadata = application.Elements ("meta-data").Where (e => e.Attribute (name)?.Value == ApplicationMetadata).FirstOrDefault ();
 			if (metadata == null) {
 				Log.LogError ("No `meta-data` element found!");
@@ -56,6 +67,15 @@ namespace Xamarin.Android.Lite.Tasks
 			}
 			manifest.Mutate (metadata, ns + "value", ApplicationClass);
 
+			var activity = application.Elements ("activity").Where (e => e.Attribute (name)?.Value == ActivityName).FirstOrDefault ();
+			if (activity == null) {
+				Log.LogError ($"No `activity` element found of name `{ActivityName}`!");
+				return false;
+			}
+			if (!string.IsNullOrEmpty (ActivityTitle)) {
+				manifest.Mutate (activity, ns + "label", ActivityTitle);
+			}
+			
 			//NOTE: two other Xamarin.Android implementation-specific places *may* need the package name replaced
 			var provider = application.Element ("provider");
 			if (provider != null)

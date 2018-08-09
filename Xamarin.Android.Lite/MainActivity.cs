@@ -9,6 +9,7 @@ using System.Reflection;
 
 namespace Xamarin.Android.Lite
 {
+	[Register ("xamarin.android.lite.MainActivity")]
 	[Activity (Label = "Xamarin.Android.Lite", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class MainActivity : Forms.Platform.Android.FormsAppCompatActivity
 	{

@@ -31,8 +31,11 @@ namespace Xamarin.Android.Lite.Tests
 				DestinationFile = temp,
 				PackageName = "com.test.app",
 				ApplicationClass = "My.Namespace.App, MyAssembly",
+				ActivityName = "xamarin.android.lite.MainActivity",
 				VersionCode = "12",
 				VersionName = "2.0.0",
+				AppTitle = "MyApp",
+				ActivityTitle = "MyActivity",
 			};
 			Assert.IsTrue (task.Execute (), "Execute failed!");
 
@@ -53,9 +56,9 @@ namespace Xamarin.Android.Lite.Tests
   <uses-feature android:name=""android.hardware.location"" android:required=""false"" />
   <uses-feature android:name=""android.hardware.location.gps"" android:required=""false"" />
   <uses-feature android:name=""android.hardware.location.network"" android:required=""false"" />
-  <application android:label=""Xamarin.Android.Lite"" android:icon=""2130903040"" android:name=""android.app.Application"" android:debuggable=""true"" android:allowBackup=""true"">
+  <application android:label=""MyApp"" android:icon=""2130903040"" android:name=""android.app.Application"" android:debuggable=""true"" android:allowBackup=""true"">
     <meta-data android:name=""Xamarin.Android.Lite.Application"" android:value=""My.Namespace.App, MyAssembly"" />
-    <activity android:theme=""2131493263"" android:label=""Xamarin.Android.Lite"" android:icon=""2130903040"" android:name=""md5bff8b7c7908ce4fe5d805acf2300a9b4.MainActivity"" android:configChanges=""1152"">
+    <activity android:theme=""2131493263"" android:label=""MyActivity"" android:icon=""2130903040"" android:name=""xamarin.android.lite.MainActivity"" android:configChanges=""1152"">
       <intent-filter>
         <action android:name=""android.intent.action.MAIN"" />
         <category android:name=""android.intent.category.LAUNCHER"" />
