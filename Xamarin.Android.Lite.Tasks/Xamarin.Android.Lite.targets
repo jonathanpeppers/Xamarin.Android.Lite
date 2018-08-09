@@ -24,6 +24,9 @@
       <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)$(AndroidPackageName).apk</AndroidApkFile>
       <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
       <AndroidApplicationClass Condition=" '$(AndroidApplicationClass)' == '' ">$(RootNamespace).App, $(AssemblyName)</AndroidApplicationClass>
+      <AndroidAppTitle         Condition=" '$(AndroidAppTitle)' == '' ">$(ProjectName)</AndroidAppTitle>
+      <AndroidActivityTitle    Condition=" '$(AndroidActivityTitle)' == '' ">$(ProjectName)</AndroidActivityTitle>
+      <AndroidActivityName>xamarin.android.lite.MainActivity</AndroidActivityName>
       <AndroidApiLevel>27</AndroidApiLevel>
       <IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</IntermediateProps>
       <AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
@@ -35,6 +38,9 @@
       <_Properties Include="AndroidApplicationClass=$(AndroidApplicationClass)" />
       <_Properties Include="AndroidVersionCode=$(AndroidVersionCode)" />
       <_Properties Include="AndroidVersionName=$(AndroidVersionName)" />
+      <_Properties Include="AndroidAppTitle=$(AndroidAppTitle)" />
+      <_Properties Include="AndroidActivityTitle=$(AndroidActivityTitle)" />
+      <_Properties Include="AndroidActivityName=$(AndroidActivityName)" />
     </ItemGroup>
     <WriteLinesToFile
       File="$(IntermediateProps)"
@@ -52,8 +58,11 @@
       DestinationFile="$(AndroidManifest)"
       PackageName="$(AndroidPackageName)"
       ApplicationClass="$(AndroidApplicationClass)"
+      ActivityName="$(AndroidActivityName)"
       VersionCode="$(AndroidVersionCode)"
       VersionName="$(AndroidVersionName)"
+      AppTitle="$(AndroidAppTitle)"
+      ActivityTitle="$(AndroidActivityTitle)"
     />
     <ItemGroup>
       <FileWrites Include="$(AndroidManifest)" />
