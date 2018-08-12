@@ -73,7 +73,7 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (versionName, manifest.Document.Attribute (ns + "versionName")?.Value, "versionName should match");
 			Assert.AreEqual (packageName, manifest.Document.Attribute ("package")?.Value, "package should match");
 
-			var apkPath = Path.Combine (binDirectory, packageName + "-Signed.apk");
+			var apkPath = Path.Combine (binDirectory, packageName + ".apk");
 			FileAssert.Exists (apkPath);
 		}
 
@@ -105,7 +105,7 @@ namespace Xamarin.Android.Lite.Tests
 			Assert.AreEqual (versionName, manifest.Document.Attribute (ns + "versionName")?.Value, "versionName should match");
 			Assert.AreEqual (packageName, manifest.Document.Attribute ("package")?.Value, "package should match");
 
-			var apkPath = Path.Combine (binDirectory, packageName + "-Signed.apk");
+			var apkPath = Path.Combine (binDirectory, packageName + ".apk");
 			FileAssert.Exists (apkPath);
 		}
 

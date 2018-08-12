@@ -21,15 +21,15 @@
       <JavaToolPath            Condition=" '$(JavaSdkDirectory)' != '' ">$(JavaSdkDirectory)bin</JavaToolPath>
       <AndroidPackageName      Condition=" '$(AndroidPackageName)' == '' ">com.$(AssemblyName.ToLowerInvariant())</AndroidPackageName>
       <SourceApkFile           Condition=" '$(SourceApkFile)' == '' ">$(MSBuildThisFileDirectory)com.xamarin.android.lite.apk</SourceApkFile>
-      <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(OutputPath)$(AndroidPackageName).apk</AndroidApkFile>
-      <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(AndroidApkFile.Replace('.apk', '-Signed.apk'))</AndroidApkFileSigned>
+      <AndroidApkFile          Condition=" '$(AndroidApkFile)' == '' ">$(IntermediateOutputPath)$(AndroidPackageName).apk</AndroidApkFile>
+      <AndroidApkFileSigned    Condition=" '$(AndroidApkFileSigned)' == '' ">$(OutputPath)$(AndroidPackageName).apk</AndroidApkFileSigned>
       <AndroidApplicationClass Condition=" '$(AndroidApplicationClass)' == '' ">$(RootNamespace).App, $(AssemblyName)</AndroidApplicationClass>
       <AndroidAppTitle         Condition=" '$(AndroidAppTitle)' == '' ">$(ProjectName)</AndroidAppTitle>
       <AndroidActivityTitle    Condition=" '$(AndroidActivityTitle)' == '' ">$(ProjectName)</AndroidActivityTitle>
-      <AndroidActivityName>xamarin.android.lite.MainActivity</AndroidActivityName>
-      <AndroidApiLevel>27</AndroidApiLevel>
-      <IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</IntermediateProps>
-      <AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
+      <_AndroidActivityName>xamarin.android.lite.MainActivity</_AndroidActivityName>
+      <_AndroidApiLevel>27</_AndroidApiLevel>
+      <_IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</_IntermediateProps>
+      <_AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</_AndroidManifest>
     </PropertyGroup>
   </Target>
   <Target Name="_FindApkInputs">
@@ -40,32 +40,32 @@
       <_Properties Include="AndroidVersionName=$(AndroidVersionName)" />
       <_Properties Include="AndroidAppTitle=$(AndroidAppTitle)" />
       <_Properties Include="AndroidActivityTitle=$(AndroidActivityTitle)" />
-      <_Properties Include="AndroidActivityName=$(AndroidActivityName)" />
+      <_Properties Include="_AndroidActivityName=$(_AndroidActivityName)" />
     </ItemGroup>
     <WriteLinesToFile
-      File="$(IntermediateProps)"
+      File="$(_IntermediateProps)"
       Lines="@(_Properties)"
       Overwrite="True"
       WriteOnlyWhenDifferent="True"
     />
     <ItemGroup>
       <AssembliesToDeploy Include="$(OutputPath)*.dll" />
-      <FileWrites Include="$(IntermediateProps)" />
+      <FileWrites Include="$(_IntermediateProps)" />
     </ItemGroup>
   </Target>
-  <Target Name="_GenerateManifest" Inputs="$(IntermediateProps)" Outputs="$(AndroidManifest)">
+  <Target Name="_GenerateManifest" Inputs="$(_IntermediateProps)" Outputs="$(_AndroidManifest)">
     <GenerateManifest
-      DestinationFile="$(AndroidManifest)"
+      DestinationFile="$(_AndroidManifest)"
       PackageName="$(AndroidPackageName)"
       ApplicationClass="$(AndroidApplicationClass)"
-      ActivityName="$(AndroidActivityName)"
+      ActivityName="$(_AndroidActivityName)"
       VersionCode="$(AndroidVersionCode)"
       VersionName="$(AndroidVersionName)"
       AppTitle="$(AndroidAppTitle)"
       ActivityTitle="$(AndroidActivityTitle)"
     />
     <ItemGroup>
-      <FileWrites Include="$(AndroidManifest)" />
+      <FileWrites Include="$(_AndroidManifest)" />
     </ItemGroup>
   </Target>
   <Target Name="_CopySourceApk">
@@ -74,8 +74,8 @@
       <FileWrites Include="$(AndroidApkFile)" />
     </ItemGroup>
   </Target>
-  <Target Name="_AppendToApk" Inputs="$(AndroidManifest);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
-    <AppendToApk Files="$(AndroidManifest)" Apk="$(AndroidApkFile)" />
+  <Target Name="_AppendToApk" Inputs="$(_AndroidManifest);$(AndroidApkFile)" Outputs="$(AndroidApkFile).stamp">
+    <AppendToApk Files="$(_AndroidManifest)" Apk="$(AndroidApkFile)" />
     <Touch Files="$(AndroidApkFile).stamp" AlwaysCreate="True" />
     <ItemGroup>
       <FileWrites Include="$(AndroidApkFile).stamp" />
@@ -121,7 +121,7 @@
     <DetectPackages
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
-      ApiLevel="$(AndroidApiLevel)"
+      ApiLevel="$(_AndroidApiLevel)"
       PackageName="$(AndroidPackageName)">
       <Output PropertyName="_RuntimeVersion" TaskParameter="RuntimeVersion" />
       <Output PropertyName="_PlatformRuntimeVersion" TaskParameter="PlatformRuntimeVersion" />
@@ -150,9 +150,9 @@
   </Target>
   <Target Name="_InstallPlatformRuntime" DependsOnTargets="_GetAbi" Condition=" '$(_PlatformRuntimeVersion)' == '' ">
     <PropertyGroup>
-      <_PlatformRuntime>$(MSBuildThisFileDirectory)\Mono.Android.Platform.ApiLevel_$(AndroidApiLevel).apk</_PlatformRuntime>
+      <_PlatformRuntime>$(MSBuildThisFileDirectory)\Mono.Android.Platform.ApiLevel_$(_AndroidApiLevel).apk</_PlatformRuntime>
     </PropertyGroup>
-    <Error Text="Cannot install API $(AndroidApiLevel) runtime, $(_PlatformRuntime) not found." Condition=" !Exists('$(_PlatformRuntime)') " />
+    <Error Text="Cannot install API $(_AndroidApiLevel) runtime, $(_PlatformRuntime) not found." Condition=" !Exists('$(_PlatformRuntime)') " />
     <Adb
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
@@ -218,8 +218,8 @@
   </Target>
   <Target Name="_CleanXamarinAndroidLite">
     <ItemGroup>
-      <_FilesToDelete Include="$(IntermediateProps)" />
-      <_FilesToDelete Include="$(AndroidManifest)" />
+      <_FilesToDelete Include="$(_IntermediateProps)" />
+      <_FilesToDelete Include="$(_AndroidManifest)" />
       <_FilesToDelete Include="$(AndroidApkFile)" />
       <_FilesToDelete Include="$(AndroidApkFile).stamp" />
       <_FilesToDelete Include="$(AndroidApkFileSigned)" />
