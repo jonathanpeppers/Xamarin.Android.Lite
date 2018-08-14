@@ -22,8 +22,6 @@ namespace Xamarin.Android.Lite.Tests
 		{
 			testDirectory = TestContext.CurrentContext.TestDirectory;
 			tempDirectory = Path.Combine (testDirectory, "temp", TestContext.CurrentContext.Test.Name);
-			objDirectory = Path.Combine (tempDirectory, "obj", MSBuild.Configuration, MSBuild.TargetFramework);
-			binDirectory = Path.Combine (tempDirectory, "bin", MSBuild.Configuration, MSBuild.TargetFramework);
 
 			//NOTE: could be leftover from development
 			if (Directory.Exists (tempDirectory)) {
@@ -43,6 +41,17 @@ namespace Xamarin.Android.Lite.Tests
 			}
 		}
 
+		void FindBinObj (bool sdkStyle)
+		{
+			objDirectory = Path.Combine (tempDirectory, "obj", MSBuild.Configuration);
+			binDirectory = Path.Combine (tempDirectory, "bin", MSBuild.Configuration);
+
+			if (sdkStyle) {
+				objDirectory = Path.Combine (objDirectory, MSBuild.TargetFramework);
+				binDirectory = Path.Combine (binDirectory, MSBuild.TargetFramework);
+			}
+		}
+
 		void EnsureDeviceConnected ()
 		{
 			if (!AdbUtils.IsDeviceConnected) {
@@ -51,12 +60,14 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void SignAndroidPackage_DefaultProperties ()
+		public void SignAndroidPackage_DefaultProperties ([Values (true, false)] bool sdkStyle)
 		{
+			FindBinObj (sdkStyle);
+
 			string versionCode = "1",
 				versionName = "1.0",
 				packageName = "com.test";
-			var project = MSBuild.NewProject (testDirectory);
+			var project = MSBuild.NewProject (testDirectory, sdkStyle);
 
 			var projectFile = Path.Combine (tempDirectory, "test.csproj");
 			project.Save (projectFile);
@@ -67,6 +78,8 @@ namespace Xamarin.Android.Lite.Tests
 			FileAssert.Exists (propsPath);
 			var manifestPath = Path.Combine (objDirectory, "AndroidManifest.xml");
 			FileAssert.Exists (manifestPath);
+			var textManifestPath = Path.Combine (objDirectory, "android", "AndroidManifest.xml");
+			FileAssert.Exists (textManifestPath);
 			var ns = AndroidManifest.AndroidNamespace.Namespace;
 			var manifest = AndroidManifest.Read (manifestPath);
 			Assert.AreEqual (versionCode, manifest.Document.Attribute (ns + "versionCode")?.Value, "versionCode should match");
@@ -78,12 +91,14 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void SignAndroidPackage_WithProperties ()
+		public void SignAndroidPackage_WithProperties ([Values (true, false)] bool sdkStyle)
 		{
+			FindBinObj (sdkStyle);
+
 			string versionCode = "1234",
 				versionName = "1.2.3.4",
 				packageName = "com.mycompany.myapp";
-			var project = MSBuild.NewProject (testDirectory);
+			var project = MSBuild.NewProject (testDirectory, sdkStyle);
 			var propertyGroup = MSBuild.NewElement ("PropertyGroup");
 			propertyGroup.Add (MSBuild.NewElement ("AndroidVersionCode").WithValue (versionCode));
 			propertyGroup.Add (MSBuild.NewElement ("AndroidVersionName").WithValue (versionName));
@@ -99,6 +114,8 @@ namespace Xamarin.Android.Lite.Tests
 			FileAssert.Exists (propsPath);
 			var manifestPath = Path.Combine (objDirectory, "AndroidManifest.xml");
 			FileAssert.Exists (manifestPath);
+			var textManifestPath = Path.Combine (objDirectory, "android", "AndroidManifest.xml");
+			FileAssert.Exists (textManifestPath);
 			var ns = AndroidManifest.AndroidNamespace.Namespace;
 			var manifest = AndroidManifest.Read (manifestPath);
 			Assert.AreEqual (versionCode, manifest.Document.Attribute (ns + "versionCode")?.Value, "versionCode should match");
@@ -110,8 +127,10 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void SignAndroidPackage_UpdateProperties ()
+		public void SignAndroidPackage_UpdateProperties ([Values (true, false)] bool sdkStyle)
 		{
+			FindBinObj (sdkStyle);
+
 			string versionCode = "1234",
 				versionName = "1.2.3.4",
 				packageName = "com.mycompany.myapp";
@@ -120,7 +139,7 @@ namespace Xamarin.Android.Lite.Tests
 			var versionNameElement = MSBuild.NewElement ("AndroidVersionName").WithValue (versionName);
 			var packageNameElement = MSBuild.NewElement ("AndroidPackageName").WithValue (packageName);
 
-			var project = MSBuild.NewProject (testDirectory);
+			var project = MSBuild.NewProject (testDirectory, sdkStyle);
 			var propertyGroup = MSBuild.NewElement ("PropertyGroup");
 			propertyGroup.Add (versionCodeElement);
 			propertyGroup.Add (versionNameElement);
@@ -140,6 +159,8 @@ namespace Xamarin.Android.Lite.Tests
 
 			var manifestPath = Path.Combine (objDirectory, "AndroidManifest.xml");
 			FileAssert.Exists (manifestPath);
+			var textManifestPath = Path.Combine (objDirectory, "android", "AndroidManifest.xml");
+			FileAssert.Exists (textManifestPath);
 			var ns = AndroidManifest.AndroidNamespace.Namespace;
 			var manifest = AndroidManifest.Read (manifestPath);
 			Assert.AreEqual (versionCode, manifest.Document.Attribute (ns + "versionCode")?.Value, "versionCode should match");
@@ -148,14 +169,16 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void ApkShouldChangeDuringNuGetUpgrade ()
+		public void ApkShouldChangeDuringNuGetUpgrade ([Values (true, false)] bool sdkStyle)
 		{
+			FindBinObj (sdkStyle);
+
 			var baseApk = Path.Combine (testDirectory, "..", "..", "..", "bin", MSBuild.Configuration, "build", "com.xamarin.android.lite.apk");
 			FileAssert.Exists (baseApk);
 			var backup = Path.GetTempFileName ();
 			File.Copy (baseApk, backup, true);
 			try {
-				var project = MSBuild.NewProject (testDirectory);
+				var project = MSBuild.NewProject (testDirectory, sdkStyle);
 				var projectFile = Path.Combine (tempDirectory, "test.csproj");
 				project.Save (projectFile);
 				MSBuild.Restore (projectFile);
@@ -179,9 +202,11 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void Clean ()
+		public void Clean ([Values (true, false)] bool sdkStyle)
 		{
-			var project = MSBuild.NewProject (testDirectory);
+			FindBinObj (sdkStyle);
+
+			var project = MSBuild.NewProject (testDirectory, sdkStyle);
 
 			var projectFile = Path.Combine (tempDirectory, "test.csproj");
 			project.Save (projectFile);
@@ -211,11 +236,12 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void Install ()
+		public void Install ([Values (true, false)] bool sdkStyle)
 		{
 			EnsureDeviceConnected ();
+			FindBinObj (sdkStyle);
 
-			var project = MSBuild.NewProject (testDirectory);
+			var project = MSBuild.NewProject (testDirectory, sdkStyle);
 			var projectFile = Path.Combine (tempDirectory, "test.csproj");
 			project.Save (projectFile);
 			MSBuild.Restore (projectFile);
@@ -223,11 +249,12 @@ namespace Xamarin.Android.Lite.Tests
 		}
 
 		[Test]
-		public void Run ()
+		public void Run ([Values (true, false)] bool sdkStyle)
 		{
 			EnsureDeviceConnected ();
+			FindBinObj (sdkStyle);
 
-			var project = MSBuild.NewProject (testDirectory);
+			var project = MSBuild.NewProject (testDirectory, sdkStyle);
 			var projectFile = Path.Combine (tempDirectory, "test.csproj");
 			project.Save (projectFile);
 			MSBuild.Restore (projectFile);

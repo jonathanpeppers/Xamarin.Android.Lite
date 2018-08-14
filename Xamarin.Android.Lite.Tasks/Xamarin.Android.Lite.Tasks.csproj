@@ -74,6 +74,10 @@ DISCLAIMER: I created this project during Microsoft's #HackWeek 2018. It is not 
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
     </Content>
+    <Content Include="Xamarin.Android.Lite.VisualStudio.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\</PackagePath>
+    </Content>
     <Content Include="After.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>

@@ -8,12 +8,13 @@ namespace Xamarin.Android.Lite.Tests
 	public class GenerateManifestTests
 	{
 		MockBuildEngine engine;
-		string temp;
+		string temp, temp_txt;
 
 		[SetUp]
 		public void SetUp ()
 		{
 			temp = Path.GetTempFileName ();
+			temp_txt = Path.GetTempFileName ();
 			engine = new MockBuildEngine ();
 		}
 
@@ -21,6 +22,7 @@ namespace Xamarin.Android.Lite.Tests
 		public void TearDown ()
 		{
 			File.Delete (temp);
+			File.Decrypt (temp_txt);
 		}
 
 		[Test]
@@ -29,6 +31,7 @@ namespace Xamarin.Android.Lite.Tests
 			var task = new GenerateManifest {
 				BuildEngine = engine,
 				DestinationFile = temp,
+				IntermediateTextFile = temp_txt,
 				PackageName = "com.test.app",
 				ApplicationClass = "My.Namespace.App, MyAssembly",
 				ActivityName = "xamarin.android.lite.MainActivity",
@@ -80,6 +83,10 @@ namespace Xamarin.Android.Lite.Tests
 </manifest>";
 				Assert.AreEqual (xml, manifest.Document.ToString ());
 			}
+
+			var info = new FileInfo (temp_txt);
+			FileAssert.Exists (info);
+			Assert.AreNotEqual (0, info.Length, $"{nameof (GenerateManifest.IntermediateTextFile)} should not be an empty file!");
 		}
 	}
 }

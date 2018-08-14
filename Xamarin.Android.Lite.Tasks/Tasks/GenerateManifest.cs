@@ -21,6 +21,9 @@ namespace Xamarin.Android.Lite.Tasks
 		[Required]
 		public string ActivityName { get; set; }
 
+		[Required]
+		public string IntermediateTextFile { get; set; }
+
 		public string VersionCode { get; set; }
 
 		public string VersionName { get; set; }
@@ -92,6 +95,11 @@ namespace Xamarin.Android.Lite.Tasks
 			using (var stream = File.Create (DestinationFile)) {
 				manifest.Write (stream);
 			}
+
+			//NOTE: saving the text representation of the manifest for the IDE
+			var directory = Path.GetDirectoryName (IntermediateTextFile);
+			Directory.CreateDirectory (directory);
+			manifest.Document.Save (IntermediateTextFile);
 
 			return !Log.HasLoggedErrors;
 		}

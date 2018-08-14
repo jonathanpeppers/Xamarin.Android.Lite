@@ -1,5 +1,7 @@
 ﻿<Project>
   <Import Project="Xamarin.Android.Lite.props" Condition=" '$(XamarinAndroidLiteImported)' != 'True' " />
+  <!--IDE/Debugging support-->
+  <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Lite.VisualStudio.targets" Condition=" '$(UsingMicrosoftNETSdk)' != 'True' " />
   <Target Name="ResolveSdks">
     <Error Text="Xamarin.Android.Lite requires Xamarin.Android is installed!" Condition=" '$(XamarinAndroidPath)' == '' Or !Exists('$(XamarinAndroidPath)') " />
     <ResolveSdks
@@ -30,6 +32,8 @@
       <_AndroidApiLevel>27</_AndroidApiLevel>
       <_IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</_IntermediateProps>
       <_AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</_AndroidManifest>
+      <_TextManifest>$(IntermediateOutputPath)android\AndroidManifest.xml</_TextManifest>
+      <_DeployDirectory>$(IntermediateOutputPath)deploy\</_DeployDirectory>
     </PropertyGroup>
   </Target>
   <Target Name="_FindApkInputs">
@@ -49,13 +53,14 @@
       WriteOnlyWhenDifferent="True"
     />
     <ItemGroup>
-      <AssembliesToDeploy Include="$(OutputPath)*.dll" />
+      <FilesToDeploy Include="$(OutputPath)*.dll;$(OutputPath)*.pdb" Exclude="Xamarin.Android.*;FormsViewGroup.*;Xamarin.Forms.*" />
       <FileWrites Include="$(_IntermediateProps)" />
     </ItemGroup>
   </Target>
-  <Target Name="_GenerateManifest" Inputs="$(_IntermediateProps)" Outputs="$(_AndroidManifest)">
+  <Target Name="_GenerateManifest" Inputs="$(_IntermediateProps)" Outputs="$(_AndroidManifest);$(_TextManifest)">
     <GenerateManifest
       DestinationFile="$(_AndroidManifest)"
+      IntermediateTextFile="$(_TextManifest)"
       PackageName="$(AndroidPackageName)"
       ApplicationClass="$(AndroidApplicationClass)"
       ActivityName="$(_AndroidActivityName)"
@@ -65,7 +70,7 @@
       ActivityTitle="$(AndroidActivityTitle)"
     />
     <ItemGroup>
-      <FileWrites Include="$(_AndroidManifest)" />
+      <FileWrites Include="$(_AndroidManifest);$(_TextManifest)" />
     </ItemGroup>
   </Target>
   <Target Name="_CopySourceApk">
@@ -210,20 +215,26 @@
       PackageName="$(AndroidPackageName)"
       Condition=" '$(_ApkWasInstalled)' != 'True' "
     />
+    <RemoveDir Directories="$(_DeployDirectory)" />
+    <MakeDir Directories="$(_DeployDirectory)" />
+    <Copy SourceFiles="@(FilesToDeploy)" DestinationFolder="$(_DeployDirectory)" />
     <Adb
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
-      Command="push &quot;%(AssembliesToDeploy.Identity)&quot; &quot;$(_ExternalStorageDirectory)&quot;"
+      Command="push &quot;$(_DeployDirectory.TrimEnd('\'))&quot; &quot;$(_ExternalStorageDirectory)&quot;"
     />
+    <RemoveDir Directories="$(_DeployDirectory)" />
   </Target>
   <Target Name="_CleanXamarinAndroidLite">
     <ItemGroup>
       <_FilesToDelete Include="$(_IntermediateProps)" />
       <_FilesToDelete Include="$(_AndroidManifest)" />
+      <_FilesToDelete Include="$(_TextManifest)" />
       <_FilesToDelete Include="$(AndroidApkFile)" />
       <_FilesToDelete Include="$(AndroidApkFile).stamp" />
       <_FilesToDelete Include="$(AndroidApkFileSigned)" />
     </ItemGroup>
     <Delete Files="@(_FilesToDelete)" />
+    <RemoveDir Directories="$(_DeployDirectory)" />
   </Target>
 </Project>

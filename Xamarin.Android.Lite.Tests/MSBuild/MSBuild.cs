@@ -54,7 +54,12 @@ namespace Xamarin.Android.Lite.Tests
 		/// Creates a base csproj file for these unit tests
 		/// </summary>
 		/// <param name="sdkStyle">If true, uses a new SDK-style project</param>
-		public static XElement NewProject (string testDirectory)
+		public static XElement NewProject (string testDirectory, bool sdkStyle)
+		{
+			return sdkStyle ? NewSdkStyleProject (testDirectory) : NewClassicProject (testDirectory);
+		}
+
+		public static XElement NewSdkStyleProject (string testDirectory)
 		{
 			var project = NewElement ("Project");
 
@@ -63,6 +68,53 @@ namespace Xamarin.Android.Lite.Tests
 			propertyGroup.Add (NewElement ("TargetFramework").WithValue (TargetFramework));
 			propertyGroup.Add (NewElement ("IncludePackageReference").WithValue ("True"));
 			project.Add (propertyGroup);
+
+			var topDirectory = GetFullPath (Combine (testDirectory, "..", "..", ".."));
+			//Importing Configuration.props gets us Xamarin.Forms and Xamarin.Essentials
+			project.Add (NewElement ("Import").WithAttribute ("Project", Combine (topDirectory, "Configuration.props")));
+			project.Add (NewElement ("Import").WithAttribute ("Project", Combine (topDirectory, "bin", Configuration, "build", "Xamarin.Android.Lite.targets")));
+
+			return project;
+		}
+
+		public static XElement NewClassicProject (string testDirectory)
+		{
+			var project = NewElement ("Project");
+
+			var properties = XElement.Parse ($@"
+<Project xmlns=""{ns}"">
+	<PropertyGroup>
+		<Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
+		<Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
+		<ProjectGuid>{Guid.NewGuid ().ToString ("B")}</ProjectGuid>
+		<RootNamespace>test</RootNamespace>
+		<AssemblyName>test</AssemblyName>
+	</PropertyGroup>
+	<PropertyGroup Condition="" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>portable</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug</OutputPath>
+		<DefineConstants>DEBUG;</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include=""Mono.Android"" />
+		<Reference Include=""System"" />
+		<Reference Include=""System.Core"" />
+		<Reference Include=""System.Net.Http"" />
+		<Reference Include=""System.Xml.Linq"" />
+		<Reference Include=""System.Xml"" />
+	</ItemGroup>
+</Project>");
+			foreach (var element in properties.Elements ()) {
+				project.Add (element);
+			}
 
 			var topDirectory = GetFullPath (Combine (testDirectory, "..", "..", ".."));
 			//Importing Configuration.props gets us Xamarin.Forms and Xamarin.Essentials

@@ -1,0 +1,59 @@
+<Project>
+  <!--
+  
+  These are imported if $(UsingMicrosoftNETSdk) != True
+  
+  They enable the following:
+  * Building in Visual Studio IDE, XamarinVS can load the project
+  * Debugger support
+
+  -->
+
+  <!--Default properties that enable project to load and build-->
+  <PropertyGroup>
+    <TargetFrameworkIdentifier>MonoAndroid</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AndroidApplication>True</AndroidApplication>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+
+  <!--Debugging properties-->
+  <PropertyGroup>
+    <BundleAssemblies>False</BundleAssemblies>
+    <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
+    <AndroidFastDeploymentType>Assemblies</AndroidFastDeploymentType>
+    <AndroidGdbTargetPort>9999</AndroidGdbTargetPort>
+    <AndroidGdbHostPort>9999</AndroidGdbHostPort>
+    <AndroidGdbSymbolsPath>$(ProjectDir)\gdb-symbols</AndroidGdbSymbolsPath>
+  </PropertyGroup>
+
+  <!--References required for things to work-->
+  <ItemGroup>
+    <Reference Remove="Mono.Android" />
+    <Reference Include="netstandard" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.Compat" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.2.1" />
+  </ItemGroup>
+
+  <!--Imports for Debugging-->
+  <PropertyGroup>
+    <ImplicitlyExpandDesignTimeFacades>True</ImplicitlyExpandDesignTimeFacades>
+    <XamarinAndroidSdkProps>$(MSBuildExtensionsPath)\Xamarin\Xamarin.Android.Sdk.props</XamarinAndroidSdkProps>
+    <XamarinAndroidSdkTargets>$(MSBuildExtensionsPath)\Xamarin\Xamarin.Android.Sdk.targets</XamarinAndroidSdkTargets>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.Common.props" />
+  <Import Project="$(XamarinAndroidSdkProps)" Condition=" '$(XamarinAndroidSdkPropsImported)' != 'True' "/>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(XamarinAndroidSdkTargets)" Condition=" '$(XamarinAndroidSdkTargetsImported)' != 'True' "/>
+  <PropertyGroup>
+    <!--TODO: see if can remove, had to be last in my test/hack project-->
+    <ImplicitlyExpandNETStandardFacades>True</ImplicitlyExpandNETStandardFacades>
+  </PropertyGroup>
+
+</Project>
