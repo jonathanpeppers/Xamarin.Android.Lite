@@ -12,7 +12,7 @@
     <Adb
       ToolPath="$(AdbToolPath)"
       ToolExe="$(AdbToolExe)"
-      Command="shell am start -n &quot;$(AndroidPackageName)/$(AndroidActivityName)&quot;"
+      Command="shell am start -n &quot;$(AndroidPackageName)/$(_AndroidActivityName)&quot;"
     />
   </Target>
 </Project>
