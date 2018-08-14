@@ -29,6 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Android.Lite.IDE.Sample", "Xamarin.Android.Lite.IDE.Sample\Xamarin.Android.Lite.IDE.Sample.csproj", "{69FF4882-7522-4C9E-9924-A53718A47B2A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C6EFA0E5-01D7-4216-BD34-A60ADE223E89} = {C6EFA0E5-01D7-4216-BD34-A60ADE223E89}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +62,12 @@ Global
 		{61525B57-FF35-4495-9AB8-C7151B51C5B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61525B57-FF35-4495-9AB8-C7151B51C5B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61525B57-FF35-4495-9AB8-C7151B51C5B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69FF4882-7522-4C9E-9924-A53718A47B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69FF4882-7522-4C9E-9924-A53718A47B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69FF4882-7522-4C9E-9924-A53718A47B2A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{69FF4882-7522-4C9E-9924-A53718A47B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69FF4882-7522-4C9E-9924-A53718A47B2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69FF4882-7522-4C9E-9924-A53718A47B2A}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

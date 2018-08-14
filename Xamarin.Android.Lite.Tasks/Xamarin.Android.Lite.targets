@@ -2,7 +2,7 @@
   <Import Project="Xamarin.Android.Lite.props" Condition=" '$(XamarinAndroidLiteImported)' != 'True' " />
   <!--IDE/Debugging support-->
   <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Lite.VisualStudio.targets" Condition=" '$(UsingMicrosoftNETSdk)' != 'True' " />
-  <Target Name="ResolveSdks">
+  <Target Name="ResolveSdks" DependsOnTargets="$(ResolveSdksDependsOn)">
     <Error Text="Xamarin.Android.Lite requires Xamarin.Android is installed!" Condition=" '$(XamarinAndroidPath)' == '' Or !Exists('$(XamarinAndroidPath)') " />
     <ResolveSdks
       AndroidSdkPath="$(AndroidSdkDirectory)"
@@ -33,7 +33,7 @@
       <_IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</_IntermediateProps>
       <_AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</_AndroidManifest>
       <_TextManifest>$(IntermediateOutputPath)android\AndroidManifest.xml</_TextManifest>
-      <_DeployDirectory>$(IntermediateOutputPath)deploy\</_DeployDirectory>
+      <_DeployDirectory>$(IntermediateOutputPath).__override__\</_DeployDirectory>
     </PropertyGroup>
   </Target>
   <Target Name="_FindApkInputs">
@@ -53,7 +53,12 @@
       WriteOnlyWhenDifferent="True"
     />
     <ItemGroup>
-      <FilesToDeploy Include="$(OutputPath)*.dll;$(OutputPath)*.pdb" Exclude="Xamarin.Android.*;FormsViewGroup.*;Xamarin.Forms.*" />
+      <FilesToExcludeFromDeploy Include="$(OutputPath)Xamarin.Android.Arch.*" />
+      <FilesToExcludeFromDeploy Include="$(OutputPath)Xamarin.Android.Support.*" />
+      <FilesToExcludeFromDeploy Include="$(OutputPath)Xamarin.Forms.*" />
+      <FilesToExcludeFromDeploy Include="$(OutputPath)Xamarin.Essentials.*" />
+      <FilesToExcludeFromDeploy Include="$(OutputPath)FormsViewGroup.*" />
+      <FilesToDeploy Include="$(OutputPath)*.dll;$(OutputPath)*.pdb" Exclude="@(FilesToExcludeFromDeploy)" />
       <FileWrites Include="$(_IntermediateProps)" />
     </ItemGroup>
   </Target>

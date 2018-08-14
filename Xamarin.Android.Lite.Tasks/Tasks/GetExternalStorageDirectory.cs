@@ -36,8 +36,8 @@ namespace Xamarin.Android.Lite.Tasks
 			string external = data.Trim ();
 			Directories = new [] {
 				$"{external}/Android/data/{PackageName}",
-				$"{external}/Android/data/{PackageName}/files",
-				ExternalStorageDirectory = $"{external}/Android/data/{PackageName}/files/.__override__"
+				ExternalStorageDirectory = $"{external}/Android/data/{PackageName}/files",
+				$"{external}/Android/data/{PackageName}/files/.__override__"
 			};
 		}
 	}

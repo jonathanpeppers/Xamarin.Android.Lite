@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!--NOTE: the IDE cares about this apparently? Used for the Play button.-->
+  <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="27" />
+</manifest>

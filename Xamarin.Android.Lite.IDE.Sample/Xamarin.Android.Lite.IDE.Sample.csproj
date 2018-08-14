@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69FF4882-7522-4C9E-9924-A53718A47B2A}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TemplateGuid>{122416d6-6b49-4ee2-a1e8-b825f31c79fe}</TemplateGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Xamarin.Android.Lite.IDE.Sample</RootNamespace>
+    <AssemblyName>Xamarin.Android.Lite.IDE.Sample</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>True</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <IncludePackageReference>True</IncludePackageReference>
+    <AndroidApplicationClass>Xamarin.Android.Lite.Sample.App, Xamarin.Android.Lite.IDE.Sample</AndroidApplicationClass>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidManagedSymbols>true</AndroidManagedSymbols>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <Import Project="..\Configuration.props" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Models\Item.cs">
+      <Link>Models\Item.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Services\IDataStore.cs">
+      <Link>Services\IDataStore.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Services\MockDataStore.cs">
+      <Link>Services\MockDataStore.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\ViewModels\AboutViewModel.cs">
+      <Link>ViewModels\AboutViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\ViewModels\BaseViewModel.cs">
+      <Link>ViewModels\BaseViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\ViewModels\ItemDetailViewModel.cs">
+      <Link>ViewModels\ItemDetailViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\ViewModels\ItemsViewModel.cs">
+      <Link>ViewModels\ItemsViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\App.xaml.cs">
+      <Link>App.xaml.cs</Link>
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Views\AboutPage.xaml.cs">
+      <Link>Views\AboutPage.xaml.cs</Link>
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Views\ItemDetailPage.xaml.cs">
+      <Link>Views\ItemDetailPage.xaml.cs</Link>
+      <DependentUpon>ItemDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Views\ItemsPage.xaml.cs">
+      <Link>Views\ItemsPage.xaml.cs</Link>
+      <DependentUpon>ItemsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Views\MainPage.xaml.cs">
+      <Link>Views\MainPage.xaml.cs</Link>
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\Xamarin.Android.Lite.Sample\Views\NewItemPage.xaml.cs">
+      <Link>Views\NewItemPage.xaml.cs</Link>
+      <DependentUpon>NewItemPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\xamarin_logo.png">
+      <Link>xamarin_logo.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\App.xaml">
+      <Link>App.xaml</Link>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\Views\AboutPage.xaml">
+      <Link>Views\AboutPage.xaml</Link>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\Views\ItemDetailPage.xaml">
+      <Link>Views\ItemDetailPage.xaml</Link>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\Views\ItemsPage.xaml">
+      <Link>Views\ItemsPage.xaml</Link>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\Views\MainPage.xaml">
+      <Link>Views\MainPage.xaml</Link>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Xamarin.Android.Lite.Sample\Views\NewItemPage.xaml">
+      <Link>Views\NewItemPage.xaml</Link>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="..\bin\$(Configuration)\build\Xamarin.Android.Lite.targets" Condition="Exists('..\bin\$(Configuration)\build\Xamarin.Android.Lite.targets')" />
+</Project>

@@ -11,7 +11,8 @@ namespace Xamarin.Android.Lite.Sample.Views
 		{
 			InitializeComponent ();
 
-			xamarin_logo.Source = ImageSource.FromResource ("Xamarin.Android.Lite.Sample.xamarin_logo.png", typeof (App));
+			var assembly = GetType ().Assembly.GetName ().Name;
+			xamarin_logo.Source = ImageSource.FromResource (assembly + ".xamarin_logo.png", typeof (App));
 		}
 	}
 }

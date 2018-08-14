@@ -13,10 +13,11 @@
   <PropertyGroup>
     <TargetFrameworkIdentifier>MonoAndroid</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
-    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AndroidApplication>True</AndroidApplication>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <!--NOTE: Debugging will not work at all unless DebugType=portable-->
+    <DebugType Condition=" '$(DebugSymbols)' == 'True' Or '$(Optimize)' == 'False' Or '$(DebugType)' == 'Full' ">portable</DebugType>
   </PropertyGroup>
 
   <!--Debugging properties-->
@@ -55,5 +56,13 @@
     <!--TODO: see if can remove, had to be last in my test/hack project-->
     <ImplicitlyExpandNETStandardFacades>True</ImplicitlyExpandNETStandardFacades>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <ResolveSdksDependsOn>_CheckProject</ResolveSdksDependsOn>
+    <_ExpectedProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</_ExpectedProjectTypeGuids>
+  </PropertyGroup>
+  <Target Name="_CheckProject">
+    <Error Text="If not using an SDK-style project, please include &lt;ProjectTypeGuids&gt;$(_ExpectedProjectTypeGuids)&lt;/ProjectTypeGuids&gt; in your project file!" Condition=" '$(_ExpectedProjectTypeGuids)' != '$(ProjectTypeGuids)' " />
+  </Target>
 
 </Project>
