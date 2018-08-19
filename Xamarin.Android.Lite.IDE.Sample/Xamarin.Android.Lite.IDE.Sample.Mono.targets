@@ -1,0 +1,4 @@
+<Project>
+  <!--NOTE: for some reason /t:Restore fails on MacOS without this-->
+  <Target Name="Restore" />
+</Project>

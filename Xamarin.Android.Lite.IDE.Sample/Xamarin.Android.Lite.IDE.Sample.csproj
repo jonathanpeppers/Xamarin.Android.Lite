@@ -140,4 +140,5 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\bin\$(Configuration)\build\Xamarin.Android.Lite.targets" Condition="Exists('..\bin\$(Configuration)\build\Xamarin.Android.Lite.targets')" />
+  <Import Project="Xamarin.Android.Lite.IDE.Sample.Mono.targets" Condition=" '$(OS)' != 'Windows_NT' " />
 </Project>
