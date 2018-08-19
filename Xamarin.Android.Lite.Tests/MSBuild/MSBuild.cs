@@ -87,6 +87,7 @@ namespace Xamarin.Android.Lite.Tests
 		<Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
 		<Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
 		<ProjectGuid>{Guid.NewGuid ().ToString ("B")}</ProjectGuid>
+		<ProjectTypeGuids>{{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}};{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}</ProjectTypeGuids>
 		<RootNamespace>test</RootNamespace>
 		<AssemblyName>test</AssemblyName>
 	</PropertyGroup>
