@@ -19,6 +19,8 @@
     <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <IncludePackageReference>True</IncludePackageReference>
+    <!-- NOTE: Not a fan of this setting: https://github.com/xamarin/xamarin-android/pull/1628#issuecomment-404294235 -->
+    <AppendTargetFrameworkToIntermediateOutputPath>False</AppendTargetFrameworkToIntermediateOutputPath>
   </PropertyGroup>
   <Import Project="..\Configuration.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
