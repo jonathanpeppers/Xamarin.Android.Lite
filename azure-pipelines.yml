@@ -1,0 +1,62 @@
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+jobs:
+- job: windows
+
+  pool:
+    name: Hosted Windows 2019 with VS2019
+    demands:
+    - msbuild
+    - vstest
+
+  steps:
+  - task: MSBuild@1
+    displayName: 'Bootstrap build.proj'
+    inputs:
+      solution: build.proj
+      msbuildArguments: '/t:Bootstrap'
+
+  - task: MSBuild@1
+    displayName: 'Build build.proj'
+    inputs:
+      solution: build.proj
+
+  - task: VSTest@2
+    displayName: 'Run tests'
+    inputs:
+      testAssemblyVer2: 'Xamarin.Android.Lite.Tests\bin\Debug\Xamarin.Android.Lite.Tests.dll'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      Contents: |
+      **/*.nupkg
+      **/*.binlog
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: succeededOrFailed()
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifacts'
+    inputs:
+      ArtifactName: artifacts
+    condition: succeededOrFailed()
+
+- job: mac
+  pool:
+    name: Hosted macOS
+    demands: msbuild
+
+  steps:
+  - task: MSBuild@1
+    displayName: 'Bootstrap build.proj'
+    inputs:
+      solution: build.proj
+      msbuildArguments: '/t:Bootstrap'
+
+  - task: MSBuild@1
+    displayName: 'Build build.proj'
+    inputs:
+      solution: build.proj
