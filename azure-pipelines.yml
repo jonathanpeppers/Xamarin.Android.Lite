@@ -32,9 +32,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
     inputs:
-      Contents: |
-      **/*.nupkg
-      **/*.binlog
+      Contents: '**/*.nupkg;**/*.binlog'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: succeededOrFailed()
 
