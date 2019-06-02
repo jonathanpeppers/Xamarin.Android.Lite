@@ -5,8 +5,8 @@
   </Target>
   <Target Name="SetProperties">
     <PropertyGroup>
-      <!--Should be latest on 15.8 https://jenkins.mono-project.com/view/Xamarin.Android/job/xamarin-android/1082/Azure/-->
-      <XamarinAndroidUrl>https://xamjenkinsartifact.azureedge.net/xamarin-android/xamarin-android/xamarin.android-oss_v8.4.99.60_Darwin-x86_64_HEAD_6ce26a0d.zip</XamarinAndroidUrl>
+      <!--Should be latest on VS 2019 16.1 https://jenkins.mono-project.com/view/Xamarin.Android/job/xamarin-android-d16-1/28/Azure/-->
+      <XamarinAndroidUrl>https://xamjenkinsartifact.azureedge.net/mono-jenkins/xamarin-android/xamarin-android/xamarin.android-oss_v9.2.99.78_Darwin-x86_64_d16-1_87a80b34-Release.zip</XamarinAndroidUrl>
       <UrlFile>$(IntermediateOutputPath)xamarin-android.url</UrlFile>
       <ZipFile>$(IntermediateOutputPath)xamarin-android.zip</ZipFile>
       <UnzipFolder>$(IntermediateOutputPath)unzip\</UnzipFolder>
