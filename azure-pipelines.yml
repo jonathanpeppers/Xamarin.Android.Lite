@@ -7,7 +7,7 @@ jobs:
 - job: windows
 
   pool:
-    name: Hosted Windows 2019 with VS2019
+    name: Hosted VS2017
     demands:
     - msbuild
     - vstest
