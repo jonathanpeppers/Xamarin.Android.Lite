@@ -1,5 +1,7 @@
 # https://aka.ms/yaml
 
+name: $(BuildID)
+
 trigger:
 - master
 
