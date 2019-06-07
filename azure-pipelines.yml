@@ -53,10 +53,16 @@ jobs:
 
   steps:
   - task: MSBuild@1
+    displayName: 'Provision'
+    inputs:
+      solution: build.proj
+      msbuildArguments: '/t:Provision'
+
+  - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap /p:Provision=True'
+      msbuildArguments: '/t:Bootstrap'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'

@@ -46,6 +46,7 @@ DISCLAIMER: I created this project during Microsoft's #HackWeek 2018. It is not 
       <PackagePath>build\</PackagePath>
     </Content>
     <Content Include="$(AssetsDirectory)x64\*">
+      <Link>x64\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\x64</PackagePath>
     </Content>
