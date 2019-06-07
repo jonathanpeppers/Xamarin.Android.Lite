@@ -4,7 +4,7 @@
   <Target Name="Bootstrap" DependsOnTargets="Build;InstallMono" />
   <Target Name="InstallMono" Condition=" '$(OS)' != 'Windows_NT' And '$(Provision)' == 'True' ">
     <DownloadUri
-      SourceUris="https://download.mono-project.com/archive/5.20.1/macos-10-universal/MonoFramework-MDK-5.20.1.19.macos10.xamarin.universal.pkg"
+      SourceUris="https://xamjenkinsartifact.azureedge.net/build-package-osx-mono/2018-10/196/2b6f395180b09cf31c849104f7774be3c04fd46f/MonoFramework-MDK-5.20.0.217.macos10.xamarin.universal.pkg"
       DestinationFiles="$(IntermediateOutputPath)mono.pkg"
     />
     <Exec Command="sudo installer -pkg &quot;$(IntermediateOutputPath)mono.pkg&quot; -target /" />
