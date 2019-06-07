@@ -7,7 +7,7 @@
       SourceUris="https://download.mono-project.com/archive/5.20.1/macos-10-universal/MonoFramework-MDK-5.20.1.19.macos10.xamarin.universal.pkg"
       DestinationFiles="$(IntermediateOutputPath)mono.pkg"
     />
-    <Exec Command="installer -pkg &quot;$(IntermediateOutputPath)mono.pkg&quot; -target /" />
+    <Exec Command="sudo installer -pkg &quot;$(IntermediateOutputPath)mono.pkg&quot; -target /" />
     <Delete Files="$(IntermediateOutputPath)mono.pkg" />
   </Target>
 </Project>
