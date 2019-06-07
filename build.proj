@@ -4,6 +4,7 @@
   </PropertyGroup>
   <Target Name="Bootstrap">
     <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
+    <!--This is "vestigial", but I'll leave it here if needed again-->
     <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Debug" />

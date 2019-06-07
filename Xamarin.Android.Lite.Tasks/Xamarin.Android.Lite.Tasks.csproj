@@ -29,42 +29,25 @@ DISCLAIMER: I created this project during Microsoft's #HackWeek 2018. It is not 
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179" PrivateAssets="all" />
     <PackageReference Include="Xamarin.Forms"                  Version="$(XamarinFormsVersion)"      PrivateAssets="none" Condition=" '$(TargetFramework)' == 'netstandard2.0' " />
     <PackageReference Include="Xamarin.Essentials"             Version="$(XamarinEssentialsVersion)" PrivateAssets="none" Condition=" '$(TargetFramework)' == 'netstandard2.0' " />
-    <Reference Include="$(XamarinAndroidReferencePath)libZipSharp.dll" />
-    <Reference Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll" />
+    <Reference Include="$(AssetsDirectory)libZipSharp.dll" />
+    <Reference Include="$(AssetsDirectory)Xamarin.Android.Tools.AndroidSdk.dll" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(OutputPath)Xamarin.Android.Lite.Tasks.dll">
       <PackagePath>build\</PackagePath>
-    </Content>
-    <Content Include="$(XamarinAndroidReferencePath)libZipSharp.dll">
-      <PackagePath>build\</PackagePath>
-    </Content>
-    <Content Include="$(XamarinAndroidReferencePath)libZipSharp.dll.config">
-      <PackagePath>build\</PackagePath>
-    </Content>
-    <Content Include="$(XamarinAndroidReferencePath)Xamarin.Android.Tools.AndroidSdk.dll">
-      <PackagePath>build\</PackagePath>
-    </Content>
-    <Content Include="$(XamarinAndroidReferencePath)libzip.5.0.dylib" Link="libzip.5.0.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>build\</PackagePath>
-    </Content>
-    <Content Include="$(XamarinAndroidReferencePath)libzip.dll" Link="libzip.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>build\</PackagePath>
-    </Content>
-    <Content Include="$(XamarinAndroidReferencePath)x64\libzip.dll" Link="x64\libzip.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>build\x64\</PackagePath>
     </Content>
     <EmbeddedResource Include="..\bin\$(Configuration)\AndroidManifest.xml" Condition="Exists('..\bin\$(Configuration)\AndroidManifest.xml')" />
     <Content Include="..\bin\$(Configuration)\com.xamarin.android.lite.apk" Condition="Exists('..\bin\$(Configuration)\com.xamarin.android.lite.apk')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
     </Content>
-    <Content Include="..\assets\*">
+    <Content Include="$(AssetsDirectory)*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>build\</PackagePath>
+    </Content>
+    <Content Include="$(AssetsDirectory)x64\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>build\x64</PackagePath>
     </Content>
     <Content Include="Xamarin.Android.Lite.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
