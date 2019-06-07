@@ -56,7 +56,7 @@ jobs:
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap'
+      msbuildArguments: '/t:Bootstrap /p:Provision=True'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'

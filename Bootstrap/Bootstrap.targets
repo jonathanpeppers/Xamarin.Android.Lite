@@ -1,6 +1,13 @@
 <Project>
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.DownloadUri" />
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.Unzip" />
-  <!--This is "vestigial", but I'll leave it here if needed again-->
-  <Target Name="Bootstrap" DependsOnTargets="Build" />
+  <Target Name="Bootstrap" DependsOnTargets="Build;InstallMono" />
+  <Target Name="InstallMono" Condition=" '$(OS)' != 'Windows_NT' And '$(Provision)' == 'True' ">
+    <DownloadUri
+      SourceUris="https://download.mono-project.com/archive/5.20.1/macos-10-universal/MonoFramework-MDK-5.20.1.19.macos10.xamarin.universal.pkg"
+      DestinationFiles="$(IntermediateOutputPath)mono.pkg"
+    />
+    <Exec Command="installer -pkg &quot;$(IntermediateOutputPath)mono.pkg&quot; -target /" />
+    <Delete Files="$(IntermediateOutputPath)mono.pkg" />
+  </Target>
 </Project>
