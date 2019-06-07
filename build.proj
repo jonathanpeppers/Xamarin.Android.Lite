@@ -6,13 +6,13 @@
   </PropertyGroup>
   <Target Name="Bootstrap">
     <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
-    <!--Run this in a new process, it might bootstrap mono-->
-    <Exec Command="&quot;$(_MSBuildExe)&quot; Bootstrap\Bootstrap.csproj /t:Bootstrap /bl:bootstrap.binlog" />
-    <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
-    <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Debug" />
-    <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Release" />
+    <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
+    <!--Run this in a new process, we might have bootstrapped mono-->
+    <Exec Command="&quot;$(_MSBuildExe)&quot; Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj /t:Build /bl:bootstrap.binlog" />
   </Target>
   <Target Name="Build">
+    <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Debug" />
+    <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Release" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Rebuild" />
     <MSBuild Projects="Xamarin.Android.Lite.Tests\Xamarin.Android.Lite.Tests.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Pack" Properties="Configuration=Release" />
