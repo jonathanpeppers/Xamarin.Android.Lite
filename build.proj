@@ -20,17 +20,6 @@
     </PropertyGroup>
     <Exec Command="&quot;$(_MSBuildExe)&quot; Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage /bl:sample.binlog" />
   </Target>
-  <Target Name="Clean">
-    <!--NOTE: not cleaning extracted xamarin-android binaries on purpose-->
-    <ItemGroup>
-      <DirToClean Include="Xamarin.Android.Lite" />
-      <DirToClean Include="Xamarin.Android.Lite.Sample" />
-      <DirToDelete Include="bin\Debug" />
-      <DirToDelete Include="bin\Release" />
-    </ItemGroup>
-    <Exec Command="git clean -dxf @(DirToClean->'%(Identity)', ' ')" />
-    <RemoveDir Directories="@(DirToDelete)" />
-  </Target>
   <Target Name="Publish">
     <Error Text="Please supply `/p:NuGetPackage` !" Condition=" '$(NuGetPackage)' == '' " />
     <Error Text=".nugetapikey does not exist!" Condition=" !Exists('.nugetapikey') " />
