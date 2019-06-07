@@ -3,7 +3,7 @@
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.Unzip" />
   <!--This is "vestigial", but I'll leave it here if needed again-->
   <Target Name="Bootstrap" DependsOnTargets="Build" />
-  <Target Name="Provision" Condition=" '$(OS)' != 'Windows_NT' ">
+  <Target Name="Provision" DependsOnTargets="Build" Condition=" '$(OS)' != 'Windows_NT' ">
     <DownloadUri
       SourceUris="https://download.mono-project.com/archive/6.0.0/macos-10-universal/MonoFramework-MDK-6.0.0.286.macos10.xamarin.universal.pkg"
       DestinationFiles="$(IntermediateOutputPath)mono.pkg"
