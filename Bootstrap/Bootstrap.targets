@@ -3,12 +3,16 @@
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.Unzip" />
   <!--This is "vestigial", but I'll leave it here if needed again-->
   <Target Name="Bootstrap" DependsOnTargets="Build" />
-  <Target Name="Provision" DependsOnTargets="Build" Condition=" '$(OS)' != 'Windows_NT' ">
+  <Target Name="Provision" DependsOnTargets="Build" >
+    <ItemGroup>
+      <_Download Name="mono.pkg"   Include="https://download.mono-project.com/archive/6.0.0/macos-10-universal/MonoFramework-MDK-6.0.0.286.macos10.xamarin.universal.pkg" />
+      <_Download Name="dotnet.pkg" Include="https://download.visualstudio.microsoft.com/download/pr/d3392a3f-8437-4357-8ed1-58061a421ab7/4e354d4a659d1ac4b20ebacb2dedf656/dotnet-sdk-2.2.107-osx-x64.pkg" />
+    </ItemGroup>
     <DownloadUri
-      SourceUris="https://download.mono-project.com/archive/6.0.0/macos-10-universal/MonoFramework-MDK-6.0.0.286.macos10.xamarin.universal.pkg"
-      DestinationFiles="$(IntermediateOutputPath)mono.pkg"
+      SourceUris="@(_Download)"
+      DestinationFiles="@(_Download->'$(IntermediateOutputPath)%(Name)')"
     />
-    <Exec Command="sudo installer -pkg &quot;$(IntermediateOutputPath)mono.pkg&quot; -target /" />
-    <Delete Files="$(IntermediateOutputPath)mono.pkg" />
+    <Exec Command="sudo installer -pkg &quot;$(IntermediateOutputPath)%(_Download.Name)&quot; -target /" />
+    <Delete Files="$(IntermediateOutputPath)%(_Download.Name)" />
   </Target>
 </Project>
