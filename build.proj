@@ -5,6 +5,7 @@
     <_MSBuildExe Condition=" '$(OS)' != 'Windows_NT' ">msbuild</_MSBuildExe>
   </PropertyGroup>
   <Target Name="Provision">
+    <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
     <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Provision" />
   </Target>
   <Target Name="Bootstrap">
