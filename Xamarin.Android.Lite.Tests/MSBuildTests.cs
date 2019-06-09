@@ -190,8 +190,9 @@ namespace Xamarin.Android.Lite.Tests
 			MSBuild.Clean (projectFile);
 
 			var allowedFiles = new [] {
-				//NOTE: apparently MSBuild 15.7.179 leaves this behind? $(ProjectAssetsCache) file
+				//NOTE: apparently MSBuild 16.x leaves these behind
 				"test.assets.cache",
+				"test.csproj.FileListAbsolute.txt",
 			};
 			
 			//Seriously, I am disgusted by them

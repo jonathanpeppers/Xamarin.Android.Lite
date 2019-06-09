@@ -1,9 +1,16 @@
 <Project DefaultTargets="Build">
   <PropertyGroup>
     <XamarinAndroid>$(MSBuildThisFileDirectory)bin\xamarin-android\</XamarinAndroid>
+    <_MSBuildExe Condition=" '$(OS)' == 'Windows_NT' ">$(MSBuildBinPath)\MSBuild.exe</_MSBuildExe>
+    <_MSBuildExe Condition=" '$(OS)' != 'Windows_NT' ">msbuild</_MSBuildExe>
   </PropertyGroup>
+  <Target Name="Provision">
+    <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
+    <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Provision" />
+  </Target>
   <Target Name="Bootstrap">
     <MSBuild Projects="Xamarin.Android.Lite.sln" Targets="Restore" />
+    <!--This is "vestigial", but I'll leave it here if needed again-->
     <MSBuild Projects="Bootstrap\Bootstrap.csproj" Targets="Bootstrap" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite\Xamarin.Android.Lite.csproj" Targets="SignAndroidPackage" Properties="Configuration=Debug" />
@@ -13,22 +20,7 @@
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Rebuild" />
     <MSBuild Projects="Xamarin.Android.Lite.Tests\Xamarin.Android.Lite.Tests.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Pack" Properties="Configuration=Release" />
-    <PropertyGroup>
-      <_MSBuildExe Condition=" '$(OS)' == 'Windows_NT' ">$(MSBuildBinPath)\MSBuild.exe</_MSBuildExe>
-      <_MSBuildExe Condition=" '$(OS)' != 'Windows_NT' ">msbuild</_MSBuildExe>
-    </PropertyGroup>
     <Exec Command="&quot;$(_MSBuildExe)&quot; Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage /bl:sample.binlog" />
-  </Target>
-  <Target Name="Clean">
-    <!--NOTE: not cleaning extracted xamarin-android binaries on purpose-->
-    <ItemGroup>
-      <DirToClean Include="Xamarin.Android.Lite" />
-      <DirToClean Include="Xamarin.Android.Lite.Sample" />
-      <DirToDelete Include="bin\Debug" />
-      <DirToDelete Include="bin\Release" />
-    </ItemGroup>
-    <Exec Command="git clean -dxf @(DirToClean->'%(Identity)', ' ')" />
-    <RemoveDir Directories="@(DirToDelete)" />
   </Target>
   <Target Name="Publish">
     <Error Text="Please supply `/p:NuGetPackage` !" Condition=" '$(NuGetPackage)' == '' " />
