@@ -41,7 +41,7 @@ namespace Xamarin.Android.Lite.Tests
 
 			using (var stream = File.OpenRead (temp)) {
 				var manifest = AndroidManifest.Read (stream);
-				var xml = @"<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" android:versionCode=""12"" android:versionName=""2.0.0"" package=""com.test.app"" platformBuildVersionCode=""28"" platformBuildVersionName=""8.1.0"">
+				var xml = @"<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" android:versionCode=""12"" android:versionName=""2.0.0"" package=""com.test.app"" platformBuildVersionCode=""28"" platformBuildVersionName=""9"">
   <uses-sdk android:minSdkVersion=""19"" android:targetSdkVersion=""28"" />
   <uses-permission android:name=""android.permission.INTERNET"" />
   <uses-permission android:name=""android.permission.READ_EXTERNAL_STORAGE"" />
