@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.xamarin.android.lite">
-  <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="27" />
+  <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="28" />
   <application android:label="Xamarin.Android.Lite">
     <meta-data android:name="Xamarin.Android.Lite.Application" android:value="Xamarin.Android.Lite.Sample.App, Xamarin.Android.Lite.Sample" />
   </application>
