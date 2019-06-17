@@ -8,6 +8,7 @@ namespace Xamarin.Android.Lite.Tasks
 	public class GenerateManifest : Task
 	{
 		const string ApplicationMetadata = "Xamarin.Android.Lite.Application";
+		const string MonoRuntimeProvider = "mono.MonoRuntimeProvider";
 
 		[Required]
 		public string DestinationFile { get; set; }
@@ -75,9 +76,9 @@ namespace Xamarin.Android.Lite.Tasks
 			if (!string.IsNullOrEmpty (ActivityTitle)) {
 				manifest.Mutate (activity, ns + "label", ActivityTitle);
 			}
-			
+
 			//NOTE: two other Xamarin.Android implementation-specific places *may* need the package name replaced
-			var provider = application.Element ("provider");
+			var provider = application.Elements ("provider").FirstOrDefault (e => e.Attribute (ns + "name")?.Value == MonoRuntimeProvider);
 			if (provider != null)
 				manifest.Mutate (provider, ns + "authorities", PackageName + ".mono.MonoRuntimeProvider.__mono_init_");
 
