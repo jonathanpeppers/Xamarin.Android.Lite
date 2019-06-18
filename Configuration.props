@@ -1,13 +1,14 @@
 <Project>
   <!--NOTE: putting repo-wide MSBuild properties here-->
   <PropertyGroup>
-    <XamarinAndroidLiteVersion>0.1.0</XamarinAndroidLiteVersion>
+    <XamarinAndroidLiteVersion>0.2.0</XamarinAndroidLiteVersion>
     <XamarinAndroidLiteSuffix>-preview</XamarinAndroidLiteSuffix>
     <BuildNumber Condition=" '$(BuildNumber)' == '' And '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</BuildNumber>
     <BuildNumber Condition=" '$(BuildNumber)' == '' ">1</BuildNumber>
     <XamarinAndroidLiteFullVersion>$(XamarinAndroidLiteVersion).$(BuildNumber)$(XamarinAndroidLiteSuffix)</XamarinAndroidLiteFullVersion>
-    <XamarinFormsVersion>[3.1.0.697729]</XamarinFormsVersion>
-    <XamarinEssentialsVersion>[0.9.1-preview]</XamarinEssentialsVersion>
+    <XamarinFormsVersion>[4.0.0.497661]</XamarinFormsVersion>
+    <XamarinEssentialsVersion>[1.1.0]</XamarinEssentialsVersion>
+    <AndroidSdkBuildToolsVersion>28.0.3</AndroidSdkBuildToolsVersion>
     <AssetsDirectory>$(MSBuildThisFileDirectory)\assets\</AssetsDirectory>
   </PropertyGroup>
   <ItemGroup Condition=" '$(IncludePackageReference)' == 'True' ">

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -8,6 +9,7 @@ namespace Xamarin.Android.Lite.Tasks
 	public class GenerateManifest : Task
 	{
 		const string ApplicationMetadata = "Xamarin.Android.Lite.Application";
+		const string PackageNamePrefix = "com.xamarin.android.lite.";
 
 		[Required]
 		public string DestinationFile { get; set; }
@@ -75,11 +77,15 @@ namespace Xamarin.Android.Lite.Tasks
 			if (!string.IsNullOrEmpty (ActivityTitle)) {
 				manifest.Mutate (activity, ns + "label", ActivityTitle);
 			}
-			
-			//NOTE: two other Xamarin.Android implementation-specific places *may* need the package name replaced
-			var provider = application.Element ("provider");
-			if (provider != null)
-				manifest.Mutate (provider, ns + "authorities", PackageName + ".mono.MonoRuntimeProvider.__mono_init_");
+
+			foreach (var provider in application.Elements ("provider")) {
+				var authorities = ns + "authorities";
+				var attribute = provider.Attribute (authorities);
+				if (attribute != null && attribute.Value.StartsWith (PackageNamePrefix, StringComparison.Ordinal)) {
+					var value = PackageName + attribute.Value.Substring (PackageNamePrefix.Length - 1, attribute.Value.Length - PackageNamePrefix.Length + 1);
+					manifest.Mutate (provider, authorities, value);
+				}
+			}
 
 			var category = application.Elements ("receiver")
 				.Where (e => e.Attribute (name)?.Value == "mono.android.Seppuku")

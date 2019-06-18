@@ -27,7 +27,7 @@
       <AndroidAppTitle         Condition=" '$(AndroidAppTitle)' == '' ">$(ProjectName)</AndroidAppTitle>
       <AndroidActivityTitle    Condition=" '$(AndroidActivityTitle)' == '' ">$(ProjectName)</AndroidActivityTitle>
       <_AndroidActivityName>xamarin.android.lite.MainActivity</_AndroidActivityName>
-      <_AndroidApiLevel>27</_AndroidApiLevel>
+      <_AndroidApiLevel>28</_AndroidApiLevel>
       <_IntermediateProps>$(IntermediateOutputPath)Xamarin.Android.Lite.props</_IntermediateProps>
       <_AndroidManifest>$(IntermediateOutputPath)AndroidManifest.xml</_AndroidManifest>
     </PropertyGroup>

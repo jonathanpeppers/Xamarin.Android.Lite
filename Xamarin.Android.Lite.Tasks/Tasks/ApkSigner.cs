@@ -34,7 +34,7 @@ namespace Xamarin.Android.Lite.Tasks
 
 			//TODO: hardcoded
 			int minSdk = 19;
-			int maxSdk = 27;
+			int maxSdk = 28;
 
 			cmd.AppendSwitchIfNotNull ("-jar ", ApkSignerJar);
 			cmd.AppendSwitch ("sign");
