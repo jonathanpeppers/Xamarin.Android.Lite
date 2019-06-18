@@ -68,11 +68,11 @@ namespace Xamarin.Android.Lite.Tests
     <receiver android:label=""Essentials Battery Broadcast Receiver"" android:name=""md5d630c3d3bfb5f5558520331566132d97.BatteryBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
     <receiver android:label=""Essentials Energy Saver Broadcast Receiver"" android:name=""md5d630c3d3bfb5f5558520331566132d97.EnergySaverBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
     <receiver android:label=""Essentials Connectivity Broadcast Receiver"" android:name=""md5d630c3d3bfb5f5558520331566132d97.ConnectivityBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
-    <provider android:name=""xamarin.essentials.fileProvider"" android:exported=""false"" android:authorities=""com.xamarin.android.lite.fileProvider"" android:grantUriPermissions=""true"">
+    <provider android:name=""xamarin.essentials.fileProvider"" android:exported=""false"" android:authorities=""com.test.app.fileProvider"" android:grantUriPermissions=""true"">
       <meta-data android:name=""android.support.FILE_PROVIDER_PATHS"" android:resource=""2131230720"" />
     </provider>
     <receiver android:name=""md51558244f76c53b6aeda52c8a337f2c37.PowerSaveModeBroadcastReceiver"" android:enabled=""true"" android:exported=""false"" />
-    <provider android:name=""mono.MonoRuntimeProvider"" android:exported=""false"" android:authorities=""com.test.app.mono.MonoRuntimeProvider.__mono_init_"" android:initOrder=""1999999999"" />
+    <provider android:name=""mono.MonoRuntimeProvider"" android:exported=""false"" android:authorities=""com.test.app.mono.MonoRuntimeProvider.__mono_init__"" android:initOrder=""1999999999"" />
     <receiver android:name=""mono.android.Seppuku"">
       <intent-filter>
         <action android:name=""mono.android.intent.action.SEPPUKU"" />
