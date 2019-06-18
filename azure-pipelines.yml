@@ -6,8 +6,8 @@ trigger:
 - master
 
 jobs:
-
 - job: windows
+
   pool:
     name: Hosted Windows 2019 with VS2019
     demands:
@@ -15,15 +15,6 @@ jobs:
     - vstest
 
   steps:
-
-  - task: MSBuild@1
-    displayName: 'Provision'
-    inputs:
-      solution: build.proj
-      msbuildArguments: '/t:Provision'
-    env:
-      SdkManager: 'C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat'
-
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
     inputs:
@@ -61,14 +52,11 @@ jobs:
     demands: msbuild
 
   steps:
-
   - task: MSBuild@1
     displayName: 'Provision'
     inputs:
       solution: build.proj
       msbuildArguments: '/t:Provision'
-    env:
-      SdkManager: $(HOME)/Library/Android/sdk/tools/bin/sdkmanager
 
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'

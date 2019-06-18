@@ -3,13 +3,7 @@
   <UsingTask AssemblyFile="$(OutputPath)Bootstrap.dll" TaskName="Xamarin.Android.Lite.Bootstrap.Unzip" />
   <!--This is "vestigial", but I'll leave it here if needed again-->
   <Target Name="Bootstrap" DependsOnTargets="Build" />
-  <Target Name="Provision" DependsOnTargets="Build;_ProvisionAndroidSdk;_ProvisionMono" />
-  <Target Name="_ProvisionAndroidSdk">
-    <Error Condition=" '$(SdkManager)' == '' " Text="%24(SdkManager) must be set!" />
-    <Exec Command="&quot;$(SdkManager)&quot; --list" />
-    <Exec Command="&quot;$(SdkManager)&quot; &quot;build-tools;28.0.3&quot;" />
-  </Target>
-  <Target Name="_ProvisionMono" Condition=" '$(OS)' != 'Windows_NT' ">
+  <Target Name="Provision" DependsOnTargets="Build" >
     <ItemGroup>
       <_Download Name="mono.pkg"   Include="https://download.mono-project.com/archive/5.20.1/macos-10-universal/MonoFramework-MDK-5.20.1.19.macos10.xamarin.universal.pkg" />
       <_Download Name="dotnet.pkg" Include="https://download.visualstudio.microsoft.com/download/pr/d3392a3f-8437-4357-8ed1-58061a421ab7/4e354d4a659d1ac4b20ebacb2dedf656/dotnet-sdk-2.2.107-osx-x64.pkg" />
