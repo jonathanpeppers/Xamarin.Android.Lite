@@ -22,7 +22,7 @@ jobs:
       solution: build.proj
       msbuildArguments: '/t:Provision'
     env:
-      SdkManager: ${ProgramFiles(x86)}\Android\android-sdk\tools\bin\sdkmanager.bat
+      SdkManager: 'C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat'
 
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
