@@ -8,6 +8,7 @@
     <XamarinAndroidLiteFullVersion>$(XamarinAndroidLiteVersion).$(BuildNumber)$(XamarinAndroidLiteSuffix)</XamarinAndroidLiteFullVersion>
     <XamarinFormsVersion>[4.0.0.497661]</XamarinFormsVersion>
     <XamarinEssentialsVersion>[1.1.0]</XamarinEssentialsVersion>
+    <AndroidSdkBuildToolsVersion>28.0.3</AndroidSdkBuildToolsVersion>
     <AssetsDirectory>$(MSBuildThisFileDirectory)\assets\</AssetsDirectory>
   </PropertyGroup>
   <ItemGroup Condition=" '$(IncludePackageReference)' == 'True' ">
