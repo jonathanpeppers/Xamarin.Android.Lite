@@ -13,8 +13,6 @@ jobs:
     demands:
     - msbuild
     - vstest
-    env:
-      SdkManager: C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat
 
   steps:
 
@@ -23,6 +21,8 @@ jobs:
     inputs:
       solution: build.proj
       msbuildArguments: '/t:Provision'
+    env:
+      SdkManager: $(ProgramFiles(x86))\Android\android-sdk\tools\bin\sdkmanager.bat
 
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
@@ -59,8 +59,6 @@ jobs:
   pool:
     name: Hosted macOS
     demands: msbuild
-    env:
-      SdkManager: $(HOME)/Library/Android/sdk/tools/bin/sdkmanager
 
   steps:
 
@@ -69,6 +67,8 @@ jobs:
     inputs:
       solution: build.proj
       msbuildArguments: '/t:Provision'
+    env:
+      SdkManager: $(HOME)/Library/Android/sdk/tools/bin/sdkmanager
 
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
