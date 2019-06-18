@@ -6,15 +6,24 @@ trigger:
 - master
 
 jobs:
-- job: windows
 
+- job: windows
   pool:
     name: Hosted Windows 2019 with VS2019
     demands:
     - msbuild
     - vstest
+    env:
+      SdkManager: C:\Program Files (x86)\Android\android-sdk\tools\bin\sdkmanager.bat
 
   steps:
+
+  - task: MSBuild@1
+    displayName: 'Provision'
+    inputs:
+      solution: build.proj
+      msbuildArguments: '/t:Provision'
+
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
     inputs:
@@ -50,8 +59,11 @@ jobs:
   pool:
     name: Hosted macOS
     demands: msbuild
+    env:
+      SdkManager: $(HOME)/Library/Android/sdk/tools/bin/sdkmanager
 
   steps:
+
   - task: MSBuild@1
     displayName: 'Provision'
     inputs:
