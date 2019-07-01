@@ -19,12 +19,13 @@ jobs:
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap'
+      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'
     inputs:
       solution: build.proj
+      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog'
 
   - task: VSTest@2
     displayName: 'Run tests'
@@ -43,7 +44,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifacts'
     inputs:
-      ArtifactName: artifacts
+      ArtifactName: win
     condition: succeededOrFailed()
 
 - job: mac
@@ -62,9 +63,26 @@ jobs:
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap'
+      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'
     inputs:
       solution: build.proj
+      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      Contents: |
+        **\*.nupkg
+        **\*.binlog
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: succeededOrFailed()
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifacts'
+    inputs:
+      ArtifactName: mac
+    condition: succeededOrFailed()
+
