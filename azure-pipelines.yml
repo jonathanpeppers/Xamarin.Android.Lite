@@ -5,6 +5,10 @@ name: $(BuildID)
 trigger:
 - master
 
+# Workaround for https://github.com/xamarin/xamarin-android-tools/pull/74
+variables:
+  JavaSdkDirectory: $(JAVA_HOME_8_X64)
+
 jobs:
 - job: windows
 
