@@ -31,8 +31,6 @@ jobs:
     displayName: 'Run tests'
     inputs:
       testAssemblyVer2: 'Xamarin.Android.Lite.Tests\bin\Debug\Xamarin.Android.Lite.Tests.dll'
-    env:
-      JavaSdkDirectory: $(JAVA_HOME_8_X64)
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
