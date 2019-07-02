@@ -13,19 +13,21 @@ jobs:
     demands:
     - msbuild
     - vstest
+    env:
+      JavaSdkDirectory: $(JAVA_HOME_8_X64)
 
   steps:
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog /p:JavaSdkDirectory="$(JAVA_HOME_8_X64)"'
+      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog /p:JavaSdkDirectory="$(JAVA_HOME_8_X64)"'
+      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog'
 
   - task: VSTest@2
     displayName: 'Run tests'
@@ -63,20 +65,20 @@ jobs:
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog'
+      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)/bootstrap.binlog'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog'
+      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)/build.binlog'
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
     inputs:
       Contents: |
-        **\*.nupkg
-        **\*.binlog
+        **/*.nupkg
+        **/*.binlog
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
     condition: succeededOrFailed()
 
