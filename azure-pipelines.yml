@@ -13,21 +13,19 @@ jobs:
     demands:
     - msbuild
     - vstest
-    env:
-      JavaSdkDirectory: $(JAVA_HOME_8_X64)
 
   steps:
   - task: MSBuild@1
     displayName: 'Bootstrap build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog'
+      msbuildArguments: '/t:Bootstrap /bl:$(System.DefaultWorkingDirectory)\bootstrap.binlog /p:JavaSdkDirectory="$(JAVA_HOME_8_X64)"'
 
   - task: MSBuild@1
     displayName: 'Build build.proj'
     inputs:
       solution: build.proj
-      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog'
+      msbuildArguments: '/bl:$(System.DefaultWorkingDirectory)\build.binlog /p:JavaSdkDirectory="$(JAVA_HOME_8_X64)"'
 
   - task: VSTest@2
     displayName: 'Run tests'
