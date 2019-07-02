@@ -84,9 +84,16 @@ namespace Xamarin.Android.Lite.Tests
 
 		public static void Build (string projectFile, string target = "Build", string additionalArgs = "")
 		{
+			//HACK: workaround for Azure DevOps 2019 Pool
+			string java_args = "";
+			string java_home = Environment.GetEnvironmentVariable ("JAVA_HOME_8_X64");
+			if (!string.IsNullOrEmpty (java_home)) {
+				java_args = $"/p:JavaSdkDirectory=\"{java_home}\"";
+			}
+
 			var psi = new ProcessStartInfo {
 				FileName = FindMSBuild (),
-				Arguments = $"/v:minimal /nologo {projectFile} /t:{target} /bl {additionalArgs}",
+				Arguments = $"/v:minimal /nologo {projectFile} /t:{target} /bl {java_args} {additionalArgs}",
 				CreateNoWindow = true,
 				WindowStyle = ProcessWindowStyle.Hidden,
 				UseShellExecute = false,
