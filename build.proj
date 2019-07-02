@@ -21,9 +21,9 @@
     <MSBuild Projects="Xamarin.Android.Lite.Tests\Xamarin.Android.Lite.Tests.csproj" Targets="Build" />
     <MSBuild Projects="Xamarin.Android.Lite.Tasks\Xamarin.Android.Lite.Tasks.csproj" Targets="Pack" Properties="Configuration=Release" />
     <PropertyGroup>
-      <_ExtraArgs Condition=" '$(JavaSdkDirectory)' != '' ">/p:JavaSdkDirectory=$(JavaSdkDirectory)</_ExtraArgs>
+      <_ExtraArgs Condition=" '$(JavaSdkDirectory)' != '' ">/p:JavaSdkDirectory=&quot;$(JavaSdkDirectory)&quot;</_ExtraArgs>
     </PropertyGroup>
-    <Exec Command="&quot;$(_MSBuildExe)&quot; Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage /bl:sample.binlog $(_ExtraArgs)" />
+    <Exec Command="&quot;$(_MSBuildExe)&quot; Xamarin.Android.Lite.Sample\Xamarin.Android.Lite.Sample.csproj /t:SignAndroidPackage /bl:sample.binlog $([MSBuild]::Unescape($(_ExtraArgs)))" />
   </Target>
   <Target Name="Publish">
     <Error Text="Please supply `/p:NuGetPackage` !" Condition=" '$(NuGetPackage)' == '' " />
