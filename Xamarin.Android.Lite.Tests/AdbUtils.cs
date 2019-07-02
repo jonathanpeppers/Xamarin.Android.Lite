@@ -10,6 +10,9 @@ namespace Xamarin.Android.Lite.Tests
 	{
 		static AndroidSdkInfo RefreshSdk ()
 		{
+			//HACK: workaround for Azure DevOps 2019 Pool
+			string java_home = Environment.GetEnvironmentVariable ("JAVA_HOME_8_X64");
+
 			return new AndroidSdkInfo ((l, m) => {
 				switch (l) {
 					case TraceLevel.Error:
@@ -19,7 +22,7 @@ namespace Xamarin.Android.Lite.Tests
 						TestContext.WriteLine (m);
 						break;
 				}
-			});
+			}, javaSdkPath: java_home);
 		}
 
 		static readonly Lazy<AndroidSdkInfo> androidSdk = new Lazy<AndroidSdkInfo> (RefreshSdk);
